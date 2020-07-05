@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
@@ -27,14 +29,17 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
             var images = JsonConvert.DeserializeObject<ICollection<Image>>(Arguments.GetString("images"));
             listView.Adapter = new ImageViewModelAdapter(Activity, images);
-            listView.ItemClick += ListViewOnItemClick;
+            listView.ItemClick += OnItemClick;
             return view;
         }
 
         //============================================================
-        private void ListViewOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void OnItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            throw new NotImplementedException();
+            var image = JsonConvert.DeserializeObject<ICollection<Image>>(Arguments.GetString("images")).ElementAt(e.Position);
+            var intent = new Intent(Context, typeof(GalleryActivity));
+            intent.PutExtra("image", JsonConvert.SerializeObject(image));
+            StartActivity(intent);
         }
     }
 }

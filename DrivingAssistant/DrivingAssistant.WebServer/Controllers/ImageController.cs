@@ -80,5 +80,25 @@ namespace DrivingAssistant.WebServer.Controllers
                 return Problem(ex.Message);
             }
         }
+
+        //============================================================
+        [HttpGet]
+        [Route("images_download")]
+        public async Task<IActionResult> DownloadAsync()
+        {
+            try
+            {
+                Logger.Log("Received GET images_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                var id = Convert.ToInt64(Request.Query["id"].First());
+                using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
+                var image = (await imageService.GetAsync()).First(x => x.Id == id);
+                return File(System.IO.File.Open(image.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+                return Problem(ex.Message);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Android.Graphics;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 
@@ -58,6 +59,18 @@ namespace DrivingAssistant.AndroidApp.Services
             };
 
             await request.GetResponseAsync();
+        }
+
+        //============================================================
+        public async Task<Bitmap> DownloadImageAsync(long id)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/images_download?id=" + id))
+            {
+                Method = "GET"
+            };
+
+            var response = request.GetResponse() as HttpWebResponse;
+            return await BitmapFactory.DecodeStreamAsync(response.GetResponseStream());
         }
 
         //============================================================

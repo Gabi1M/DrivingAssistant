@@ -1,5 +1,4 @@
 ﻿using System;
-using Android;
 using Android.App;
 using Android.OS;
 using Android.Runtime;
@@ -8,12 +7,15 @@ using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.App;
 using Android.Views;
+using DrivingAssistant.AndroidApp.Fragments;
+using DrivingAssistant.AndroidApp.Services;
 
-namespace DrivingAssistant.AndroidApp
+namespace DrivingAssistant.AndroidApp.Activities
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
+        //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -34,6 +36,7 @@ namespace DrivingAssistant.AndroidApp
             navigationView.SetNavigationItemSelectedListener(this);
         }
 
+        //============================================================
         public override void OnBackPressed()
         {
             DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
@@ -47,62 +50,58 @@ namespace DrivingAssistant.AndroidApp
             }
         }
 
+        //============================================================
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
 
+        //============================================================
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             var id = item.ItemId;
             return id == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
         }
 
-        private void FabOnClick(object sender, EventArgs eventArgs)
+        //============================================================
+        private static void FabOnClick(object sender, EventArgs eventArgs)
         {
-            var view = (View) sender;
+            var view = sender as View;
             Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong).SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
         }
 
+        //============================================================
         public bool OnNavigationItemSelected(IMenuItem item)
         {
-            var id = item.ItemId;
-
-            if (id == Resource.Id.nav_camera)
-            {
-                // Handle the camera action
-            }
-            else if (id == Resource.Id.nav_gallery)
-            {
-
-            }
-            else if (id == Resource.Id.nav_slideshow)
-            {
-
-            }
-            else if (id == Resource.Id.nav_manage)
-            {
-
-            }
-            else if (id == Resource.Id.nav_share)
-            {
-
-            }
-            else if (id == Resource.Id.nav_send)
-            {
-
-            }
-
-            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            drawer.CloseDrawer(GravityCompat.Start);
+            ProcessNavigationItemSelected(item.ItemId);
             return true;
         }
+
+        //============================================================
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        //============================================================
+        private async void ProcessNavigationItemSelected(int id)
+        {
+            switch (id)
+            {
+                case Resource.Id.nav_camera:
+                {
+                    using var imageService = new ImageService("http://192.168.100.246:3287");
+                    var images = await imageService.GetAsync();
+                    var fragment = new ImageFragment(images);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
+            }
+
+            FindViewById<DrawerLayout>(Resource.Id.drawer_layout).CloseDrawer(GravityCompat.Start);
         }
     }
 }

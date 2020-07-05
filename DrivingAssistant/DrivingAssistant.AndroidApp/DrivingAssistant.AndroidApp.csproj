@@ -84,10 +84,11 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\GalleryActivity.cs" />
     <Compile Include="Adapters\FragmentAdapters\ImageFragmentAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\ImageViewModelAdapter.cs" />
     <Compile Include="Fragments\ImageFragment.cs" />
-    <Compile Include="MainActivity.cs" />
+    <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ImageService.cs" />
@@ -164,6 +165,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\fragment_images.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_gallery.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
