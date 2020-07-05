@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Tools;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -73,11 +74,27 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
             inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
+
+            _loginButton.Enabled = false;
+            _registerButton.Enabled = false;
+
             if (ValidateFields())
             {
                 _progressBar.Visibility = ViewStates.Visible;
+
+                if (!await Utils.CheckConnectionAsync("http://192.168.100.246:3287"))
+                {
+                    Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
+                    _progressBar.Visibility = ViewStates.Invisible;
+                    _loginButton.Enabled = true;
+                    _registerButton.Enabled = true;
+                    return;
+                }
+
                 using var userService = new UserService("http://192.168.100.246:3287");
                 var users = await userService.GetAsync();
+                _loginButton.Enabled = true;
+                _registerButton.Enabled = true;
                 if (users.Any(x =>
                     x.Username.Trim() == _textInputUsername.Text.Trim() &&
                     x.Password.Trim() == Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim())))

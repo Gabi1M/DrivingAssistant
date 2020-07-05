@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.Content.Res;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 
@@ -30,12 +28,14 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelUsername;
         private TextView _labelPassword;
         private TextView _labelConfirmPassword;
+        private ProgressBar _progressBar;
         private Button _registerButton;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_register);
 
             _textInputFirstName = FindViewById<TextInputEditText>(Resource.Id.registerInputFirstName);
@@ -48,21 +48,58 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelUsername = FindViewById<TextView>(Resource.Id.registerLabelUsername);
             _labelPassword = FindViewById<TextView>(Resource.Id.registerLabelPassword);
             _labelConfirmPassword = FindViewById<TextView>(Resource.Id.registerLabelConfirmPassword);
+            _progressBar = FindViewById<ProgressBar>(Resource.Id.registerProgressBar);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
+
+            _progressBar.Visibility = ViewStates.Invisible;
+
+            _textInputConfirmPassword.EditorAction += OnTextInputConfirmPasswordEditorAction;
 
             _registerButton.Click += OnRegisterButtonClick;
         }
 
         //============================================================
+        private void OnTextInputConfirmPasswordEditorAction(object sender, TextView.EditorActionEventArgs e)
+        {
+            try
+            {
+                if (e.Event.KeyCode == Keycode.Enter)
+                {
+                    _registerButton.PerformClick();
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        //============================================================
         private async void OnRegisterButtonClick(object sender, EventArgs e)
         {
+            var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
+            inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
+
+            _registerButton.Enabled = false;
+
             if (ValidateFields())
             {
+                _progressBar.Visibility = ViewStates.Visible;
+                if (!await Utils.CheckConnectionAsync("http://192.168.100.246:3287"))
+                {
+                    Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
+                    _registerButton.Enabled = true;
+                    _progressBar.Visibility = ViewStates.Invisible;
+                    return;
+                }
+
                 using var userService = new UserService("http://192.168.100.246:3287");
                 var users = await userService.GetAsync();
+                _registerButton.Enabled = true;
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
                 {
                     Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();
+                    _progressBar.Visibility = ViewStates.Invisible;
                     return;
                 }
 
@@ -74,6 +111,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     DateTime.Now);
 
                 await userService.SetAsync(user);
+                _progressBar.Visibility = ViewStates.Invisible;
                 Toast.MakeText(Application.Context, "Register successful!", ToastLength.Short).Show();
                 await Task.Delay(1000);
                 Finish();

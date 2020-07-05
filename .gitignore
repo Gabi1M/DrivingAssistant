@@ -5,3 +5,6 @@
 /DrivingAssistant/DrivingAssistant.Core/obj
 /DrivingAssistant/DrivingAssistant.WebServer/bin
 /DrivingAssistant/DrivingAssistant.WebServer/obj
+/DrivingAssistant/DrivingAssistant.WindowsApp/bin
+/DrivingAssistant/DrivingAssistant.WindowsApp/obj
+/DrivingAssistant/packages

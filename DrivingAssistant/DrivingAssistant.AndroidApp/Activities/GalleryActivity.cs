@@ -18,7 +18,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_gallery);
             _imageView = FindViewById<ImageView>(Resource.Id.galleryView);
             _image = JsonConvert.DeserializeObject<Image>(Intent.GetStringExtra("image"));
