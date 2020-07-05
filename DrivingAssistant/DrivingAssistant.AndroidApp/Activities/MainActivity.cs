@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.OS;
 using Android.Runtime;
@@ -7,19 +8,20 @@ using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Support.V7.App;
 using Android.Views;
+using Android.Widget;
 using DrivingAssistant.AndroidApp.Fragments;
 using DrivingAssistant.AndroidApp.Services;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            //Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
             var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
@@ -97,6 +99,13 @@ namespace DrivingAssistant.AndroidApp.Activities
                     var images = await imageService.GetAsync();
                     var fragment = new ImageFragment(images);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
+                case Resource.Id.nav_logout:
+                {
+                    Toast.MakeText(Application.Context, "Logging out...", ToastLength.Short).Show();
+                    await Task.Delay(1000);
+                    Finish();
                     break;
                 }
             }
