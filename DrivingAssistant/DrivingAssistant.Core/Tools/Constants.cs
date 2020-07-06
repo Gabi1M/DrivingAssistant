@@ -17,6 +17,10 @@
             public const string AddImageCommand = @"insert into image(filepath, width, height, format, source, datetime) values (@filepath, @width, @height, @format, @source, @datetime) returning id;";
             public const string DeleteImageCommand = @"delete from image where id = @id";
 
+            public const string GetVideosCommand = @"select * from video;";
+            public const string AddVideoCommand = @"insert into video(filepath, width, height, fps, format, source, datetime) values (@filepath, @width, @height, @fps, @format, @source, @datetime) returning id;";
+            public const string DeleteVideoCommand = @"delete from video where id = @id";
+
             public const string GetUsersCommand = @"select * from users;";
             public const string AddUserCommand = @"insert into users(username, password, firstname, lastname, datetime) values (@username, @password, @firstname, @lastname, @datetime) returning id;";
             public const string DeleteUserCommand = @"delete from users where id = @id";

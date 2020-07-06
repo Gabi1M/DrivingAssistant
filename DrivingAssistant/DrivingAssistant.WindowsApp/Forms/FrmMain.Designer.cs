@@ -31,8 +31,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.workToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.openVideo2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -53,7 +54,8 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openVideoToolStripMenuItem});
+            this.openVideoToolStripMenuItem,
+            this.openVideo2ToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
             this.fileToolStripMenuItem.Text = "File";
@@ -65,6 +67,13 @@
             this.openVideoToolStripMenuItem.Text = "Open Video";
             this.openVideoToolStripMenuItem.Click += new System.EventHandler(this.OnOpenVideoToolStripMenuItemClick);
             // 
+            // workToolStripMenuItem
+            // 
+            this.workToolStripMenuItem.Name = "workToolStripMenuItem";
+            this.workToolStripMenuItem.Size = new System.Drawing.Size(70, 29);
+            this.workToolStripMenuItem.Text = "Work";
+            this.workToolStripMenuItem.Click += new System.EventHandler(this.OnWorkToolStripMenuItemClick);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -75,12 +84,12 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // workToolStripMenuItem
+            // openVideo2ToolStripMenuItem
             // 
-            this.workToolStripMenuItem.Name = "workToolStripMenuItem";
-            this.workToolStripMenuItem.Size = new System.Drawing.Size(70, 29);
-            this.workToolStripMenuItem.Text = "Work";
-            this.workToolStripMenuItem.Click += new System.EventHandler(this.OnWorkToolStripMenuItemClick);
+            this.openVideo2ToolStripMenuItem.Name = "openVideo2ToolStripMenuItem";
+            this.openVideo2ToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.openVideo2ToolStripMenuItem.Text = "Open Video 2";
+            this.openVideo2ToolStripMenuItem.Click += new System.EventHandler(this.openVideo2ToolStripMenuItem_Click);
             // 
             // FrmMain
             // 
@@ -107,5 +116,6 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openVideoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem workToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openVideo2ToolStripMenuItem;
     }
 }

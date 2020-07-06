@@ -93,11 +93,19 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             switch (id)
             {
-                case Resource.Id.nav_camera:
+                case Resource.Id.nav_images:
                 {
                     using var imageService = new ImageService("http://192.168.100.246:3287");
                     var images = await imageService.GetAsync();
                     var fragment = new ImageFragment(images);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
+                case Resource.Id.nav_videos:
+                {
+                    using var videoService = new VideoService("http://192.168.100.246:3287");
+                    var videos = await videoService.GetAsync();
+                    var fragment = new VideoFragment(videos);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }

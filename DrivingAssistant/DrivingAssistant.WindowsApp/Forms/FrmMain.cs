@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emgu.CV;
 
@@ -56,10 +52,28 @@ namespace DrivingAssistant.WindowsApp.Forms
         private async void OnWorkToolStripMenuItemClick(object sender, EventArgs e)
         {
             var client = new HttpClient();
-            foreach (var base64 in _imagesBase64)
+            var fullString = string.Join(" ", _imagesBase64);
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos");
+            request.Content = new StringContent(fullString);
+            await client.SendAsync(request);
+            /*foreach (var base64 in _imagesBase64)
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/images");
                 request.Content = new StringContent(base64);
+                await client.SendAsync(request);
+            }*/
+        }
+
+        //============================================================
+        private async void openVideo2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var file = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos_2");
+                request.Content = new StreamContent(file);
                 await client.SendAsync(request);
             }
         }

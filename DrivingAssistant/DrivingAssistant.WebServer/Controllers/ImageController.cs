@@ -20,7 +20,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET image from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
                 return Ok(await imageService.GetAsync());
             }
@@ -38,12 +38,12 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST image from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
                 using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
                 var base64Bytes = Convert.FromBase64String(await streamReader.ReadToEndAsync());
                 var bitmap = Utils.Base64ToBitmap(base64Bytes);
-                var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat);
+                var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat, "image");
                 bitmap.Save(filepath, bitmap.RawFormat);
                 var image = new Image(
                     filepath, 
@@ -68,7 +68,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received DELETE image from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
                 await imageService.DeleteAsync(id);
