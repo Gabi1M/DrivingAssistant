@@ -15,13 +15,13 @@ namespace DrivingAssistant.WebServer.Services
         public UserService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
+            _connection.Open();
         }
 
         //============================================================
         public async Task<ICollection<User>> GetAsync()
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUsersCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUsersCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var users = new List<User>();
             while (await result.ReadAsync())
@@ -35,38 +35,34 @@ namespace DrivingAssistant.WebServer.Services
                     Convert.ToInt64(result["id"])));
             }
 
-            await _connection.CloseAsync();
             return users;
         }
 
         //============================================================
         public async Task<long> SetAsync(User user)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.AddUserCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddUserCommand, _connection);
             command.Parameters.AddWithValue("username", user.Username);
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
             command.Parameters.AddWithValue("lastname", user.LastName);
             command.Parameters.AddWithValue("datetime", user.JoinDate);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
-            await _connection.CloseAsync();
             return result;
         }
 
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
             command.Parameters.AddWithValue("id", id);
             await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
         }
 
         //============================================================
         public async void Dispose()
         {
+            await _connection.CloseAsync();
             await _connection.DisposeAsync();
         }
     }

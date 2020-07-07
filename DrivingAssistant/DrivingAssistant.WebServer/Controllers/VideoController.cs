@@ -39,42 +39,6 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var streamReader = new StreamReader(Request.Body);
-                using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
-                var base64Frames = (await streamReader.ReadToEndAsync()).Split(' ');
-                foreach (var base64Frame in base64Frames)
-                {
-                    var bitmap = Utils.Base64ToBitmap(Convert.FromBase64String(base64Frame));
-                    var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat, "image");
-                    bitmap.Save(filepath, bitmap.RawFormat);
-                    var image = new Image(
-                        filepath,
-                        bitmap.Width,
-                        bitmap.Height,
-                        bitmap.RawFormat.ToString(),
-                        Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                        DateTime.Now);
-                    await imageService.SetAsync(image);
-                }
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return Problem(ex.Message);
-            }
-        }
-
-        //============================================================
-        [HttpPost]
-        [Route("videos_2")]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> PostAsync2()
-        {
-            try
-            {
                 Logger.Log("Received POST videos_2 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var videoService = new VideoService(Constants.ServerConstants.ConnectionString);
                 var stream = Request.Body;

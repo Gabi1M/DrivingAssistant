@@ -15,13 +15,13 @@ namespace DrivingAssistant.WebServer.Services
         public ImageService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
+            _connection.Open();
         }
 
         //============================================================
         public async Task<ICollection<Image>> GetAsync()
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.GetImagesCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetImagesCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var images = new List<Image>();
             while (await result.ReadAsync())
@@ -35,15 +35,13 @@ namespace DrivingAssistant.WebServer.Services
                     Convert.ToInt64(result["id"])));
             }
 
-            await _connection.CloseAsync();
             return images;
         }
 
         //============================================================
         public async Task<long> SetAsync(Image image)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.AddImageCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddImageCommand, _connection);
             command.Parameters.AddWithValue("filepath", image.Filepath);
             command.Parameters.AddWithValue("width", image.Width);
             command.Parameters.AddWithValue("height", image.Height);
@@ -51,23 +49,21 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("source", image.Source);
             command.Parameters.AddWithValue("datetime", DateTime.Now);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
-            await _connection.CloseAsync();
             return result;
         }
 
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteImageCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteImageCommand, _connection);
             command.Parameters.AddWithValue("id", id);
             await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
         }
 
         //============================================================
         public async void Dispose()
         {
+            await _connection.CloseAsync();
             await _connection.DisposeAsync();
         }
     }

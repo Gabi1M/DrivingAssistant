@@ -48,7 +48,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             }
             else
             {
-                base.OnBackPressed();
+                //base.OnBackPressed();
             }
         }
 

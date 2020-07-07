@@ -32,11 +32,11 @@ namespace DrivingAssistant.WindowsApp.Forms
                 while (true)
                 {
                     var cvFrame = capture.QueryFrame();
-                    if (cvFrame == null)
+                    if (cvFrame == null || cvFrame.DataPointer == IntPtr.Zero)
                     {
                         break;
                     }
-                    if (++count == 5)
+                    if (++count == 30)
                     {
                         using var memoryStream = new MemoryStream();
                         cvFrame.ToBitmap().Save(memoryStream, ImageFormat.Jpeg);
@@ -45,23 +45,20 @@ namespace DrivingAssistant.WindowsApp.Forms
                     }
                     cvFrame.Dispose();
                 }
+                capture.Dispose();
             }
         }
 
         //============================================================
         private async void OnWorkToolStripMenuItemClick(object sender, EventArgs e)
         {
-            var client = new HttpClient();
+            using var client = new HttpClient();
             var fullString = string.Join(" ", _imagesBase64);
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos");
+            _imagesBase64.Clear();
+            using var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/images2");
             request.Content = new StringContent(fullString);
+            fullString = string.Empty;
             await client.SendAsync(request);
-            /*foreach (var base64 in _imagesBase64)
-            {
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/images");
-                request.Content = new StringContent(base64);
-                await client.SendAsync(request);
-            }*/
         }
 
         //============================================================
@@ -72,7 +69,7 @@ namespace DrivingAssistant.WindowsApp.Forms
             {
                 var file = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos_2");
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos");
                 request.Content = new StreamContent(file);
                 await client.SendAsync(request);
             }

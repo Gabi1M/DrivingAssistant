@@ -42,7 +42,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 using var streamReader = new StreamReader(Request.Body);
                 using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
                 var base64Bytes = Convert.FromBase64String(await streamReader.ReadToEndAsync());
-                var bitmap = Utils.Base64ToBitmap(base64Bytes);
+                using var bitmap = Utils.Base64ToBitmap(base64Bytes);
                 var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat, "image");
                 bitmap.Save(filepath, bitmap.RawFormat);
                 var image = new Image(
@@ -52,7 +52,41 @@ namespace DrivingAssistant.WebServer.Controllers
                     bitmap.RawFormat.ToString(),
                     Request.HttpContext.Connection.RemoteIpAddress.ToString(), 
                     DateTime.Now);
+                bitmap.Dispose();
                 return Ok(await imageService.SetAsync(image));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpPost]
+        [Route("images2")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> PostAsync2()
+        {
+            try
+            {
+                Logger.Log("Received POST images2 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                using var streamReader = new StreamReader(Request.Body);
+                using var imageService = new ImageService(Constants.ServerConstants.ConnectionString);
+                var base64Frames = (await streamReader.ReadToEndAsync()).Split(' ');
+                foreach (var frame in base64Frames)
+                {
+                    using var bitmap = Utils.Base64ToBitmap(Convert.FromBase64String(frame));
+                    var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat, "image");
+                    bitmap.Save(filepath, bitmap.RawFormat);
+                    var image = new Image(filepath, bitmap.Width, bitmap.Height, bitmap.RawFormat.ToString(),
+                        Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now);
+                    await imageService.SetAsync(image);
+                }
+
+                Logger.Log("Finished saving images", LogType.Info);
+                GC.Collect();
+                return Ok();
             }
             catch (Exception ex)
             {

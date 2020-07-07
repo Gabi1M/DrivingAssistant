@@ -15,13 +15,13 @@ namespace DrivingAssistant.WebServer.Services
         public VideoService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
+            _connection.Open();
         }
 
         //============================================================
         public async Task<ICollection<Video>> GetAsync()
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.GetVideosCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetVideosCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var videos = new List<Video>();
             while (await result.ReadAsync())
@@ -37,15 +37,13 @@ namespace DrivingAssistant.WebServer.Services
                     Convert.ToInt64(result["id"])));
             }
 
-            await _connection.CloseAsync();
             return videos;
         }
 
         //============================================================
         public async Task<long> SetAsync(Video video)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.AddVideoCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddVideoCommand, _connection);
             command.Parameters.AddWithValue("filepath", video.Filepath);
             command.Parameters.AddWithValue("width", video.Width);
             command.Parameters.AddWithValue("height", video.Height);
@@ -54,18 +52,15 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("source", video.Source);
             command.Parameters.AddWithValue("datetime", DateTime.Now);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
-            await _connection.CloseAsync();
             return result;
         }
 
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            await _connection.OpenAsync();
-            var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteVideoCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteVideoCommand, _connection);
             command.Parameters.AddWithValue("id", id);
             await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
         }
 
         //============================================================

@@ -43,7 +43,7 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _loginButton.Click += OnLoginButtonClick;
             _registerButton.Click += OnRegisterButtonClick;
-            _textInputPassword.EditorAction += OnTextInputPasswordEditorAction;
+            //_textInputPassword.EditorAction += OnTextInputPasswordEditorAction;
         }
 
         //============================================================
@@ -53,7 +53,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 if (e.Event.KeyCode == Keycode.Enter)
                 {
-                    _loginButton.PerformClick();
+                    _loginButton.Selected = true;
                 }
             }
             catch (Exception)
