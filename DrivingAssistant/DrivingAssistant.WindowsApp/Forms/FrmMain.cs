@@ -55,7 +55,7 @@ namespace DrivingAssistant.WindowsApp.Forms
             using var client = new HttpClient();
             var fullString = string.Join(" ", _imagesBase64);
             _imagesBase64.Clear();
-            using var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/images2");
+            using var request = new HttpRequestMessage(HttpMethod.Post, "http://127.0.0.1:3287/images2");
             request.Content = new StringContent(fullString);
             fullString = string.Empty;
             await client.SendAsync(request);
@@ -69,7 +69,7 @@ namespace DrivingAssistant.WindowsApp.Forms
             {
                 var file = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.246:3287/videos");
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://127.0.0.1:3287/videos");
                 request.Content = new StreamContent(file);
                 await client.SendAsync(request);
             }

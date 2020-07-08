@@ -10,19 +10,11 @@
             android:title="Images" />
         <item
             android:id="@+id/nav_videos"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_video"
             android:title="Videos" />
         <item
             android:id="@+id/nav_logout"
             android:title="Logout" />
-        <!--<item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />-->
     </group>
 
     <!--<item android:title="Communicate">

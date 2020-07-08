@@ -82,7 +82,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 _progressBar.Visibility = ViewStates.Visible;
 
-                if (!await Utils.CheckConnectionAsync("http://192.168.100.246:3287"))
+                if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
                     _progressBar.Visibility = ViewStates.Invisible;
@@ -91,7 +91,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                using var userService = new UserService("http://192.168.100.246:3287");
+                using var userService = new UserService("http://192.168.100.234:3287");
                 var users = await userService.GetAsync();
                 _loginButton.Enabled = true;
                 _registerButton.Enabled = true;

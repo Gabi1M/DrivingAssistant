@@ -5,6 +5,9 @@ namespace DrivingAssistant.Core.Models
 {
     public class Video : BaseEntity
     {
+        [JsonProperty("ProcessedId")]
+        public long ProcessedId { get; set; }
+
         [JsonProperty("Filepath")]
         public string Filepath { get; }
 
@@ -27,7 +30,7 @@ namespace DrivingAssistant.Core.Models
         public DateTime DateTime { get; }
 
         //============================================================
-        public Video(string filepath, int width, int height, int fps, string format, string source, DateTime dateTime, long id = -1)
+        public Video(string filepath, int width, int height, int fps, string format, string source, DateTime dateTime, long processedId = -1, long id = -1)
         {
             Filepath = filepath;
             Width = width;
@@ -36,6 +39,7 @@ namespace DrivingAssistant.Core.Models
             Format = format;
             Source = source;
             DateTime = dateTime;
+            ProcessedId = processedId;
             Id = id;
         }
     }

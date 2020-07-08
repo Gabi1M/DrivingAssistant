@@ -29,7 +29,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var mediaController = new MediaController(this);
             mediaController.SetAnchorView(_videoView);
-            _videoView.SetVideoURI(Android.Net.Uri.Parse("http://192.168.100.246:3287/videos_download?id=" + _video.Id));
+            _videoView.SetVideoURI(Android.Net.Uri.Parse("http://192.168.100.234:3287/videos_download?id=" + _video.Id));
             _videoView.SetMediaController(mediaController);
             _videoView.RequestFocus();
             _videoView.Start();

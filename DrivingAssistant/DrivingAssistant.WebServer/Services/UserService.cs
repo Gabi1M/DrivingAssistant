@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
-using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Tools;
 using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services
 {
-    public class UserService : IDisposable
+    public class UserService : GenericService<User>
     {
         private readonly NpgsqlConnection _connection;
 
@@ -15,12 +15,12 @@ namespace DrivingAssistant.WebServer.Services
         public UserService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
-            _connection.Open();
         }
 
         //============================================================
-        public async Task<ICollection<User>> GetAsync()
+        public override async Task<ICollection<User>> GetAsync()
         {
+            await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUsersCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var users = new List<User>();
@@ -35,12 +35,14 @@ namespace DrivingAssistant.WebServer.Services
                     Convert.ToInt64(result["id"])));
             }
 
+            await _connection.CloseAsync();
             return users;
         }
 
         //============================================================
-        public async Task<long> SetAsync(User user)
+        public override async Task<long> SetAsync(User user)
         {
+            await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddUserCommand, _connection);
             command.Parameters.AddWithValue("username", user.Username);
             command.Parameters.AddWithValue("password", user.Password);
@@ -48,21 +50,38 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("lastname", user.LastName);
             command.Parameters.AddWithValue("datetime", user.JoinDate);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
+            await _connection.CloseAsync();
             return result;
         }
 
         //============================================================
-        public async Task DeleteAsync(long id)
+        public override async Task UpdateAsync(User user)
         {
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
-            command.Parameters.AddWithValue("id", id);
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateUserCommand, _connection);
+            command.Parameters.AddWithValue("id", user.Id);
+            command.Parameters.AddWithValue("username", user.Username);
+            command.Parameters.AddWithValue("password", user.Password);
+            command.Parameters.AddWithValue("firstname", user.FirstName);
+            command.Parameters.AddWithValue("lastname", user.LastName);
+            command.Parameters.AddWithValue("datetime", user.JoinDate);
             await command.ExecuteNonQueryAsync();
+            await _connection.CloseAsync();
         }
 
         //============================================================
-        public async void Dispose()
+        public override async Task DeleteAsync(long id)
         {
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
+            command.Parameters.AddWithValue("id", id);
+            await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
+        }
+
+        //============================================================
+        public override async void Dispose()
+        {
             await _connection.DisposeAsync();
         }
     }

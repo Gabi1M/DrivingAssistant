@@ -28,7 +28,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void LoadImage()
         {
-            using var imageService = new ImageService("http://192.168.100.246:3287");
+            using var imageService = new ImageService("http://192.168.100.234:3287");
             _imageView.SetImageBitmap(await imageService.DownloadImageAsync(_image.Id));
         }
     }

@@ -41,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         public override void OnBackPressed()
         {
-            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            var drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             if(drawer.IsDrawerOpen(GravityCompat.Start))
             {
                 drawer.CloseDrawer(GravityCompat.Start);
@@ -70,7 +70,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private static void FabOnClick(object sender, EventArgs eventArgs)
         {
             var view = sender as View;
-            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong).SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong).SetAction("Action", (View.IOnClickListener)null).Show();
         }
 
         //============================================================
@@ -95,7 +95,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 case Resource.Id.nav_images:
                 {
-                    using var imageService = new ImageService("http://192.168.100.246:3287");
+                    using var imageService = new ImageService("http://192.168.100.234:3287");
                     var images = await imageService.GetAsync();
                     var fragment = new ImageFragment(images);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
@@ -103,7 +103,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 }
                 case Resource.Id.nav_videos:
                 {
-                    using var videoService = new VideoService("http://192.168.100.246:3287");
+                    using var videoService = new VideoService("http://192.168.100.234:3287");
                     var videos = await videoService.GetAsync();
                     var fragment = new VideoFragment(videos);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();

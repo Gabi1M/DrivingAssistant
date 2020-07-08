@@ -12,18 +12,18 @@ using Newtonsoft.Json;
 namespace DrivingAssistant.WebServer.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class SessionController : ControllerBase
     {
         //============================================================
         [HttpGet]
-        [Route("users")]
+        [Route("sessions")]
         public async Task<IActionResult> GetAsync()
         {
             try
             {
-                Logger.Log("Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                return Ok(await userService.GetAsync());
+                Logger.Log("Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                return Ok(await sessionService.GetAsync());
             }
             catch (Exception ex)
             {
@@ -34,16 +34,16 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route("users")]
+        [Route("sessions")]
         public async Task<IActionResult> PostAsync()
         {
             try
             {
-                Logger.Log("Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                return Ok(await userService.SetAsync(user));
+                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
+                return Ok(await sessionService.SetAsync(session));
             }
             catch (Exception ex)
             {
@@ -54,16 +54,16 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPut]
-        [Route("users")]
+        [Route("sessions")]
         public async Task<IActionResult> PutAsync()
         {
             try
             {
-                Logger.Log("Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                await userService.UpdateAsync(user);
+                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
+                await sessionService.UpdateAsync(session);
                 return Ok();
             }
             catch (Exception ex)
@@ -75,15 +75,15 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpDelete]
-        [Route("users")]
+        [Route("sessions")]
         public async Task<IActionResult> DeleteAsync()
         {
             try
             {
-                Logger.Log("Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                await userService.DeleteAsync(id);
+                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                await sessionService.DeleteAsync(id);
                 return Ok();
             }
             catch (Exception ex)

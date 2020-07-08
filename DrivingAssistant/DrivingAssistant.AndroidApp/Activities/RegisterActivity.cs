@@ -85,7 +85,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (ValidateFields())
             {
                 _progressBar.Visibility = ViewStates.Visible;
-                if (!await Utils.CheckConnectionAsync("http://192.168.100.246:3287"))
+                if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
                     _registerButton.Enabled = true;
@@ -93,7 +93,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                using var userService = new UserService("http://192.168.100.246:3287");
+                using var userService = new UserService("http://192.168.100.234:3287");
                 var users = await userService.GetAsync();
                 _registerButton.Enabled = true;
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))

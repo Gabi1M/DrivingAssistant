@@ -22,7 +22,7 @@ namespace DrivingAssistant.AndroidApp.Tools
                 using var streamReader = new StreamReader(response.GetResponseStream());
                 return await streamReader.ReadToEndAsync() == "Success";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
