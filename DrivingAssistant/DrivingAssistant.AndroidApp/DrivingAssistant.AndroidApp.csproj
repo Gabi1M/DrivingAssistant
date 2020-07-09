@@ -89,15 +89,20 @@
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\VideoActivity.cs" />
     <Compile Include="Adapters\ViewModelAdapters\ImageViewModelAdapter.cs" />
+    <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\VideoViewModelAdapter.cs" />
     <Compile Include="Fragments\ImageFragment.cs" />
     <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Fragments\MapFragment.cs" />
+    <Compile Include="Fragments\SessionFragment.cs" />
     <Compile Include="Fragments\VideoFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ImageService.cs" />
+    <Compile Include="Services\SessionService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\VideoService.cs" />
+    <Compile Include="Tools\CacheManager.cs" />
     <Compile Include="Tools\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +158,12 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Mapsui">
+      <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="SimpleStorage">
+      <Version>1.4.25</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
@@ -206,6 +217,21 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-v21\ic_menu_video.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\view_model_session_list.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_sessions.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_map.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

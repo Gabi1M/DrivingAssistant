@@ -26,8 +26,8 @@ namespace DrivingAssistant.AndroidApp.Activities
             var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
-            var fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
-            fab.Click += FabOnClick;
+            /*var fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
+            fab.Click += FabOnClick;*/
 
             var drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             var toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
@@ -46,10 +46,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 drawer.CloseDrawer(GravityCompat.Start);
             }
-            else
-            {
-                //base.OnBackPressed();
-            }
         }
 
         //============================================================
@@ -62,8 +58,14 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            var id = item.ItemId;
-            return id == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
+            switch (item.ItemId)
+            {
+                case Resource.Id.action_settings:
+                {
+                    break;
+                }
+            }
+            return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
         }
 
         //============================================================
@@ -106,6 +108,20 @@ namespace DrivingAssistant.AndroidApp.Activities
                     using var videoService = new VideoService("http://192.168.100.234:3287");
                     var videos = await videoService.GetAsync();
                     var fragment = new VideoFragment(videos);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
+                case Resource.Id.nav_sessions:
+                {
+                    using var sessionService = new SessionService("http://192.168.100.234:3287");
+                    var sessions = await sessionService.GetAsync();
+                    var fragment = new SessionFragment(sessions);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
+                case Resource.Id.nav_map:
+                {
+                    var fragment = new MapFragment();
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }

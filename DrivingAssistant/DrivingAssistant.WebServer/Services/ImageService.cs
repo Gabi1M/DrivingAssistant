@@ -45,6 +45,7 @@ namespace DrivingAssistant.WebServer.Services
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddImageCommand, _connection);
+            command.Parameters.AddWithValue("session_id", image.SessionId);
             command.Parameters.AddWithValue("processed_id", image.ProcessedId);
             command.Parameters.AddWithValue("filepath", image.Filepath);
             command.Parameters.AddWithValue("width", image.Width);
@@ -63,6 +64,7 @@ namespace DrivingAssistant.WebServer.Services
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateImageCommand, _connection);
             command.Parameters.AddWithValue("id", image.Id);
+            command.Parameters.AddWithValue("session_id", image.SessionId);
             command.Parameters.AddWithValue("processed_id", image.ProcessedId);
             command.Parameters.AddWithValue("filepath", image.Filepath);
             command.Parameters.AddWithValue("width", image.Width);

@@ -10,6 +10,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Tools;
+using PerpetualEngine.Storage;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -28,6 +29,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            SimpleStorage.SetContext(ApplicationContext);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_login);
 

@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services;
 using DrivingAssistant.WebServer.Tools;
@@ -97,16 +98,21 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received POST images2 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
                 using var imageService = new ImageService(Constants.ServerConstants.GetConnectionString());
+                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
                 var base64Frames = (await streamReader.ReadToEndAsync()).Split(' ');
+                var session = new Session(DateTime.Now, DateTime.Now, new Coordinates(), new Coordinates());
+                session.Id = await sessionService.SetAsync(session);
                 foreach (var frame in base64Frames)
                 {
                     using var bitmap = Utils.Base64ToBitmap(Convert.FromBase64String(frame));
                     var filepath = Utils.GetRandomFilename("." + bitmap.RawFormat, "image");
                     bitmap.Save(filepath, bitmap.RawFormat);
-                    var image = new Image(filepath, bitmap.Width, bitmap.Height, bitmap.RawFormat.ToString(),
-                        Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now);
+                    var image = new Image(filepath, bitmap.Width, bitmap.Height, bitmap.RawFormat.ToString(), Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now, -1L, session.Id);
                     await imageService.SetAsync(image);
+                    session.EndDateTime = DateTime.Now;
                 }
+
+                await sessionService.UpdateAsync(session);
 
                 Logger.Log("Finished saving images", LogType.Info);
                 GC.Collect();

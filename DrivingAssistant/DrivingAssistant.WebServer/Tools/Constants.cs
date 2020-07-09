@@ -39,8 +39,8 @@ namespace DrivingAssistant.WebServer.Tools
         public static class DatabaseConstants
         {
             public const string GetImagesCommand = @"select * from image;";
-            public const string AddImageCommand = @"insert into image(processed_id, filepath, width, height, format, source, datetime) values (@processed_id, @filepath, @width, @height, @format, @source, @datetime) returning id;";
-            public const string UpdateImageCommand = @"update image set processed_id = @processed_id, filepath = @filepath, width = @width, height = @height, format = @format, source = @source, datetime = @datetime where id = @id";
+            public const string AddImageCommand = @"insert into image(processed_id, session_id, filepath, width, height, format, source, datetime) values (@processed_id, @session_id, @filepath, @width, @height, @format, @source, @datetime) returning id;";
+            public const string UpdateImageCommand = @"update image set processed_id = @processed_id, session_id = @session_id, filepath = @filepath, width = @width, height = @height, format = @format, source = @source, datetime = @datetime where id = @id";
             public const string DeleteImageCommand = @"delete from image where id = @id";
 
             public const string GetVideosCommand = @"select * from video;";
@@ -54,7 +54,7 @@ namespace DrivingAssistant.WebServer.Tools
             public const string DeleteUserCommand = @"delete from users where id = @id";
 
             public const string GetSessionsCommand = @"select * from sessions";
-            public const string AddSessionCommand = @"insert into sessions(startdatetime, enddatetime, startx, starty, endx, enxy) values (@startdatetime, @enddatetime, @startx, @starty, @endx, @endy) returning id;";
+            public const string AddSessionCommand = @"insert into sessions(startdatetime, enddatetime, startx, starty, endx, endy) values (@startdatetime, @enddatetime, @startx, @starty, @endx, @endy) returning id;";
             public const string UpdateSessionCommand = @"update sessions set startdatetime = @startdatetime, enddatetime = @enddatetime, startx = @startx, starty = @starty, endx = @endx, endy = @endy where id = @id";
             public const string DeleteSessionCommand = @"delete from sessions where id = @id";
         }

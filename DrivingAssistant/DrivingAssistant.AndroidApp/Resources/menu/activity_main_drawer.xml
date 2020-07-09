@@ -13,6 +13,12 @@
             android:icon="@drawable/ic_menu_video"
             android:title="Videos" />
         <item
+          android:id="@+id/nav_sessions"
+          android:title="Sessions" />
+        <item
+          android:id="@+id/nav_map"
+          android:title="Map" />
+        <item
             android:id="@+id/nav_logout"
             android:title="Logout" />
     </group>

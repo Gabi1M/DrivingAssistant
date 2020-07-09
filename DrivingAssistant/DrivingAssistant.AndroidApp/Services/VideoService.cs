@@ -45,7 +45,22 @@ namespace DrivingAssistant.AndroidApp.Services
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response.GetResponseStream());
-            return JsonConvert.DeserializeObject<long>(await streamReader.ReadToEndAsync());
+            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task UpdateAsync(Video video)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/videos"))
+            {
+                Method = "PUT"
+            };
+
+            await using var requestStream = await request.GetRequestStreamAsync();
+            await using var streamWriter = new StreamWriter(JsonConvert.SerializeObject(video));
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(video));
+            await streamWriter.FlushAsync();
+            await request.GetResponseAsync();
         }
 
         //============================================================

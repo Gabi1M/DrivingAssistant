@@ -8,6 +8,9 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("ProcessedId")]
         public long ProcessedId { get; set; }
 
+        [JsonProperty("SessionId")]
+        public long SessionId { get; set; }
+
         [JsonProperty("Filepath")]
         public string Filepath { get; }
 
@@ -27,7 +30,7 @@ namespace DrivingAssistant.Core.Models
         public DateTime DateTime { get; }
 
         //============================================================
-        public Image(string filepath, int width, int height, string format, string source, DateTime dateTime, long processedId = -1, long id = -1)
+        public Image(string filepath, int width, int height, string format, string source, DateTime dateTime, long processedId = -1, long sessionId = -1, long id = -1)
         {
             Filepath = filepath;
             Width = width;
@@ -35,6 +38,7 @@ namespace DrivingAssistant.Core.Models
             Format = format;
             Source = source;
             DateTime = dateTime;
+            SessionId = sessionId;
             ProcessedId = processedId;
             Id = id;
         }
