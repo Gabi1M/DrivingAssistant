@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using DrivingAssistant.Core.Enums;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Bitmap = System.Drawing.Bitmap;
 
 namespace DrivingAssistant.WebServer.Tools
 {
@@ -39,33 +41,33 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public static Bitmap ProcessImage(Bitmap bitmap)
+        private static Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image)
         {
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
-                bitmap.PixelFormat);
-            var originalImage =
-                new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
-            bitmap.UnlockBits(bitmapData);
-
-            var processedImage = originalImage.Clone();
-
-            var cannyImage = originalImage.Canny(100, 150);
-            var maskedImage = MaskImage(cannyImage, GetOverlayPoints(originalImage.Width, originalImage.Height))
-                .Dilate(1);
-
+            var processedImage = image.Clone();
+            var cannyImage = processedImage.Canny(100, 150);
+            var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(1);
             var houghLines = maskedImage.HoughLinesBinary(1, Math.PI / 180, 10, 5, 5)[0];
-            foreach (var line in houghLines)
-            {
-                processedImage.Draw(line, new Bgr(0, 255, 0), 2);
+            foreach (var houghLine in houghLines)
+            { 
+                processedImage.Draw(houghLine, new Bgr(0, 255, 0), 2);
             }
 
-            bitmap.Dispose();
-
-            return processedImage.ToBitmap();
+            image.Dispose();
+            return processedImage;
         }
 
         //======================================================//
-        public static Bitmap ToBitmap(this Image<Bgr, byte> image)
+        private static Bitmap ProcessBitmap(Bitmap bitmap)
+        {
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
+            bitmap.UnlockBits(bitmapData);
+            bitmap.Dispose();
+            return ProcessCvImage(originalImage).ToBitmap();
+        }
+
+        //======================================================//
+        private static Bitmap ToBitmap(this Image<Bgr, byte> image)
         {
             var size = image.Size;
             var bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
@@ -75,6 +77,58 @@ namespace DrivingAssistant.WebServer.Tools
             bitmap.UnlockBits(bitmapData);
             image.Dispose();
             return bitmap;
+        }
+
+        //======================================================//
+        public static string ProcessImage(string filename, bool loadAsBitmap = false)
+        {
+            if (loadAsBitmap)
+            {
+                using var bitmap = Image.FromFile(filename) as Bitmap;
+                using var processedBitmap = ProcessBitmap(bitmap);
+                var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
+                processedBitmap.Save(processedFilename);
+                return processedFilename;
+            }
+            else
+            {
+                using var image = new Image<Bgr, byte>(filename);
+                using var processedImage = ProcessCvImage(image);
+                var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
+                processedImage.Save(processedFilename);
+                return processedFilename;
+            }
+        }
+
+        //======================================================//
+        public static string ProcessVideo(string filename)
+        {
+            var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
+            using var video = new VideoCapture(filename);
+            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width,video.Height), true);
+            while (true)
+            {
+                try
+                {
+                    using var capturedImage = video.QueryFrame();
+                    if (capturedImage == null)
+                    {
+                        break;
+                    }
+
+                    using var bgrImage = capturedImage.ToImage<Bgr, byte>();
+
+                    using var processedImage = ProcessCvImage(bgrImage);
+                    videoWriter.Write(processedImage.Mat);
+                }
+                catch (Exception)
+                {
+                    break;
+                }
+            }
+
+            videoWriter.Dispose();
+            return processedVideoFilename;
         }
     }
 }

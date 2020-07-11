@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Mapsui;

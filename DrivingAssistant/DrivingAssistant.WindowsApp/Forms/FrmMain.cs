@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Windows.Forms;
-using Emgu.CV;
 
 namespace DrivingAssistant.WindowsApp.Forms
 {
     public partial class FrmMain : Form
     {
-        private readonly ICollection<Bitmap> _images = new List<Bitmap>();
-        private readonly ICollection<string> _imagesBase64 = new List<string>();
-        private readonly ICollection<byte[]> _imageBytes = new List<byte[]>();
+        private readonly HttpClient _client = new HttpClient();
 
         //============================================================
         public FrmMain()
@@ -22,56 +15,42 @@ namespace DrivingAssistant.WindowsApp.Forms
         }
 
         //============================================================
-        private void OnOpenVideoToolStripMenuItemClick(object sender, EventArgs e)
+        private async void OnUploadImageToolStripMenuItemClick(object sender, System.EventArgs e)
         {
-            var openFileDialog = new OpenFileDialog();
+            using var openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = @"Jpeg Image File(*.jpg)|*.jpg"
+            };
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                var capture = new VideoCapture(openFileDialog.FileName);
-                var count = 0;
-                while (true)
+                var filename = openFileDialog.FileName;
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.234:3287/image_stream")
                 {
-                    var cvFrame = capture.QueryFrame();
-                    if (cvFrame == null || cvFrame.DataPointer == IntPtr.Zero)
-                    {
-                        break;
-                    }
-                    if (++count == 30)
-                    {
-                        using var memoryStream = new MemoryStream();
-                        cvFrame.ToBitmap().Save(memoryStream, ImageFormat.Jpeg);
-                        _imagesBase64.Add(Convert.ToBase64String(memoryStream.ToArray()));
-                        count = 0;
-                    }
-                    cvFrame.Dispose();
-                }
-                capture.Dispose();
+                    Content = new StreamContent(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                };
+                await _client.SendAsync(request);
+                MessageBox.Show(@"Finished uploading image!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         //============================================================
-        private async void OnWorkToolStripMenuItemClick(object sender, EventArgs e)
+        private async void OnUploadVideoToolStripMenuItemClick(object sender, System.EventArgs e)
         {
-            using var client = new HttpClient();
-            var fullString = string.Join(" ", _imagesBase64);
-            _imagesBase64.Clear();
-            using var request = new HttpRequestMessage(HttpMethod.Post, "http://127.0.0.1:3287/images2");
-            request.Content = new StringContent(fullString);
-            fullString = string.Empty;
-            await client.SendAsync(request);
-        }
-
-        //============================================================
-        private async void openVideo2ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
+            using var openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = @"MP4 Video File(*.mp4)|*.mp4"
+            };
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                var file = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Post, "http://127.0.0.1:3287/videos");
-                request.Content = new StreamContent(file);
-                await client.SendAsync(request);
+                var filename = openFileDialog.FileName;
+                var request = new HttpRequestMessage(HttpMethod.Post, "http://192.168.100.234:3287/video_stream")
+                {
+                    Content = new StreamContent(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                };
+                await _client.SendAsync(request);
+                MessageBox.Show(@"Finished uploading video!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

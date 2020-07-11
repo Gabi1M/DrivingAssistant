@@ -30,10 +30,9 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.workToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.openVideo2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -43,8 +42,7 @@
             this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.workToolStripMenuItem});
+            this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1006, 33);
@@ -54,25 +52,11 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openVideoToolStripMenuItem,
-            this.openVideo2ToolStripMenuItem});
+            this.uploadImageToolStripMenuItem,
+            this.uploadVideoToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // openVideoToolStripMenuItem
-            // 
-            this.openVideoToolStripMenuItem.Name = "openVideoToolStripMenuItem";
-            this.openVideoToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.openVideoToolStripMenuItem.Text = "Open Video";
-            this.openVideoToolStripMenuItem.Click += new System.EventHandler(this.OnOpenVideoToolStripMenuItemClick);
-            // 
-            // workToolStripMenuItem
-            // 
-            this.workToolStripMenuItem.Name = "workToolStripMenuItem";
-            this.workToolStripMenuItem.Size = new System.Drawing.Size(70, 29);
-            this.workToolStripMenuItem.Text = "Work";
-            this.workToolStripMenuItem.Click += new System.EventHandler(this.OnWorkToolStripMenuItemClick);
             // 
             // pictureBox1
             // 
@@ -84,12 +68,19 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
-            // openVideo2ToolStripMenuItem
+            // uploadImageToolStripMenuItem
             // 
-            this.openVideo2ToolStripMenuItem.Name = "openVideo2ToolStripMenuItem";
-            this.openVideo2ToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.openVideo2ToolStripMenuItem.Text = "Open Video 2";
-            this.openVideo2ToolStripMenuItem.Click += new System.EventHandler(this.openVideo2ToolStripMenuItem_Click);
+            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
+            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.uploadImageToolStripMenuItem.Text = "Upload image";
+            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.OnUploadImageToolStripMenuItemClick);
+            // 
+            // uploadVideoToolStripMenuItem
+            // 
+            this.uploadVideoToolStripMenuItem.Name = "uploadVideoToolStripMenuItem";
+            this.uploadVideoToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.uploadVideoToolStripMenuItem.Text = "Upload video";
+            this.uploadVideoToolStripMenuItem.Click += new System.EventHandler(this.OnUploadVideoToolStripMenuItemClick);
             // 
             // FrmMain
             // 
@@ -114,8 +105,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openVideoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem workToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openVideo2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadVideoToolStripMenuItem;
     }
 }

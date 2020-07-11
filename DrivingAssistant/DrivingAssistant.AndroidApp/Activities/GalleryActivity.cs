@@ -12,7 +12,7 @@ namespace DrivingAssistant.AndroidApp.Activities
     public class GalleryActivity : AppCompatActivity
     {
         private ImageView _imageView;
-        private Image _image;
+        private Media _image;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -21,15 +21,15 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_gallery);
             _imageView = FindViewById<ImageView>(Resource.Id.galleryView);
-            _image = JsonConvert.DeserializeObject<Image>(Intent.GetStringExtra("image"));
+            _image = JsonConvert.DeserializeObject<Media>(Intent.GetStringExtra("image"));
             LoadImage();
         }
 
         //============================================================
         private async void LoadImage()
         {
-            using var imageService = new ImageService("http://192.168.100.234:3287");
-            _imageView.SetImageBitmap(await imageService.DownloadImageAsync(_image.Id));
+            var mediaService = new MediaService("http://192.168.100.234:3287");
+            _imageView.SetImageBitmap(await mediaService.DownloadImageAsync(_image.Id));
         }
     }
 }

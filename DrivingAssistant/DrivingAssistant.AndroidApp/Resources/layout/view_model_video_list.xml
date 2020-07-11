@@ -4,27 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/videoTextWidth" />
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/videoTextHeight" />
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/videoTextFps" />
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/videoTextFormat" />
-    <TextView
+      android:textAppearance="?android:attr/textAppearanceMedium"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:id="@+id/videoTextSource" />
     <TextView
+      android:textAppearance="?android:attr/textAppearanceMedium"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:id="@+id/videoTextDateTime" />
+    <TextView
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/videoTextStatus" />
 </LinearLayout>

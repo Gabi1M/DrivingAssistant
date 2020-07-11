@@ -93,7 +93,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                using var userService = new UserService("http://192.168.100.234:3287");
+                var userService = new UserService("http://192.168.100.234:3287");
                 var users = await userService.GetAsync();
                 _loginButton.Enabled = true;
                 _registerButton.Enabled = true;

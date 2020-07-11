@@ -15,7 +15,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
     public class VideoFragment : Fragment
     {
         //============================================================
-        public VideoFragment(ICollection<Video> videos)
+        public VideoFragment(ICollection<Media> videos)
         {
             Arguments = new Bundle();
             Arguments.PutString("videos", JsonConvert.SerializeObject(videos));
@@ -27,7 +27,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             var view = inflater.Inflate(Resource.Layout.fragment_videos, container, false);
             var listView = view.FindViewById<ListView>(Resource.Id.videosListView);
 
-            var videos = JsonConvert.DeserializeObject<ICollection<Video>>(Arguments.GetString("videos"));
+            var videos = JsonConvert.DeserializeObject<ICollection<Media>>(Arguments.GetString("videos"));
             listView.Adapter = new VideoViewModelAdapter(Activity, videos);
             listView.ItemClick += OnItemClick;
             return view;
@@ -36,7 +36,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void OnItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            var video = JsonConvert.DeserializeObject<ICollection<Video>>(Arguments.GetString("videos")).ElementAt(e.Position);
+            var video = JsonConvert.DeserializeObject<ICollection<Media>>(Arguments.GetString("videos")).ElementAt(e.Position);
             var intent = new Intent(Context, typeof(VideoActivity));
             intent.PutExtra("video", JsonConvert.SerializeObject(video));
             StartActivity(intent);

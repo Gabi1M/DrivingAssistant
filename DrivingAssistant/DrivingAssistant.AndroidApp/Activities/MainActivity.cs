@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
@@ -14,7 +15,7 @@ using DrivingAssistant.AndroidApp.Services;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         //============================================================
@@ -97,23 +98,23 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 case Resource.Id.nav_images:
                 {
-                    using var imageService = new ImageService("http://192.168.100.234:3287");
-                    var images = await imageService.GetAsync();
+                    var mediaService = new MediaService("http://192.168.100.234:3287");
+                    var images = await mediaService.GetImagesAsync();
                     var fragment = new ImageFragment(images);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_videos:
                 {
-                    using var videoService = new VideoService("http://192.168.100.234:3287");
-                    var videos = await videoService.GetAsync();
+                    var mediaService = new MediaService("http://192.168.100.234:3287");
+                    var videos = await mediaService.GetVideosAsync();
                     var fragment = new VideoFragment(videos);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_sessions:
                 {
-                    using var sessionService = new SessionService("http://192.168.100.234:3287");
+                    var sessionService = new SessionService("http://192.168.100.234:3287");
                     var sessions = await sessionService.GetAsync();
                     var fragment = new SessionFragment(sessions);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();

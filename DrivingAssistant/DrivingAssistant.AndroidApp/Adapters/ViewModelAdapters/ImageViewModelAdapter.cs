@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Android.App;
 using Android.Views;
@@ -11,10 +12,10 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
     public class ImageViewModelAdapter : BaseAdapter
     {
         private readonly Activity _activity;
-        private readonly ICollection<Image> _images;
+        private readonly ICollection<Media> _images;
 
         //============================================================
-        public ImageViewModelAdapter(Activity activity, ICollection<Image> images)
+        public ImageViewModelAdapter(Activity activity, ICollection<Media> images)
         {
             _activity = activity;
             _images = images;
@@ -39,19 +40,15 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var view = convertView ?? _activity.LayoutInflater.Inflate(Resource.Layout.view_model_image_list, parent, false);
-            var textWidth = view.FindViewById<TextView>(Resource.Id.imageTextWidth);
-            var textHeight = view.FindViewById<TextView>(Resource.Id.imageTextHeight);
-            var textFormat = view.FindViewById<TextView>(Resource.Id.imageTextFormat);
             var textSource = view.FindViewById<TextView>(Resource.Id.imageTextSource);
             var textDateTime = view.FindViewById<TextView>(Resource.Id.imageTextDateTime);
+            var textStatus = view.FindViewById<TextView>(Resource.Id.imageTextStatus);
 
             var currentImage = _images.ElementAt(position);
 
-            textWidth.Text = "Width: " + currentImage.Width;
-            textHeight.Text = "Height: " + currentImage.Height;
-            textFormat.Text = "Format: " + currentImage.Format;
             textSource.Text = "Source: " + currentImage.Source;
-            textDateTime.Text = "Date taken: " + currentImage.DateTime.ToString("dd.MM.yyyy HH:mm:ss");
+            textDateTime.Text = "Date added: " + currentImage.DateAdded.ToString("dd.MM.yyyy HH:mm:ss");
+            textStatus.Text = currentImage.ProcessedId == 0 ? "Status: Image not yet processed!" : "Status: Image processed!";
 
             return view;
         }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Tools;
 
 namespace DrivingAssistant.AndroidApp.Tools
 {
@@ -24,6 +25,7 @@ namespace DrivingAssistant.AndroidApp.Tools
             }
             catch (Exception ex)
             {
+                Logger.LogException(ex);
                 return false;
             }
         }

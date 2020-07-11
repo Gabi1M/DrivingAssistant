@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content.PM;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Widget;
@@ -7,11 +8,11 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
-    [Activity(Label = "VideoActivity")]
+    [Activity(Label = "VideoActivity", ScreenOrientation = ScreenOrientation.Landscape)]
     public class VideoActivity : AppCompatActivity
     {
         private VideoView _videoView;
-        private Video _video;
+        private Media _video;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -20,7 +21,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_video);
             _videoView = FindViewById<VideoView>(Resource.Id.videoView);
-            _video = JsonConvert.DeserializeObject<Video>(Intent.GetStringExtra("video"));
+            _video = JsonConvert.DeserializeObject<Media>(Intent.GetStringExtra("video"));
             LoadVideo();
         }
 
@@ -29,7 +30,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var mediaController = new MediaController(this);
             mediaController.SetAnchorView(_videoView);
-            _videoView.SetVideoURI(Android.Net.Uri.Parse("http://192.168.100.234:3287/videos_download?id=" + _video.Id));
+            _videoView.SetVideoURI(Android.Net.Uri.Parse("http://192.168.100.234:3287/media_download?id=" + _video.Id));
             _videoView.SetMediaController(mediaController);
             _videoView.RequestFocus();
             _videoView.Start();

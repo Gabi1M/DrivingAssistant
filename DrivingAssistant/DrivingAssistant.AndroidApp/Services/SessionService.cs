@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Services
 {
-    public class SessionService : IDisposable
+    public class SessionService
     {
         private readonly string _serverUri;
 
@@ -72,12 +72,6 @@ namespace DrivingAssistant.AndroidApp.Services
             };
 
             await request.GetResponseAsync();
-        }
-
-        //============================================================
-        public void Dispose()
-        {
-
         }
     }
 }
