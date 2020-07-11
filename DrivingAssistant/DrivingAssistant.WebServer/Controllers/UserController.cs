@@ -83,7 +83,8 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                await userService.DeleteAsync(id);
+                var user = await userService.GetByIdAsync(id);
+                await userService.DeleteAsync(user);
                 return Ok();
             }
             catch (Exception ex)

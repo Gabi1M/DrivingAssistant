@@ -1,14 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-  <ListView
-    android:minWidth="25px"
-    android:minHeight="25px"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/sessionsListView" />
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="50.0dp"
+        android:id="@+id/sessionsButtonsLayout" >
+        <Button
+            android:text="Add"
+            android:layout_width="130.0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionsButtonAdd" />
+        <Button
+            android:text="Modify"
+            android:layout_width="130.0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionsButtonModify" />
+        <Button
+            android:text="Delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionsButtonDelete" />
+    </LinearLayout>
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/sessionsListView"/>
 
 </LinearLayout>

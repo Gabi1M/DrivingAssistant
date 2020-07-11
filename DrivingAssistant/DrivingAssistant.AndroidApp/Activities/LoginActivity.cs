@@ -10,6 +10,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Tools;
+using Newtonsoft.Json;
 using PerpetualEngine.Storage;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -101,8 +102,12 @@ namespace DrivingAssistant.AndroidApp.Activities
                     x.Username.Trim() == _textInputUsername.Text.Trim() &&
                     x.Password.Trim() == Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim())))
                 {
+                    var user = users.First(x =>
+                        x.Username.Trim() == _textInputUsername.Text.Trim() && x.Password.Trim() ==
+                        Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()));
                     _progressBar.Visibility = ViewStates.Invisible;
                     var intent = new Intent(Application.Context, typeof(MainActivity));
+                    intent.PutExtra("user", JsonConvert.SerializeObject(user));
                     StartActivity(intent);
                 }
                 else

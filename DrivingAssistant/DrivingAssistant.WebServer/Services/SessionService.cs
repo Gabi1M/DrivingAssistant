@@ -46,6 +46,31 @@ namespace DrivingAssistant.WebServer.Services
         }
 
         //============================================================
+        public override async Task<Session> GetByIdAsync(long id)
+        {
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetSessionByIdCommand, _connection);
+            command.Parameters.AddWithValue("id", id);
+            var result = await command.ExecuteReaderAsync();
+            await result.ReadAsync();
+            var session = new Session(Convert.ToDateTime(result["startdatetime"]),
+                Convert.ToDateTime(result["enddatetime"]),
+                new Coordinates
+                {
+                    X = Convert.ToDouble(result["startx"]),
+                    Y = Convert.ToDouble(result["starty"])
+                },
+                new Coordinates
+                {
+                    X = Convert.ToDouble(result["endx"]),
+                    Y = Convert.ToDouble(result["endy"])
+                },
+                Convert.ToInt64(result["id"]));
+            await _connection.CloseAsync();
+            return session;
+        }
+
+        //============================================================
         public override async Task<long> SetAsync(Session session)
         {
             await _connection.OpenAsync();
@@ -78,11 +103,11 @@ namespace DrivingAssistant.WebServer.Services
         }
 
         //============================================================
-        public override async Task DeleteAsync(long id)
+        public override async Task DeleteAsync(Session session)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteSessionCommand, _connection);
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("id", session.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }

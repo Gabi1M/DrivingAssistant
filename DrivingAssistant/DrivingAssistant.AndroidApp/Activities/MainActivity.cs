@@ -11,7 +11,8 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Fragments;
-using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Models;
+using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -37,6 +38,10 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             navigationView.SetNavigationItemSelectedListener(this);
+
+            var user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
+            var userText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
+            userText.Text = user.FirstName + " " + user.LastName;
         }
 
         //============================================================
@@ -98,25 +103,19 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 case Resource.Id.nav_images:
                 {
-                    var mediaService = new MediaService("http://192.168.100.234:3287");
-                    var images = await mediaService.GetImagesAsync();
-                    var fragment = new ImageFragment(images);
+                    var fragment = new ImageFragment();
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_videos:
                 {
-                    var mediaService = new MediaService("http://192.168.100.234:3287");
-                    var videos = await mediaService.GetVideosAsync();
-                    var fragment = new VideoFragment(videos);
+                    var fragment = new VideoFragment();
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_sessions:
                 {
-                    var sessionService = new SessionService("http://192.168.100.234:3287");
-                    var sessions = await sessionService.GetAsync();
-                    var fragment = new SessionFragment(sessions);
+                    var fragment = new SessionFragment();
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }

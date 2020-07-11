@@ -186,7 +186,8 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received DELETE images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                await mediaService.DeleteAsync(id);
+                var media = await mediaService.GetByIdAsync(id);
+                await mediaService.DeleteAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -206,7 +207,8 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received DELETE videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                await mediaService.DeleteAsync(id);
+                var media = await mediaService.GetByIdAsync(id);
+                await mediaService.DeleteAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -226,7 +228,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                var media = (await mediaService.GetAsync()).First(x => x.Id == id);
+                var media = await mediaService.GetByIdAsync(id);
                 Media processedMedia;
                 if (media.Type == MediaType.Image)
                 {
@@ -235,7 +237,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 }
                 else
                 {
-                    var processedFilename = ImageProcessor.ProcessVideo(media.Filepath);
+                    var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
                     processedMedia = new Media(MediaType.Video, processedFilename, media.Source, DateTime.Now);
                 }
 

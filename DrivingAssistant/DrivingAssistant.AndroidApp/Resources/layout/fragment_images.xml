@@ -3,12 +3,39 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ListView
+    <LinearLayout
+      android:orientation="horizontal"
       android:minWidth="25px"
       android:minHeight="25px"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:id="@+id/imagesListView" />
+      android:layout_height="50.0dp"
+      android:id="@+id/imagesButtonsLayout" >
+      <Button
+          android:text="Add"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/imagesButtonAdd" />
+      <Button
+          android:text="Modify"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/imagesButtonModify" />
+      <Button
+          android:text="Delete"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/imagesButtonDelete" />
+      <Button
+          android:text="View"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/imagesButtonView" />
+    </LinearLayout>
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imagesListView" />
 
 </LinearLayout>

@@ -101,25 +101,37 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public static string ProcessVideo(string filename)
+        public static string ProcessVideo(string filename, int framesToSkip = 0)
         {
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
             var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width,video.Height), true);
+            var frameCount = 0;
             while (true)
             {
                 try
                 {
+                    ++frameCount;
                     using var capturedImage = video.QueryFrame();
                     if (capturedImage == null)
                     {
                         break;
                     }
 
-                    using var bgrImage = capturedImage.ToImage<Bgr, byte>();
+                    if (framesToSkip == 0)
+                    {
+                        using var bgrImage = capturedImage.ToImage<Bgr, byte>();
 
-                    using var processedImage = ProcessCvImage(bgrImage);
-                    videoWriter.Write(processedImage.Mat);
+                        using var processedImage = ProcessCvImage(bgrImage);
+                        videoWriter.Write(processedImage.Mat);
+                    }
+                    else if(frameCount % framesToSkip == 0)
+                    {
+                        using var bgrImage = capturedImage.ToImage<Bgr, byte>();
+
+                        using var processedImage = ProcessCvImage(bgrImage);
+                        videoWriter.Write(processedImage.Mat);
+                    }
                 }
                 catch (Exception)
                 {

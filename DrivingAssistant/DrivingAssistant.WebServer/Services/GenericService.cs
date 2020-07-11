@@ -10,13 +10,16 @@ namespace DrivingAssistant.WebServer.Services
         public abstract Task<ICollection<T>> GetAsync();
 
         //============================================================
+        public abstract Task<T> GetByIdAsync(long id);
+
+        //============================================================
         public abstract Task<long> SetAsync(T data);
 
         //============================================================
         public abstract Task UpdateAsync(T data);
 
         //============================================================
-        public abstract Task DeleteAsync(long id);
+        public abstract Task DeleteAsync(T data);
 
         //============================================================
         public abstract void Dispose();

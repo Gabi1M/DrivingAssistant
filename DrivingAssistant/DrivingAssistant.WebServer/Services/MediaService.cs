@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Tools;
 using Npgsql;
 
@@ -32,6 +33,21 @@ namespace DrivingAssistant.WebServer.Services
                     Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"])));
             }
 
+            await _connection.CloseAsync();
+            return media;
+        }
+
+        //============================================================
+        public override async Task<Media> GetByIdAsync(long id)
+        {
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetMediaByIdCommand, _connection);
+            command.Parameters.AddWithValue("id", id);
+            var result = await command.ExecuteReaderAsync();
+            await result.ReadAsync();
+            var media = new Media(result["type"].ToString(), result["filepath"].ToString(),
+                result["source"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
+                Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]));
             await _connection.CloseAsync();
             return media;
         }
@@ -69,13 +85,30 @@ namespace DrivingAssistant.WebServer.Services
         }
 
         //============================================================
-        public override async Task DeleteAsync(long id)
+        public override async Task DeleteAsync(Media media)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteMediaCommand, _connection);
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("id", media.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
+            if (File.Exists(media.Filepath))
+            {
+                var count = 0;
+                while (count < 5)
+                {
+                    try
+                    {
+                        ++count;
+                        File.Delete(media.Filepath);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException(ex);
+                    }
+                }
+            }
         }
 
         //============================================================

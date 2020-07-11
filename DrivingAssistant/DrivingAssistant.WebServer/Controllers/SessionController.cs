@@ -83,7 +83,8 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
-                await sessionService.DeleteAsync(id);
+                var session = await sessionService.GetByIdAsync(id);
+                await sessionService.DeleteAsync(session);
                 return Ok();
             }
             catch (Exception ex)

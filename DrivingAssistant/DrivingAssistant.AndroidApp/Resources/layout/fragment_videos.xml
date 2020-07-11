@@ -3,12 +3,39 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ListView
+  <LinearLayout
+      android:orientation="horizontal"
       android:minWidth="25px"
       android:minHeight="25px"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:id="@+id/videosListView" />
+      android:layout_height="50.0dp"
+      android:id="@+id/videosButtonsLayout" >
+      <Button
+          android:text="Add"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/videosButtonAdd" />
+      <Button
+          android:text="Modify"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/videosButtonModify" />
+      <Button
+          android:text="Delete"
+          android:layout_width="97.5dp"
+          android:layout_height="match_parent"
+          android:id="@+id/videosButtonDelete" />
+      <Button
+          android:text="View"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/videosButtonView" />
+  </LinearLayout>
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/videosListView" />
 
 </LinearLayout>

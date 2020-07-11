@@ -26,17 +26,27 @@ namespace DrivingAssistant.WebServer.Services
             var users = new List<User>();
             while (await result.ReadAsync())
             {
-                users.Add(new User(
-                    result["username"].ToString(),
-                    result["password"].ToString(),
-                    result["firstname"].ToString(),
-                    result["lastname"].ToString(),
-                    Convert.ToDateTime(result["datetime"].ToString()),
-                    Convert.ToInt64(result["id"])));
+                users.Add(new User(result["username"].ToString(), result["password"].ToString(),
+                    result["firstname"].ToString(), result["lastname"].ToString(),
+                    Convert.ToDateTime(result["datetime"].ToString()), Convert.ToInt64(result["id"])));
             }
 
             await _connection.CloseAsync();
             return users;
+        }
+
+        //============================================================
+        public override async Task<User> GetByIdAsync(long id)
+        {
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUserByIdCommand, _connection);
+            var result = await command.ExecuteReaderAsync();
+            await result.ReadAsync();
+            var user = new User(result["username"].ToString(), result["password"].ToString(),
+                result["firstname"].ToString(), result["lastname"].ToString(),
+                Convert.ToDateTime(result["datetime"].ToString()), Convert.ToInt64(result["id"]));
+            await _connection.CloseAsync();
+            return user;
         }
 
         //============================================================
@@ -68,13 +78,13 @@ namespace DrivingAssistant.WebServer.Services
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }
-
+         
         //============================================================
-        public override async Task DeleteAsync(long id)
+        public override async Task DeleteAsync(User user)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("id", user.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }
