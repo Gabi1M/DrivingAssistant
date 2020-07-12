@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DrivingAssistant.WebServer.Services
+namespace DrivingAssistant.WebServer.Services.Generic
 {
     public abstract class GenericService<T> : IDisposable
     {

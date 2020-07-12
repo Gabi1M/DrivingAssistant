@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
-using DrivingAssistant.WebServer.Services;
+using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Services.Psql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -14,6 +15,8 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class SessionController : ControllerBase
     {
+        private SessionService _sessionService;
+
         //============================================================
         [HttpGet]
         [Route("sessions")]
@@ -22,8 +25,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
-                return Ok(await sessionService.GetAsync());
+                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                return Ok(await _sessionService.GetAsync());
             }
             catch (Exception ex)
             {
@@ -41,9 +44,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
-                return Ok(await sessionService.SetAsync(session));
+                return Ok(await _sessionService.SetAsync(session));
             }
             catch (Exception ex)
             {
@@ -61,9 +64,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
-                await sessionService.UpdateAsync(session);
+                await _sessionService.UpdateAsync(session);
                 return Ok();
             }
             catch (Exception ex)
@@ -82,9 +85,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var sessionService = new SessionService(Constants.ServerConstants.GetConnectionString());
-                var session = await sessionService.GetByIdAsync(id);
-                await sessionService.DeleteAsync(session);
+                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                var session = await _sessionService.GetByIdAsync(id);
+                await _sessionService.DeleteAsync(session);
                 return Ok();
             }
             catch (Exception ex)

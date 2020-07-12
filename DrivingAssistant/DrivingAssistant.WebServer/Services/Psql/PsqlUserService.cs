@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
 using Npgsql;
 
-namespace DrivingAssistant.WebServer.Services
+namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class UserService : GenericService<User>
+    public class PsqlUserService : UserService
     {
         private readonly NpgsqlConnection _connection;
 
         //============================================================
-        public UserService(string connectionString)
+        public PsqlUserService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
         }

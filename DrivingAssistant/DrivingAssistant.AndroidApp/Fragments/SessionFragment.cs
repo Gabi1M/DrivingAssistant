@@ -19,6 +19,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private Button _addButton;
         private Button _modifyButton;
         private Button _deleteButton;
+        private Button _viewMapButton;
 
         private int _selectedPosition = -1;
         private View _selectedView;
@@ -43,10 +44,12 @@ namespace DrivingAssistant.AndroidApp.Fragments
             _addButton = view.FindViewById<Button>(Resource.Id.sessionsButtonAdd);
             _modifyButton = view.FindViewById<Button>(Resource.Id.sessionsButtonModify);
             _deleteButton = view.FindViewById<Button>(Resource.Id.sessionsButtonDelete);
+            _viewMapButton = view.FindViewById<Button>(Resource.Id.sessionsButtonViewMap);
 
             _addButton.Click += OnAddButtonClick;
             _modifyButton.Click += OnModifyButtonClick;
             _deleteButton.Click += OnDeleteButtonClick;
+            _viewMapButton.Click += OnViewMapButtonClick;
         }
 
         //============================================================
@@ -84,6 +87,12 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
             //TODO
+        }
+
+        //============================================================
+        private void OnViewMapButtonClick(object sender, EventArgs e)
+        {
+
         }
 
         //============================================================

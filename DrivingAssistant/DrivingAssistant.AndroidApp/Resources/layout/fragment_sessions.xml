@@ -15,19 +15,24 @@
         android:id="@+id/sessionsButtonsLayout" >
         <Button
             android:text="Add"
-            android:layout_width="130.0dp"
+            android:layout_width="97.5dp"
             android:layout_height="match_parent"
             android:id="@+id/sessionsButtonAdd" />
         <Button
             android:text="Modify"
-            android:layout_width="130.0dp"
+            android:layout_width="97.5dp"
             android:layout_height="match_parent"
             android:id="@+id/sessionsButtonModify" />
         <Button
             android:text="Delete"
-            android:layout_width="match_parent"
+            android:layout_width="97.5dp"
             android:layout_height="match_parent"
             android:id="@+id/sessionsButtonDelete" />
+        <Button
+            android:text="View on Map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionsButtonViewMap" />
     </LinearLayout>
     <ListView
         android:minWidth="25px"

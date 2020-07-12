@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
 using Npgsql;
 
-namespace DrivingAssistant.WebServer.Services
+namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class SessionService : GenericService<Session>
+    public class PsqlSessionService : SessionService
     {
         private readonly NpgsqlConnection _connection;
 
         //============================================================
-        public SessionService(string connectionString)
+        public PsqlSessionService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
         }
@@ -26,7 +27,8 @@ namespace DrivingAssistant.WebServer.Services
             var sessions = new List<Session>();
             while (await result.ReadAsync())
             {
-                sessions.Add(new Session(Convert.ToDateTime(result["startdatetime"]),
+                sessions.Add(new Session(result["description"].ToString(),
+                    Convert.ToDateTime(result["startdatetime"]),
                     Convert.ToDateTime(result["enddatetime"]),
                     new Coordinates
                     {
@@ -53,7 +55,8 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("id", id);
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
-            var session = new Session(Convert.ToDateTime(result["startdatetime"]),
+            var session = new Session(result["description"].ToString(),
+                Convert.ToDateTime(result["startdatetime"]),
                 Convert.ToDateTime(result["enddatetime"]),
                 new Coordinates
                 {
@@ -75,6 +78,8 @@ namespace DrivingAssistant.WebServer.Services
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddSessionCommand, _connection);
+            command.Parameters.AddWithValue("user_id", session.UserId);
+            command.Parameters.AddWithValue("description", session.Description);
             command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
             command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
             command.Parameters.AddWithValue("startx", session.StartCoordinates.X);
@@ -92,6 +97,8 @@ namespace DrivingAssistant.WebServer.Services
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateSessionCommand, _connection);
             command.Parameters.AddWithValue("id", session.Id);
+            command.Parameters.AddWithValue("user_id", session.UserId);
+            command.Parameters.AddWithValue("description", session.Description);
             command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
             command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
             command.Parameters.AddWithValue("startx", session.StartCoordinates.X);

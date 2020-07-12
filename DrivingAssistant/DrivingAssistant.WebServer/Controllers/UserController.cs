@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
-using DrivingAssistant.WebServer.Services;
+using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Services.Psql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -14,6 +15,8 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private UserService _userService;
+
         //============================================================
         [HttpGet]
         [Route("users")]
@@ -22,8 +25,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                return Ok(await userService.GetAsync());
+                _userService = new PsqlUserService(Constants.ServerConstants.GetConnectionString());
+                return Ok(await _userService.GetAsync());
             }
             catch (Exception ex)
             {
@@ -41,9 +44,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
+                _userService = new PsqlUserService(Constants.ServerConstants.GetConnectionString());
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                return Ok(await userService.SetAsync(user));
+                return Ok(await _userService.SetAsync(user));
             }
             catch (Exception ex)
             {
@@ -61,9 +64,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
+                _userService = new PsqlUserService(Constants.ServerConstants.GetConnectionString());
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                await userService.UpdateAsync(user);
+                await _userService.UpdateAsync(user);
                 return Ok();
             }
             catch (Exception ex)
@@ -82,9 +85,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var userService = new UserService(Constants.ServerConstants.GetConnectionString());
-                var user = await userService.GetByIdAsync(id);
-                await userService.DeleteAsync(user);
+                _userService = new PsqlUserService(Constants.ServerConstants.GetConnectionString());
+                var user = await _userService.GetByIdAsync(id);
+                await _userService.DeleteAsync(user);
                 return Ok();
             }
             catch (Exception ex)

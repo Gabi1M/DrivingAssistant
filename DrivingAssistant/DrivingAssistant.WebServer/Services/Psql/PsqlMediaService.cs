@@ -4,17 +4,18 @@ using System.IO;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
 using Npgsql;
 
-namespace DrivingAssistant.WebServer.Services
+namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class MediaService : GenericService<Media>
+    public class PsqlMediaService : MediaService
     {
         private readonly NpgsqlConnection _connection;
 
         //============================================================
-        public MediaService(string connectionString)
+        public PsqlMediaService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
         }
@@ -29,8 +30,8 @@ namespace DrivingAssistant.WebServer.Services
             while (await result.ReadAsync())
             {
                 media.Add(new Media(result["type"].ToString(), result["filepath"].ToString(),
-                    result["source"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
-                    Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"])));
+                    result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
+                    Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"])));
             }
 
             await _connection.CloseAsync();
@@ -46,8 +47,8 @@ namespace DrivingAssistant.WebServer.Services
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
             var media = new Media(result["type"].ToString(), result["filepath"].ToString(),
-                result["source"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
-                Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]));
+                result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
+                Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"]));
             await _connection.CloseAsync();
             return media;
         }
@@ -60,8 +61,10 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("type", media.Type.ToString());
             command.Parameters.AddWithValue("processed_id", media.ProcessedId);
             command.Parameters.AddWithValue("session_id", media.SessionId);
+            command.Parameters.AddWithValue("user_id", media.UserId);
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
+            command.Parameters.AddWithValue("description", media.Description);
             command.Parameters.AddWithValue("datetime", media.DateAdded);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
@@ -77,8 +80,10 @@ namespace DrivingAssistant.WebServer.Services
             command.Parameters.AddWithValue("type", media.Type.ToString());
             command.Parameters.AddWithValue("processed_id", media.ProcessedId);
             command.Parameters.AddWithValue("session_id", media.SessionId);
+            command.Parameters.AddWithValue("user_id", media.UserId);
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
+            command.Parameters.AddWithValue("description", media.Description);
             command.Parameters.AddWithValue("datetime", media.DateAdded);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();

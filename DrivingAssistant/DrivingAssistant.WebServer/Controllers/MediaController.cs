@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
-using DrivingAssistant.WebServer.Services;
+using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Services.Psql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +16,8 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class MediaController : ControllerBase
     {
+        private MediaService _mediaService;
+
         //============================================================
         [HttpGet]
         [Route("images")]
@@ -23,8 +26,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received GET images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                return Ok((await mediaService.GetAsync()).Where(x => x.Type == MediaType.Image));
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                return Ok((await _mediaService.GetAsync()).Where(x => x.Type == MediaType.Image));
             }
             catch (Exception ex)
             {
@@ -41,8 +44,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received GET videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                return Ok((await mediaService.GetAsync()).Where(x => x.Type == MediaType.Video));
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                return Ok((await _mediaService.GetAsync()).Where(x => x.Type == MediaType.Video));
             }
             catch (Exception ex)
             {
@@ -60,8 +63,8 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received GET images_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                var media = (await mediaService.GetAsync()).First(x => x.Id == id);
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
                 return File(System.IO.File.Open(media.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
             }
             catch (Exception ex)
@@ -80,10 +83,10 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received POST images_base64 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
                 var filepath = await Utils.SaveImageBase64ToFile(Request.Body);
-                var media = new Media(MediaType.Image, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now);
-                return Ok(await mediaService.SetAsync(media));
+                var media = new Media(MediaType.Image, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), string.Empty,DateTime.Now);
+                return Ok(await _mediaService.SetAsync(media));
             }
             catch (Exception ex)
             {
@@ -101,10 +104,10 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received POST images_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
                 var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
-                var media = new Media(MediaType.Image, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now);
-                return Ok(await mediaService.SetAsync(media));
+                var media = new Media(MediaType.Image, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), string.Empty, DateTime.Now);
+                return Ok(await _mediaService.SetAsync(media));
             }
             catch (Exception ex)
             {
@@ -122,10 +125,10 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received POST videos_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
-                var media = new Media(MediaType.Video, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), DateTime.Now);
-                return Ok(await mediaService.SetAsync(media));
+                var media = new Media(MediaType.Video, filepath, Request.HttpContext.Connection.RemoteIpAddress.ToString(), string.Empty, DateTime.Now);
+                return Ok(await _mediaService.SetAsync(media));
             }
             catch (Exception ex)
             {
@@ -143,9 +146,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received PUT images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
-                await mediaService.UpdateAsync(media);
+                await _mediaService.UpdateAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -164,9 +167,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received PUT videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
-                await mediaService.UpdateAsync(media);
+                await _mediaService.UpdateAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -185,9 +188,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received DELETE images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                var media = await mediaService.GetByIdAsync(id);
-                await mediaService.DeleteAsync(media);
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                var media = await _mediaService.GetByIdAsync(id);
+                await _mediaService.DeleteAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -206,9 +209,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received DELETE videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                var media = await mediaService.GetByIdAsync(id);
-                await mediaService.DeleteAsync(media);
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                var media = await _mediaService.GetByIdAsync(id);
+                await _mediaService.DeleteAsync(media);
                 return Ok();
             }
             catch (Exception ex)
@@ -227,23 +230,23 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                using var mediaService = new MediaService(Constants.ServerConstants.GetConnectionString());
-                var media = await mediaService.GetByIdAsync(id);
+                _mediaService = new PsqlMediaService(Constants.ServerConstants.GetConnectionString());
+                var media = await _mediaService.GetByIdAsync(id);
                 Media processedMedia;
                 if (media.Type == MediaType.Image)
                 {
                     var processedFilename = ImageProcessor.ProcessImage(media.Filepath);
-                    processedMedia = new Media(MediaType.Image, processedFilename, media.Source, DateTime.Now);
+                    processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description, DateTime.Now);
                 }
                 else
                 {
                     var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
-                    processedMedia = new Media(MediaType.Video, processedFilename, media.Source, DateTime.Now);
+                    processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description, DateTime.Now);
                 }
 
-                processedMedia.Id = await mediaService.SetAsync(processedMedia);
+                processedMedia.Id = await _mediaService.SetAsync(processedMedia);
                 media.ProcessedId = processedMedia.Id;
-                await mediaService.UpdateAsync(media);
+                await _mediaService.UpdateAsync(media);
 
                 return Ok(processedMedia.Id);
             }
