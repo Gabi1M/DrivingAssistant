@@ -28,7 +28,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelUsername;
         private TextView _labelPassword;
         private TextView _labelConfirmPassword;
-        private ProgressBar _progressBar;
         private Button _registerButton;
 
         //============================================================
@@ -48,13 +47,9 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelUsername = FindViewById<TextView>(Resource.Id.registerLabelUsername);
             _labelPassword = FindViewById<TextView>(Resource.Id.registerLabelPassword);
             _labelConfirmPassword = FindViewById<TextView>(Resource.Id.registerLabelConfirmPassword);
-            _progressBar = FindViewById<ProgressBar>(Resource.Id.registerProgressBar);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
 
-            _progressBar.Visibility = ViewStates.Invisible;
-
             _textInputConfirmPassword.EditorAction += OnTextInputConfirmPasswordEditorAction;
-
             _registerButton.Click += OnRegisterButtonClick;
         }
 
@@ -80,26 +75,22 @@ namespace DrivingAssistant.AndroidApp.Activities
             var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
             inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
 
-            _registerButton.Enabled = false;
-
             if (ValidateFields())
             {
-                _progressBar.Visibility = ViewStates.Visible;
+                var progressDialog = ProgressDialog.Show(this, "Register", "Registering user...");
                 if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
-                    _registerButton.Enabled = true;
-                    _progressBar.Visibility = ViewStates.Invisible;
+                    progressDialog.Dismiss();
                     return;
                 }
 
                 var userService = new UserService("http://192.168.100.234:3287");
                 var users = await userService.GetAsync();
-                _registerButton.Enabled = true;
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
                 {
                     Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();
-                    _progressBar.Visibility = ViewStates.Invisible;
+                    progressDialog.Dismiss();
                     return;
                 }
 
@@ -111,7 +102,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     DateTime.Now);
 
                 await userService.SetAsync(user);
-                _progressBar.Visibility = ViewStates.Invisible;
+                progressDialog.Dismiss();
                 Toast.MakeText(Application.Context, "Register successful!", ToastLength.Short).Show();
                 await Task.Delay(1000);
                 Finish();

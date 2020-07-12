@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Android.App;
 using Android.Content;
 using Android.Graphics;
 using Android.OS;
@@ -10,9 +11,12 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
+using Plugin.FilePicker;
 using Fragment = Android.Support.V4.App.Fragment;
+using Path = System.IO.Path;
 
 namespace DrivingAssistant.AndroidApp.Fragments
 {
@@ -44,7 +48,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private void SetupFragmentFields(View view)
         {
             _listView = view.FindViewById<ListView>(Resource.Id.videosListView);
-            _addButton = view.FindViewById<Button>(Resource.Id.videosButtonAdd);
+            _addButton = view.FindViewById<Button>(Resource.Id.videosButtonUpload);
             _modifyButton = view.FindViewById<Button>(Resource.Id.videosButtonModify);
             _deleteButton = view.FindViewById<Button>(Resource.Id.videosButtonDelete);
             _viewButton = view.FindViewById<Button>(Resource.Id.videosButtonView);
@@ -81,15 +85,34 @@ namespace DrivingAssistant.AndroidApp.Fragments
         }
 
         //============================================================
-        private void OnAddButtonClick(object sender, EventArgs e)
+        private async void OnAddButtonClick(object sender, EventArgs e)
         {
-            //TODO
+            var filedata = await CrossFilePicker.Current.PickFile(new[] { ".mp4" });
+            if (filedata == null)
+            {
+                return;
+            }
+
+            if (Path.GetExtension(filedata.FilePath) != ".mp4")
+            {
+                Toast.MakeText(Context, "Selected file is not a Mp4 video file!", ToastLength.Short).Show();
+                return;
+            }
+
+            var progressDialog = ProgressDialog.Show(Context, "Video Upload", "Uploading...");
+            await using var stream = filedata.GetStream();
+            var mediaService = new MediaService("http://192.168.100.234:3287");
+            Toast.MakeText(Context, "Uploading video...", ToastLength.Short).Show();
+            await mediaService.SetMediaStreamAsync(stream, MediaType.Video);
+            progressDialog.Dismiss();
+            Toast.MakeText(Context, "Video uploaded!", ToastLength.Short).Show();
+            await RefreshDataSource();
         }
 
         //============================================================
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
-            //TODO
+            
         }
 
         //============================================================

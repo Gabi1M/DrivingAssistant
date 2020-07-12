@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -11,10 +11,10 @@
       android:layout_height="50.0dp"
       android:id="@+id/imagesButtonsLayout" >
       <Button
-          android:text="Add"
+          android:text="Upload"
           android:layout_width="97.5dp"
           android:layout_height="match_parent"
-          android:id="@+id/imagesButtonAdd" />
+          android:id="@+id/imagesButtonUpload" />
       <Button
           android:text="Modify"
           android:layout_width="97.5dp"

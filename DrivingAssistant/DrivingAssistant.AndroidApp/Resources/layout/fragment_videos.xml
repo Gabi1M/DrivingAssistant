@@ -11,10 +11,10 @@
       android:layout_height="50.0dp"
       android:id="@+id/videosButtonsLayout" >
       <Button
-          android:text="Add"
+          android:text="Upload"
           android:layout_width="97.5dp"
           android:layout_height="match_parent"
-          android:id="@+id/videosButtonAdd" />
+          android:id="@+id/videosButtonUpload" />
       <Button
           android:text="Modify"
           android:layout_width="97.5dp"

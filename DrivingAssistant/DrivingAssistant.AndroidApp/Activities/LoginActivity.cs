@@ -22,7 +22,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextInputEditText _textInputPassword;
         private TextView _labelUsername;
         private TextView _labelPassword;
-        private ProgressBar _progressBar;
         private Button _loginButton;
         private Button _registerButton;
 
@@ -38,11 +37,8 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.loginInputPassword);
             _labelUsername = FindViewById<TextView>(Resource.Id.loginLabelUsername);
             _labelPassword = FindViewById<TextView>(Resource.Id.loginLabelPassword);
-            _progressBar = FindViewById<ProgressBar>(Resource.Id.loginProgressBar);
             _loginButton = FindViewById<Button>(Resource.Id.loginButton);
             _registerButton = FindViewById<Button>(Resource.Id.loginRegisterButton);
-
-            _progressBar.Visibility = ViewStates.Invisible;
 
             _loginButton.Click += OnLoginButtonClick;
             _registerButton.Click += OnRegisterButtonClick;
@@ -78,26 +74,19 @@ namespace DrivingAssistant.AndroidApp.Activities
             var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
             inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
 
-            _loginButton.Enabled = false;
-            _registerButton.Enabled = false;
-
             if (ValidateFields())
             {
-                _progressBar.Visibility = ViewStates.Visible;
+                var progressDialog = ProgressDialog.Show(this, "Login", "Logging in...");
 
                 if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
-                    _progressBar.Visibility = ViewStates.Invisible;
-                    _loginButton.Enabled = true;
-                    _registerButton.Enabled = true;
+                    progressDialog.Dismiss();
                     return;
                 }
 
                 var userService = new UserService("http://192.168.100.234:3287");
                 var users = await userService.GetAsync();
-                _loginButton.Enabled = true;
-                _registerButton.Enabled = true;
                 if (users.Any(x =>
                     x.Username.Trim() == _textInputUsername.Text.Trim() &&
                     x.Password.Trim() == Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim())))
@@ -105,14 +94,14 @@ namespace DrivingAssistant.AndroidApp.Activities
                     var user = users.First(x =>
                         x.Username.Trim() == _textInputUsername.Text.Trim() && x.Password.Trim() ==
                         Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()));
-                    _progressBar.Visibility = ViewStates.Invisible;
+                    progressDialog.Dismiss();
                     var intent = new Intent(Application.Context, typeof(MainActivity));
                     intent.PutExtra("user", JsonConvert.SerializeObject(user));
                     StartActivity(intent);
                 }
                 else
                 {
-                    _progressBar.Visibility = ViewStates.Invisible;
+                    progressDialog.Dismiss();
                     Toast.MakeText(Application.Context, "Username or password incorrect!", ToastLength.Short).Show();
                 }
             }
