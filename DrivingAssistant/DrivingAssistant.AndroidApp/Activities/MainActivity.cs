@@ -19,6 +19,8 @@ namespace DrivingAssistant.AndroidApp.Activities
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
+        private User _user;
+
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -42,6 +44,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             var user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
             var userText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
             userText.Text = user.FirstName + " " + user.LastName;
+            _user = user;
         }
 
         //============================================================
@@ -103,26 +106,24 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 case Resource.Id.nav_images:
                 {
-                    var fragment = new ImageFragment();
+                    var fragment = new ImageFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_videos:
                 {
-                    var fragment = new VideoFragment();
+                    var fragment = new VideoFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_sessions:
                 {
-                    var fragment = new SessionFragment();
+                    var fragment = new SessionFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_map:
                 {
-                    var fragment = new MapFragment();
-                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
                 case Resource.Id.nav_logout:

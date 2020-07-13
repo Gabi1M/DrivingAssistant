@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Psql;
-using DrivingAssistant.WebServer.Tools;
+using DrivingAssistant.WebServer.Services.Mssql;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -25,7 +24,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log("Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
-                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 return Ok(await _sessionService.GetAsync());
             }
             catch (Exception ex)
@@ -44,7 +43,7 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
                 return Ok(await _sessionService.SetAsync(session));
             }
@@ -64,7 +63,7 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 using var streamReader = new StreamReader(Request.Body);
-                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
                 await _sessionService.UpdateAsync(session);
                 return Ok();
@@ -85,7 +84,7 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
                 var id = Convert.ToInt64(Request.Query["id"].First());
-                _sessionService = new PsqlSessionService(Constants.ServerConstants.GetConnectionString());
+                _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var session = await _sessionService.GetByIdAsync(id);
                 await _sessionService.DeleteAsync(session);
                 return Ok();

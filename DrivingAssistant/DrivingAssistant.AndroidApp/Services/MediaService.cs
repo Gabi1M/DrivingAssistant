@@ -22,9 +22,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<ICollection<Media>> GetImagesAsync()
+        public async Task<ICollection<Media>> GetImagesAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/images"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/images?userId=" + userId))
             {
                 Method = "GET"
             };
@@ -35,9 +35,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<ICollection<Media>> GetVideosAsync()
+        public async Task<ICollection<Media>> GetVideosAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/videos"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/videos?userId=" + userId))
             {
                 Method = "GET"
             };
@@ -48,9 +48,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> SetImageBase64Async(byte[] base64Bytes)
+        public async Task<long> SetImageBase64Async(byte[] base64Bytes, long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/images_base64"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/images_base64?userId=" + userId))
             {
                 Method = "POST"
             };
@@ -65,11 +65,11 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type)
+        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type, long userId)
         {
             var request = type == MediaType.Image
-                ? (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/image_stream"))
-                : (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/video_stream"));
+                ? (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/image_stream?userId=" + userId))
+                : (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/video_stream?userId=" + userId));
             request.Method = "POST";
 
             await using var requestStream = await request.GetRequestStreamAsync();

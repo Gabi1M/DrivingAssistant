@@ -30,16 +30,8 @@ namespace DrivingAssistant.WebServer.Services.Psql
                 sessions.Add(new Session(result["description"].ToString(),
                     Convert.ToDateTime(result["startdatetime"]),
                     Convert.ToDateTime(result["enddatetime"]),
-                    new Coordinates
-                    {
-                        X = Convert.ToDouble(result["startx"]),
-                        Y = Convert.ToDouble(result["starty"])
-                    }, 
-                    new Coordinates
-                    {
-                        X = Convert.ToDouble(result["endx"]),
-                        Y = Convert.ToDouble(result["endy"])
-                    },
+                    new Coordinates(Convert.ToDecimal(result["startx"]), Convert.ToDecimal(result["starty"])),
+                new Coordinates(Convert.ToDecimal(result["endx"]), Convert.ToDecimal(result["endy"])),
                     Convert.ToInt64(result["id"])));
             }
 
@@ -58,16 +50,8 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var session = new Session(result["description"].ToString(),
                 Convert.ToDateTime(result["startdatetime"]),
                 Convert.ToDateTime(result["enddatetime"]),
-                new Coordinates
-                {
-                    X = Convert.ToDouble(result["startx"]),
-                    Y = Convert.ToDouble(result["starty"])
-                },
-                new Coordinates
-                {
-                    X = Convert.ToDouble(result["endx"]),
-                    Y = Convert.ToDouble(result["endy"])
-                },
+                new Coordinates(Convert.ToDecimal(result["startx"]), Convert.ToDecimal(result["starty"])),
+                new Coordinates(Convert.ToDecimal(result["endx"]), Convert.ToDecimal(result["endy"])),
                 Convert.ToInt64(result["id"]));
             await _connection.CloseAsync();
             return session;

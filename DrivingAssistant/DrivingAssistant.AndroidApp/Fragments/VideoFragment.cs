@@ -22,6 +22,8 @@ namespace DrivingAssistant.AndroidApp.Fragments
 {
     public class VideoFragment : Fragment
     {
+        private readonly User _user;
+
         private ListView _listView;
         private Button _addButton;
         private Button _modifyButton;
@@ -33,6 +35,12 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
         private MediaService _mediaService;
         private ICollection<Media> _currentVideos;
+
+        //============================================================
+        public VideoFragment(User user)
+        {
+            _user = user;
+        }
 
         //============================================================
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -70,7 +78,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
-            _currentVideos = await _mediaService.GetVideosAsync();
+            _currentVideos = await _mediaService.GetVideosAsync(_user.Id);
             _listView.Adapter?.Dispose();
             _listView.Adapter = new VideoViewModelAdapter(Activity, _currentVideos);
         }
@@ -103,7 +111,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             await using var stream = filedata.GetStream();
             var mediaService = new MediaService("http://192.168.100.234:3287");
             Toast.MakeText(Context, "Uploading video...", ToastLength.Short).Show();
-            await mediaService.SetMediaStreamAsync(stream, MediaType.Video);
+            await mediaService.SetMediaStreamAsync(stream, MediaType.Video, _user.Id);
             progressDialog.Dismiss();
             Toast.MakeText(Context, "Video uploaded!", ToastLength.Short).Show();
             await RefreshDataSource();
@@ -116,7 +124,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         }
 
         //============================================================
-        private async void OnDeleteButtonClick(object sender, EventArgs e)
+        private void OnDeleteButtonClick(object sender, EventArgs e)
         {
             if (_selectedPosition == -1)
             {
@@ -124,11 +132,24 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 return;
             }
 
-            var video = _currentVideos.ElementAt(_selectedPosition);
-            var mediaService = new MediaService("http://192.168.100.234:3287");
-            await mediaService.DeleteVideoAsync(video.Id);
-            Toast.MakeText(Context, "Video deleted!", ToastLength.Short).Show();
-            await RefreshDataSource();
+            var alert = new AlertDialog.Builder(Context);
+            alert.SetTitle("Confirm Delete");
+            alert.SetMessage("Action cannot be undone");
+            alert.SetPositiveButton("Delete", async (o, args) =>
+            {
+                var video = _currentVideos.ElementAt(_selectedPosition);
+                var mediaService = new MediaService("http://192.168.100.234:3287");
+                await mediaService.DeleteVideoAsync(video.Id);
+                Toast.MakeText(Context, "Video deleted!", ToastLength.Short).Show();
+                await RefreshDataSource();
+            });
+            alert.SetNegativeButton("Cancel", (o, args) =>
+            {
+                //NOTHING
+            });
+
+            var dialog = alert.Create();
+            dialog.Show();
         }
 
         //============================================================

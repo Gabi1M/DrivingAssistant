@@ -29,7 +29,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             {
                 users.Add(new User(result["username"].ToString(), result["password"].ToString(),
                     result["firstname"].ToString(), result["lastname"].ToString(),
-                    Convert.ToDateTime(result["datetime"].ToString()), Convert.ToInt64(result["id"])));
+                    Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"])));
             }
 
             await _connection.CloseAsync();
@@ -45,7 +45,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             await result.ReadAsync();
             var user = new User(result["username"].ToString(), result["password"].ToString(),
                 result["firstname"].ToString(), result["lastname"].ToString(),
-                Convert.ToDateTime(result["datetime"].ToString()), Convert.ToInt64(result["id"]));
+                Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"]));
             await _connection.CloseAsync();
             return user;
         }
@@ -59,7 +59,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
             command.Parameters.AddWithValue("lastname", user.LastName);
-            command.Parameters.AddWithValue("datetime", user.JoinDate);
+            command.Parameters.AddWithValue("joindate", user.JoinDate);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
             return result;
@@ -75,7 +75,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
             command.Parameters.AddWithValue("lastname", user.LastName);
-            command.Parameters.AddWithValue("datetime", user.JoinDate);
+            command.Parameters.AddWithValue("joindate", user.JoinDate);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }

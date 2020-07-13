@@ -46,6 +46,17 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
+        protected override void OnResume()
+        {
+            if (_textInputUsername != null && _textInputPassword != null)
+            {
+                _textInputUsername.Text = string.Empty;
+                _textInputPassword.Text = string.Empty;
+            }
+            base.OnResume();
+        }
+
+        //============================================================
         private void OnTextInputPasswordEditorAction(object sender, TextView.EditorActionEventArgs e)
         {
             try

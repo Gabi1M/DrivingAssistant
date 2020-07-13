@@ -5,10 +5,17 @@ namespace DrivingAssistant.Core.Models
     public class Coordinates
     {
         [JsonProperty("X")]
-        public double X { get; set; }
+        public decimal X { get; set; }
 
         [JsonProperty("Y")]
-        public double Y { get; set; }
+        public decimal Y { get; set; }
+
+        //============================================================
+        public Coordinates(decimal x, decimal y)
+        {
+            X = x;
+            Y = y;
+        }
 
         //============================================================
         public override string ToString()

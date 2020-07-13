@@ -30,7 +30,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             while (await result.ReadAsync())
             {
                 media.Add(new Media(result["type"].ToString(), result["filepath"].ToString(),
-                    result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
+                    result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["dateadded"]), Convert.ToInt64(result["id"]),
                     Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"])));
             }
 
@@ -47,7 +47,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
             var media = new Media(result["type"].ToString(), result["filepath"].ToString(),
-                result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["datetime"]), Convert.ToInt64(result["id"]),
+                result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["dateadded"]), Convert.ToInt64(result["id"]),
                 Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"]));
             await _connection.CloseAsync();
             return media;
@@ -65,7 +65,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
             command.Parameters.AddWithValue("description", media.Description);
-            command.Parameters.AddWithValue("datetime", media.DateAdded);
+            command.Parameters.AddWithValue("dateadded", media.DateAdded);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
             return result;
@@ -84,7 +84,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
             command.Parameters.AddWithValue("description", media.Description);
-            command.Parameters.AddWithValue("datetime", media.DateAdded);
+            command.Parameters.AddWithValue("dateadded", media.DateAdded);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }
