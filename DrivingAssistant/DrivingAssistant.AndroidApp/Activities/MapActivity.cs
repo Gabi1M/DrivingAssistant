@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Android.App;
 using Android.Graphics;
 using Android.OS;
+using Itinero;
+using Itinero.LocalGeo;
+using Itinero.Osm.Vehicles;
 using Mapsui;
+using Mapsui.Geometries;
 using Mapsui.Layers;
 using Mapsui.Projection;
 using Mapsui.Providers;
@@ -14,7 +19,8 @@ using Mapsui.Utilities;
 using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
-using Newtonsoft.Json;
+using Color = Mapsui.Styles.Color;
+using Point = Mapsui.Geometries.Point;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -77,7 +83,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                 DataSource = new MemoryProvider(ConvertPointsToFeatures()),
                 Style = new SymbolStyle
                 {
-                    SymbolScale = 0.50
+                    Fill = new Brush(Color.Red),
+                    SymbolScale = 0.5
                 }
             };
         }
@@ -87,9 +94,50 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             return _points.Select(x =>
             {
-                var feature = new Feature {Geometry = SphericalMercator.FromLonLat(x.Y, x.X), ["description"] = "caca"};
+                var feature = new Feature { Geometry = SphericalMercator.FromLonLat(x.Y, x.X), ["description"] = "caca" };
                 return feature;
             });
+        }
+
+        //============================================================
+        private Route GetRoute()
+        {
+            using var stream = Assets.Open("romania.routerdb");
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            var routerDb = RouterDb.Deserialize(memoryStream);
+            var router = new Router(routerDb);
+
+            var routerPoint1 = new Coordinate(_points[0].X, _points[0].Y);
+            var routerPoint2 = new Coordinate(_points[1].X, _points[1].Y);
+
+            return router.Calculate(Vehicle.Car.Fastest(), new[] {routerPoint1, routerPoint2});
+        }
+
+        //============================================================
+        private ILayer GetRouteLayer(Route route)
+        {
+            var points = new List<Point>();
+            foreach (var coordinate in route.Shape)
+            {
+                var spherical = SphericalMercator.FromLonLat(coordinate.Longitude, coordinate.Latitude);
+                points.Add(new Point(spherical.X, spherical.Y));
+            }
+
+            var lineString = new LineString(points);
+            var feature = new Feature
+            {
+                Geometry = lineString,
+                ["Name"] = "Route 1",
+                Styles = new List<IStyle> {new VectorStyle {Line = new Pen(Color.Blue, 6)}}
+            };
+
+            return new MemoryLayer
+            {
+                Name = "Route",
+                DataSource = new MemoryProvider(feature),
+                Style = null
+            };
         }
     }
 }

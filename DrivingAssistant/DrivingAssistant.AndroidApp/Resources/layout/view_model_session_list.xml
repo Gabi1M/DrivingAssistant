@@ -4,24 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-      android:textAppearance="?android:attr/textAppearanceMedium"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/sessionTextStartDateTime" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sessionTextDescription" />
     <TextView
-      android:textAppearance="?android:attr/textAppearanceMedium"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/sessionTextEndDateTime" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sessionTextStartDateTime" />
     <TextView
-      android:textAppearance="?android:attr/textAppearanceMedium"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/sessionTextStartCoordinates" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sessionTextEndDateTime" />
     <TextView
-      android:textAppearance="?android:attr/textAppearanceMedium"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/sessionTextEndCoordinates" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sessionTextStartCoordinates" />
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sessionTextEndCoordinates" />
 
 </LinearLayout>

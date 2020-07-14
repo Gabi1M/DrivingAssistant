@@ -16,7 +16,7 @@ namespace DrivingAssistant.Core.Tools
         }
 
         //===========================================================//
-        public static void Log(string message, LogType type)
+        public static void Log(string message, LogType type, bool logToConsole = false)
         {
             var fullMessage = string.Empty;
             switch (type)
@@ -41,10 +41,15 @@ namespace DrivingAssistant.Core.Tools
             fullMessage += DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + ": " + message;
             _file.WriteLine(fullMessage);
             _file.Flush();
+
+            if (logToConsole)
+            {
+                Console.WriteLine(fullMessage);
+            }
         }
 
         //===========================================================//
-        public static void LogException(Exception ex, LogType type = LogType.Error)
+        public static void LogException(Exception ex, LogType type = LogType.Error, bool logToConsole = false)
         {
             var fullMessage = string.Empty;
             switch (type)
@@ -69,6 +74,11 @@ namespace DrivingAssistant.Core.Tools
             fullMessage += DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + ": " + ex.Message + "\n" + ex.StackTrace;
             _file.WriteLine(fullMessage);
             _file.Flush();
+
+            if (logToConsole)
+            {
+                Console.WriteLine(fullMessage);
+            }
         }
 
         //===========================================================//

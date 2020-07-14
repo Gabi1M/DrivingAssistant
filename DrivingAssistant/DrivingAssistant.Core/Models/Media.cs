@@ -61,5 +61,17 @@ namespace DrivingAssistant.Core.Models
                 Type = _type;
             }
         }
+
+        //===========================================================//
+        public bool IsProcessed()
+        {
+            return ProcessedId != default;
+        }
+
+        //===========================================================//
+        public bool IsInSession()
+        {
+            return SessionId != default;
+        }
     }
 }

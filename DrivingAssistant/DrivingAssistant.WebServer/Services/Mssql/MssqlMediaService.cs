@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
 
@@ -105,6 +107,15 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 };
                 tableAdapter.Fill(_dataset.Delete_Media, media.Id);
             });
+            await Task.Delay(1000);
+            try
+            {
+                File.Delete(media.Filepath);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
         }
 
         //============================================================

@@ -8,27 +8,32 @@
       android:minWidth="25px"
       android:minHeight="25px"
       android:layout_width="match_parent"
-      android:layout_height="50.0dp"
+      android:layout_height="55.0dp"
+      android:weightSum="4"
       android:id="@+id/videosButtonsLayout" >
       <Button
           android:text="Upload"
-          android:layout_width="97.5dp"
+          android:layout_width="0dp"
           android:layout_height="match_parent"
+          android:layout_weight="1"
           android:id="@+id/videosButtonUpload" />
       <Button
           android:text="Modify"
-          android:layout_width="97.5dp"
+          android:layout_width="0dp"
           android:layout_height="match_parent"
+          android:layout_weight="1"
           android:id="@+id/videosButtonModify" />
       <Button
           android:text="Delete"
-          android:layout_width="97.5dp"
+          android:layout_width="0dp"
           android:layout_height="match_parent"
+          android:layout_weight="1"
           android:id="@+id/videosButtonDelete" />
       <Button
           android:text="View"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="match_parent"
+          android:layout_weight="1"
           android:id="@+id/videosButtonView" />
   </LinearLayout>
     <ListView

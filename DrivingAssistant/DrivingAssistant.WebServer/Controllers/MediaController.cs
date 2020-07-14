@@ -25,14 +25,14 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 return Ok((await _mediaService.GetAsync()).Where(x => x.Type == MediaType.Image && x.UserId == userId));
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -44,14 +44,14 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 return Ok((await _mediaService.GetAsync()).Where(x => x.Type == MediaType.Video && x.UserId == userId));
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -63,7 +63,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET images_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET images_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
@@ -71,7 +71,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -84,7 +84,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST images_base64 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST images_base64 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["userId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var filepath = await Utils.SaveImageBase64ToFile(Request.Body);
@@ -93,7 +93,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -106,7 +106,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST images_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST images_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["userId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
@@ -115,7 +115,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -128,7 +128,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST videos_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST videos_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["userId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
@@ -137,7 +137,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -149,7 +149,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received PUT images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received PUT images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
@@ -158,7 +158,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -170,7 +170,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received PUT videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received PUT videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
@@ -179,7 +179,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -191,7 +191,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received DELETE images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = await _mediaService.GetByIdAsync(id);
@@ -200,7 +200,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -212,7 +212,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received DELETE videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE videos from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = await _mediaService.GetByIdAsync(id);
@@ -221,7 +221,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -233,7 +233,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = await _mediaService.GetByIdAsync(id);
@@ -241,12 +241,12 @@ namespace DrivingAssistant.WebServer.Controllers
                 if (media.Type == MediaType.Image)
                 {
                     var processedFilename = ImageProcessor.ProcessImage(media.Filepath);
-                    processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description, DateTime.Now);
+                    processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description, DateTime.Now, default, default, media.SessionId, media.UserId);
                 }
                 else
                 {
                     var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
-                    processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description, DateTime.Now);
+                    processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description, DateTime.Now, default, default, media.SessionId, media.UserId);
                 }
 
                 processedMedia.Id = await _mediaService.SetAsync(processedMedia);
@@ -257,7 +257,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }

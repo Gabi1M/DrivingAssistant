@@ -95,7 +95,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async void OnAddButtonClick(object sender, EventArgs e)
         {
-            var filedata = await CrossFilePicker.Current.PickFile(new[] { ".mp4" });
+            var filedata = await CrossFilePicker.Current.PickFile(new[] { "*.mp4" });
             if (filedata == null)
             {
                 return;

@@ -23,13 +23,13 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
                 return Ok(await _userService.GetAsync());
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -41,7 +41,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
@@ -49,7 +49,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -61,7 +61,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
@@ -70,7 +70,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -82,7 +82,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
                 var user = await _userService.GetByIdAsync(id);
@@ -91,7 +91,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }

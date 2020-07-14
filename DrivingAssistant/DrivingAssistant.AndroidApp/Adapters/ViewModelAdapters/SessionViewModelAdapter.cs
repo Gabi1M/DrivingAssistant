@@ -39,6 +39,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var view = convertView ?? _activity.LayoutInflater.Inflate(Resource.Layout.view_model_session_list, parent, false);
+            var textDescription = view.FindViewById<TextView>(Resource.Id.sessionTextDescription);
             var textStartDateTime = view.FindViewById<TextView>(Resource.Id.sessionTextStartDateTime);
             var textEndDateTime = view.FindViewById<TextView>(Resource.Id.sessionTextEndDateTime);
             var textStartCoordinates = view.FindViewById<TextView>(Resource.Id.sessionTextStartCoordinates);
@@ -46,6 +47,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
 
             var currentSession = _sessions.ElementAt(position);
 
+            textDescription.Text = "Description: " + currentSession.Description;
             textStartDateTime.Text = "Start: " + currentSession.StartDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textEndDateTime.Text = "End: " + currentSession.EndDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textStartCoordinates.Text = "Start position: " + currentSession.StartCoordinates;

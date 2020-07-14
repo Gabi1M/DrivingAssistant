@@ -19,6 +19,12 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelDescription;
         private TextInputEditText _textDescription;
 
+        private TextView _labelStartDateTime;
+        private TextView _labelStartDateTimeValue;
+
+        private TextView _labelEndDateTime;
+        private TextView _labelEndDateTimeValue;
+
         private TextView _labelStartLocation;
         private TextView _labelStartLocationX;
         private TextView _labelStartLocationY;
@@ -40,7 +46,9 @@ namespace DrivingAssistant.AndroidApp.Activities
         private SessionService _sessionService;
         private MediaService _mediaService;
 
-        private List<Media> _selectedMedia = new List<Media>();
+        private readonly List<Media> _selectedMedia = new List<Media>();
+        private DateTime _selectedStartDateTime;
+        private DateTime _selectedEndDateTime;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -55,6 +63,10 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _labelDescription = FindViewById<TextView>(Resource.Id.sessionEditLabelDescription);
             _textDescription = FindViewById<TextInputEditText>(Resource.Id.sessionEditTextDescription);
+            _labelStartDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelStartDateTime);
+            _labelStartDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartDateTime);
+            _labelEndDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelEndDateTime);
+            _labelEndDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
             _labelStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelStartPosition);
             _labelStartLocationX = FindViewById<TextView>(Resource.Id.sessionEditLabelStartX);
             _labelStartLocationY = FindViewById<TextView>(Resource.Id.sessionEditLabelStartY);
@@ -71,13 +83,49 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _buttonSelectMedia.Click += OnButtonSelectMediaClick;
             _buttonSubmit.Click += OnButtonSubmitClick;
+            _labelStartDateTimeValue.Click += ButtonSelectStartDateOnClick;
+            _labelEndDateTimeValue.Click += ButtonSelectEndDateOnClick;
+        }
+
+        //============================================================
+        private void ButtonSelectStartDateOnClick(object sender, EventArgs e)
+        {
+            var datePickerDialog = new DatePickerDialog(this, (o, args) =>
+            {
+                _selectedStartDateTime = args.Date;
+                var timePickerDialog = new TimePickerDialog(this, (sender1, eventArgs) =>
+                {
+                    _selectedStartDateTime = _selectedStartDateTime.AddHours(eventArgs.HourOfDay);
+                    _selectedStartDateTime = _selectedStartDateTime.AddMinutes(eventArgs.Minute);
+                    _labelStartDateTimeValue.Text = _selectedStartDateTime.ToString();
+                }, DateTime.Now.Hour, DateTime.Now.Minute, true);
+                timePickerDialog.Show();
+            }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            datePickerDialog.Show();
+        }
+
+        //============================================================
+        private void ButtonSelectEndDateOnClick(object sender, EventArgs e)
+        {
+            var datePickerDialog = new DatePickerDialog(this, (o, args) =>
+            {
+                _selectedEndDateTime = args.Date;
+                var timePickerDialog = new TimePickerDialog(this, (sender1, eventArgs) =>
+                {
+                    _selectedEndDateTime = _selectedEndDateTime.AddHours(eventArgs.HourOfDay);
+                    _selectedEndDateTime = _selectedEndDateTime.AddMinutes(eventArgs.Minute);
+                    _labelEndDateTimeValue.Text = _selectedEndDateTime.ToString();
+                }, DateTime.Now.Hour, DateTime.Now.Minute, true);
+                timePickerDialog.Show();
+            }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+            datePickerDialog.Show();
         }
 
         //============================================================
         private async void OnButtonSelectMediaClick(object sender, EventArgs e)
         {
-            var images = await _mediaService.GetImagesAsync(_user.Id); 
-            var videos = await _mediaService.GetVideosAsync(_user.Id);
+            var images = (await _mediaService.GetImagesAsync(_user.Id)).Where(x => !x.IsInSession()); 
+            var videos = (await _mediaService.GetVideosAsync(_user.Id)).Where(x => !x.IsInSession());
 
             var medias = new List<Media>();
             medias.AddRange(images);
@@ -123,7 +171,16 @@ namespace DrivingAssistant.AndroidApp.Activities
                 return;
             }
 
-            var session = new Session(_textDescription.Text.Trim(), DateTime.Now, DateTime.Now,
+            if (_selectedStartDateTime == null || _selectedEndDateTime == null ||
+                string.IsNullOrEmpty(_textDescription.Text) || string.IsNullOrEmpty(_textStartLocationX.Text) ||
+                string.IsNullOrEmpty(_textStartLocationY.Text) || string.IsNullOrEmpty(_textEndLocationX.Text) ||
+                string.IsNullOrEmpty(_textEndLocationY.Text))
+            {
+                Toast.MakeText(this, "Some fields were left blank!", ToastLength.Short).Show();
+                return;
+            }
+
+            var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime, _selectedEndDateTime,
                 new Coordinates(Convert.ToDecimal(_textStartLocationX.Text.Trim()),
                     Convert.ToDecimal(_textStartLocationY.Text.Trim())),
                 new Coordinates(Convert.ToDecimal(_textEndLocationX.Text.Trim()),

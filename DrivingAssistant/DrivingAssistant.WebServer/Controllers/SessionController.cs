@@ -2,10 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Services.Mssql;
+using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -23,13 +25,13 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 return Ok(await _sessionService.GetAsync());
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -41,7 +43,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
@@ -49,7 +51,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -61,7 +63,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
@@ -70,7 +72,7 @@ namespace DrivingAssistant.WebServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
@@ -82,16 +84,63 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info);
+                Logger.Log("Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["id"].First());
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
+                var mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var session = await _sessionService.GetByIdAsync(id);
+                foreach (var media in (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id))
+                {
+                    media.SessionId = default;
+                    await mediaService.UpdateAsync(media);
+                }
                 await _sessionService.DeleteAsync(session);
                 return Ok();
             }
             catch (Exception ex)
             {
-                Logger.LogException(ex);
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpPost]
+        [Route("process_session")]
+        public async Task<IActionResult> ProcessSession()
+        {
+            try
+            {
+                Logger.Log("Received POST process_session from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
+                var id = Convert.ToInt64(Request.Query["id"].First());
+                _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
+                var mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
+                var session = await _sessionService.GetByIdAsync(id);
+                var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
+                foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
+                {
+                    Media processedMedia;
+                    if (media.Type == MediaType.Image)
+                    {
+                        var processedFilename = ImageProcessor.ProcessImage(media.Filepath);
+                        processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description, DateTime.Now, default, default, media.SessionId, media.UserId);
+                    }
+                    else
+                    {
+                        var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
+                        processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description, DateTime.Now, default, default, media.SessionId, media.UserId);
+                    }
+
+                    processedMedia.Id = await mediaService.SetAsync(processedMedia);
+                    media.ProcessedId = processedMedia.Id;
+                    await mediaService.UpdateAsync(media);
+                }
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
                 return Problem(ex.Message);
             }
         }
