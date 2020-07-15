@@ -102,7 +102,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
-            //TODO
+            
         }
 
         //============================================================
@@ -117,8 +117,8 @@ namespace DrivingAssistant.AndroidApp.Fragments
             var session = _currentSessions.ElementAt(_selectedPosition);
             var intent = new Intent(Context, typeof(MapActivity));
 
-            var str = session.StartCoordinates.X + "," + session.StartCoordinates.Y + " " + session.EndCoordinates.X + "," + session.EndCoordinates.Y;
-            intent.PutExtra("points", str);
+            intent.PutExtra("startPoint", JsonConvert.SerializeObject(session.StartCoordinates));
+            intent.PutExtra("endPoint", JsonConvert.SerializeObject(session.EndCoordinates));
             StartActivity(intent);
         }
 

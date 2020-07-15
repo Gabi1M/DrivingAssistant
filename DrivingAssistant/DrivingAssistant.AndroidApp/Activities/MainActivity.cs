@@ -30,9 +30,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
-            /*var fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
-            fab.Click += FabOnClick;*/
-
             var drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             var toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
             drawer.AddDrawerListener(toggle);
@@ -43,7 +40,9 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
             var userText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
+            var userRoleText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserRole);
             userText.Text = user.FirstName + " " + user.LastName;
+            userRoleText.Text = user.Role.ToString();
             _user = user;
         }
 
@@ -75,13 +74,6 @@ namespace DrivingAssistant.AndroidApp.Activities
                 }
             }
             return item.ItemId == Resource.Id.action_settings || base.OnOptionsItemSelected(item);
-        }
-
-        //============================================================
-        private static void FabOnClick(object sender, EventArgs eventArgs)
-        {
-            var view = sender as View;
-            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong).SetAction("Action", (View.IOnClickListener)null).Show();
         }
 
         //============================================================

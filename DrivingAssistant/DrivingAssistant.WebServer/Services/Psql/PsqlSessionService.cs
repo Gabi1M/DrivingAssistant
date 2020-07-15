@@ -30,8 +30,8 @@ namespace DrivingAssistant.WebServer.Services.Psql
                 sessions.Add(new Session(result["description"].ToString(),
                     Convert.ToDateTime(result["startdatetime"]),
                     Convert.ToDateTime(result["enddatetime"]),
-                    new Coordinates(Convert.ToDecimal(result["startx"]), Convert.ToDecimal(result["starty"])),
-                new Coordinates(Convert.ToDecimal(result["endx"]), Convert.ToDecimal(result["endy"])),
+                    new Coordinates(Convert.ToSingle(result["startx"]), Convert.ToSingle(result["starty"])),
+                new Coordinates(Convert.ToSingle(result["endx"]), Convert.ToSingle(result["endy"])),
                     Convert.ToInt64(result["id"])));
             }
 
@@ -50,8 +50,8 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var session = new Session(result["description"].ToString(),
                 Convert.ToDateTime(result["startdatetime"]),
                 Convert.ToDateTime(result["enddatetime"]),
-                new Coordinates(Convert.ToDecimal(result["startx"]), Convert.ToDecimal(result["starty"])),
-                new Coordinates(Convert.ToDecimal(result["endx"]), Convert.ToDecimal(result["endy"])),
+                new Coordinates(Convert.ToSingle(result["startx"]), Convert.ToSingle(result["starty"])),
+                new Coordinates(Convert.ToSingle(result["endx"]), Convert.ToSingle(result["endy"])),
                 Convert.ToInt64(result["id"]));
             await _connection.CloseAsync();
             return session;
@@ -66,10 +66,10 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("description", session.Description);
             command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
             command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
-            command.Parameters.AddWithValue("startx", session.StartCoordinates.X);
-            command.Parameters.AddWithValue("starty", session.StartCoordinates.Y);
-            command.Parameters.AddWithValue("endx", session.EndCoordinates.X);
-            command.Parameters.AddWithValue("endy", session.EndCoordinates.Y);
+            command.Parameters.AddWithValue("startx", session.StartCoordinates.Latitude);
+            command.Parameters.AddWithValue("starty", session.StartCoordinates.Longitude);
+            command.Parameters.AddWithValue("endx", session.EndCoordinates.Latitude);
+            command.Parameters.AddWithValue("endy", session.EndCoordinates.Longitude);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
             return result;
@@ -85,10 +85,10 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("description", session.Description);
             command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
             command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
-            command.Parameters.AddWithValue("startx", session.StartCoordinates.X);
-            command.Parameters.AddWithValue("starty", session.StartCoordinates.Y);
-            command.Parameters.AddWithValue("endx", session.EndCoordinates.X);
-            command.Parameters.AddWithValue("endy", session.EndCoordinates.Y);
+            command.Parameters.AddWithValue("startx", session.StartCoordinates.Latitude);
+            command.Parameters.AddWithValue("starty", session.StartCoordinates.Longitude);
+            command.Parameters.AddWithValue("endx", session.EndCoordinates.Latitude);
+            command.Parameters.AddWithValue("endy", session.EndCoordinates.Longitude);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }

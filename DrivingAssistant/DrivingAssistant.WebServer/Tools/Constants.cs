@@ -57,8 +57,8 @@ namespace DrivingAssistant.WebServer.Tools
 
             public const string GetUsersCommand = @"select * from users;";
             public const string GetUserByIdCommand = @"select * from users where id = @id";
-            public const string AddUserCommand = @"insert into users(username, password, firstname, lastname, joindate) values (@username, @password, @firstname, @lastname, @joindate) returning id;";
-            public const string UpdateUserCommand = @"update users set username = @username, password = @password, firstname = @firstname, lastname = @lastname, joindate = @joindate where id = @id";
+            public const string AddUserCommand = @"insert into users(username, password, firstname, lastname, role, joindate) values (@username, @password, @firstname, @lastname, @role, @joindate) returning id;";
+            public const string UpdateUserCommand = @"update users set username = @username, password = @password, firstname = @firstname, lastname = @lastname, role = @role, joindate = @joindate where id = @id";
             public const string DeleteUserCommand = @"delete from users where id = @id";
 
             public const string GetSessionsCommand = @"select * from sessions";

@@ -125,6 +125,13 @@
             android:password="true"
             android:singleLine="true" />
     </LinearLayout>
+    <TextView
+        android:text="Tap to select role"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="37.0dp"
+        android:id="@+id/registerSelectRole"
+        android:gravity="center" />
     <Button
         android:text="Register"
         android:layout_width="match_parent"

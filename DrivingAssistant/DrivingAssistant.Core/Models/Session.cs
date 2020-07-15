@@ -24,7 +24,8 @@ namespace DrivingAssistant.Core.Models
         public Coordinates EndCoordinates { get; set; }
 
         //============================================================
-        public Session(string description, DateTime startDateTime, DateTime endDateTime, Coordinates startCoordinates, Coordinates endCoordinates, long id = default, long userid = default)
+        public Session(string description, DateTime startDateTime, DateTime endDateTime, Coordinates startCoordinates,
+            Coordinates endCoordinates, long id = default, long userid = default)
         {
             Description = description;
             StartDateTime = startDateTime;

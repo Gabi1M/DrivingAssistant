@@ -4,23 +4,23 @@ namespace DrivingAssistant.Core.Models
 {
     public class Coordinates
     {
-        [JsonProperty("X")]
-        public decimal X { get; set; }
+        [JsonProperty("Latitude")]
+        public float Latitude { get; set; }
 
-        [JsonProperty("Y")]
-        public decimal Y { get; set; }
+        [JsonProperty("Longitude")]
+        public float Longitude { get; set; }
 
         //============================================================
-        public Coordinates(decimal x, decimal y)
+        public Coordinates(float latitude, float longitude)
         {
-            X = x;
-            Y = y;
+            Latitude = latitude;
+            Longitude = longitude;
         }
 
         //============================================================
         public override string ToString()
         {
-            return X + ", " + Y;
+            return Latitude + ", " + Longitude;
         }
     }
 }

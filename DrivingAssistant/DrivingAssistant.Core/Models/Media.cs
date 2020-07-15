@@ -32,7 +32,8 @@ namespace DrivingAssistant.Core.Models
 
         //===========================================================//
         [JsonConstructor]
-        public Media(MediaType type, string filepath, string source, string description, DateTime dateAdded, long id = default, long processedId = default, long sessionId = default, long userId = default)
+        public Media(MediaType type, string filepath, string source, string description, DateTime dateAdded,
+            long id = default, long processedId = default, long sessionId = default, long userId = default)
         {
             Type = type;
             Filepath = filepath;
@@ -46,7 +47,8 @@ namespace DrivingAssistant.Core.Models
         }
 
         //===========================================================//
-        public Media(string type, string filepath, string source, string description, DateTime dateAdded, long id = default, long processedId = default, long sessionId = default, long userId = default)
+        public Media(string type, string filepath, string source, string description, DateTime dateAdded,
+            long id = default, long processedId = default, long sessionId = default, long userId = default)
         {
             Filepath = filepath;
             Source = source;

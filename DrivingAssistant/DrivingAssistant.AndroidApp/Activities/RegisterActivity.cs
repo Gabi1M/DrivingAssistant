@@ -10,6 +10,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 
@@ -28,7 +29,10 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelUsername;
         private TextView _labelPassword;
         private TextView _labelConfirmPassword;
+        private TextView _labelSelectedRole;
         private Button _registerButton;
+
+        private UserRole _selectedRole = UserRole.None;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -47,10 +51,35 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelUsername = FindViewById<TextView>(Resource.Id.registerLabelUsername);
             _labelPassword = FindViewById<TextView>(Resource.Id.registerLabelPassword);
             _labelConfirmPassword = FindViewById<TextView>(Resource.Id.registerLabelConfirmPassword);
+            _labelSelectedRole = FindViewById<TextView>(Resource.Id.registerSelectRole);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
 
             _textInputConfirmPassword.EditorAction += OnTextInputConfirmPasswordEditorAction;
+            _labelSelectedRole.Click += LabelSelectedRoleOnClick;
             _registerButton.Click += OnRegisterButtonClick;
+        }
+
+        //============================================================
+        private void LabelSelectedRoleOnClick(object sender, EventArgs e)
+        {
+            var enumItems = Enum.GetNames(typeof(UserRole)).ToList();
+            enumItems.Remove(UserRole.Administrator.ToString());
+            enumItems.Remove(UserRole.None.ToString());
+
+            var alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Choose user role");
+            alert.SetSingleChoiceItems(enumItems.ToArray(), 0, (o, args) =>
+            {
+                _selectedRole = (UserRole) Enum.Parse(typeof(UserRole), enumItems[args.Which]);
+            });
+
+            alert.SetPositiveButton("Select", (o, args) =>
+            {
+                _labelSelectedRole.Text = "Role: " + _selectedRole.ToString();
+            });
+
+            var dialog = alert.Create();
+            dialog.Show();
         }
 
         //============================================================
@@ -99,6 +128,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()),
                     _textInputFirstName.Text.Trim(),
                     _textInputLastName.Text.Trim(),
+                    _selectedRole,
                     DateTime.Now);
 
                 await userService.SetAsync(user);
@@ -145,6 +175,12 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (_textInputPassword.Text.Trim() != _textInputConfirmPassword.Text.Trim())
             {
                 Toast.MakeText(Application.Context, "Passwords don't match!", ToastLength.Short).Show();
+                return false;
+            }
+
+            if (_selectedRole == UserRole.None)
+            {
+                Toast.MakeText(Application.Context, "Please select your role!", ToastLength.Short).Show();
                 return false;
             }
 

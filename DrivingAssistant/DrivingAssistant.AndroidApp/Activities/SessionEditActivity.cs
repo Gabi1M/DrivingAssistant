@@ -181,10 +181,10 @@ namespace DrivingAssistant.AndroidApp.Activities
             }
 
             var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime, _selectedEndDateTime,
-                new Coordinates(Convert.ToDecimal(_textStartLocationX.Text.Trim()),
-                    Convert.ToDecimal(_textStartLocationY.Text.Trim())),
-                new Coordinates(Convert.ToDecimal(_textEndLocationX.Text.Trim()),
-                    Convert.ToDecimal(_textEndLocationY.Text.Trim())), default, _user.Id);
+                new Coordinates(Convert.ToSingle(_textStartLocationX.Text.Trim()),
+                    Convert.ToSingle(_textStartLocationY.Text.Trim())),
+                new Coordinates(Convert.ToSingle(_textEndLocationX.Text.Trim()),
+                    Convert.ToSingle(_textEndLocationY.Text.Trim())), default, _user.Id);
             session.Id = await _sessionService.SetAsync(session);
             foreach (var media in _selectedMedia)
             {

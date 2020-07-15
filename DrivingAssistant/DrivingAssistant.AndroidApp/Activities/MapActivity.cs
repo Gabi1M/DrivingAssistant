@@ -5,6 +5,8 @@ using System.Linq;
 using Android.App;
 using Android.Graphics;
 using Android.OS;
+using Android.Views;
+using Android.Widget;
 using Itinero;
 using Itinero.LocalGeo;
 using Itinero.Osm.Vehicles;
@@ -14,11 +16,13 @@ using Mapsui.Layers;
 using Mapsui.Projection;
 using Mapsui.Providers;
 using Mapsui.Styles;
+using Mapsui.UI;
 using Mapsui.UI.Android;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
+using Newtonsoft.Json;
 using Color = Mapsui.Styles.Color;
 using Point = Mapsui.Geometries.Point;
 
@@ -29,8 +33,6 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private MapControl _mapControl;
 
-        private readonly List<PointF> _points = new List<PointF>();
-
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,12 +42,19 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _mapControl = FindViewById<MapControl>(Resource.Id.mapControl);
 
-            var str = Intent.GetStringExtra("points");
-            var firstPoint = str.Split(' ').First();
-            var secondPoint = str.Split(' ').Last();
-            _points.Add(new PointF(Convert.ToSingle(firstPoint.Split(',')[0]), Convert.ToSingle(firstPoint.Split(',')[1])));
-            _points.Add(new PointF(Convert.ToSingle(secondPoint.Split(',')[0]), Convert.ToSingle(secondPoint.Split(',')[1])));
             SetupMap();
+        }
+
+        //============================================================
+        private Point[] GetConvertedPointsFromIntent()
+        {
+            var startPoint = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("startPoint"));
+            var endPoint = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("endPoint"));
+
+            var startPointConverted = SphericalMercator.FromLonLat(startPoint.Longitude, startPoint.Latitude);
+            var endPointConverted = SphericalMercator.FromLonLat(endPoint.Longitude, endPoint.Latitude);
+
+            return new[] {startPointConverted, endPointConverted};
         }
 
         //============================================================
@@ -57,7 +66,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            map.Layers.Add(CreatePointLayer());
+            map.Layers.Add(CreatePointLayer(GetConvertedPointsFromIntent()));
             map.Widgets.Add(new ScaleBarWidget(map)
             {
                 TextAlignment = Alignment.Center,
@@ -71,32 +80,41 @@ namespace DrivingAssistant.AndroidApp.Activities
             });
             _mapControl.Map = map;
             map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            _mapControl.Info += MapControlOnInfo;
         }
 
         //============================================================
-        private MemoryLayer CreatePointLayer()
+        private void MapControlOnInfo(object sender, MapInfoEventArgs e)
+        {
+            if (e.NumTaps == 1)
+            {
+                var zoomWidgetEnvelope = _mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
+                if (!zoomWidgetEnvelope.Contains(e.MapInfo.ScreenPosition))
+                {
+                    _mapControl.Map.Layers.Remove(_mapControl.Map.Layers.FindLayer("Points").First());
+                    _mapControl.Map.Layers.Add(CreatePointLayer(new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)));
+                }
+            }
+            else if (e.NumTaps == 2)
+            {
+                var feature = e.MapInfo.Feature;
+            }
+        }
+
+        //============================================================
+        private static MemoryLayer CreatePointLayer(params Point[] points)
         {
             return new MemoryLayer
             {
                 Name = "Points",
                 IsMapInfoLayer = true,
-                DataSource = new MemoryProvider(ConvertPointsToFeatures()),
+                DataSource = new MemoryProvider(points),
                 Style = new SymbolStyle
                 {
                     Fill = new Brush(Color.Red),
                     SymbolScale = 0.5
                 }
             };
-        }
-
-        //============================================================
-        private IEnumerable<Feature> ConvertPointsToFeatures()
-        {
-            return _points.Select(x =>
-            {
-                var feature = new Feature { Geometry = SphericalMercator.FromLonLat(x.Y, x.X), ["description"] = "caca" };
-                return feature;
-            });
         }
 
         //============================================================
@@ -107,11 +125,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             stream.CopyTo(memoryStream);
             var routerDb = RouterDb.Deserialize(memoryStream);
             var router = new Router(routerDb);
-
-            var routerPoint1 = new Coordinate(_points[0].X, _points[0].Y);
-            var routerPoint2 = new Coordinate(_points[1].X, _points[1].Y);
-
-            return router.Calculate(Vehicle.Car.Fastest(), new[] {routerPoint1, routerPoint2});
+            return null;
         }
 
         //============================================================
