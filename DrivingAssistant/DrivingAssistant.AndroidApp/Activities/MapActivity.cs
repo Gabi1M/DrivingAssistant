@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Android.App;
-using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Itinero;
 using Itinero.LocalGeo;
-using Itinero.Osm.Vehicles;
 using Mapsui;
 using Mapsui.Geometries;
 using Mapsui.Layers;
@@ -32,6 +29,9 @@ namespace DrivingAssistant.AndroidApp.Activities
     public class MapActivity : Activity
     {
         private MapControl _mapControl;
+        private LinearLayout _popup;
+        private TextView _popupTextView;
+        private Button _popupButton;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -41,8 +41,53 @@ namespace DrivingAssistant.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_map);
 
             _mapControl = FindViewById<MapControl>(Resource.Id.mapControl);
+            _popup = CreatePopup();
+
+            FindViewById<RelativeLayout>(Resource.Id.mapLayout).AddView(_popup);
 
             SetupMap();
+        }
+
+        //============================================================
+        private LinearLayout CreatePopup()
+        {
+            var linearLayout = new LinearLayout(this);
+            linearLayout.AddView(CreateTextView());
+            linearLayout.AddView(CreateButton());
+            linearLayout.SetPadding(5, 5, 5, 5);
+            linearLayout.SetBackgroundColor(Android.Graphics.Color.Transparent);
+            linearLayout.Visibility = ViewStates.Gone;
+            return linearLayout;
+        }
+
+        //============================================================
+        private TextView CreateTextView()
+        {
+            _popupTextView = new TextView(this)
+            {
+                TextSize = 16,
+                Text = "Native Android",
+                LayoutParameters = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WrapContent,
+                    ViewGroup.LayoutParams.WrapContent)
+            };
+            _popupTextView.SetPadding(3, 3, 3, 3);
+            return _popupTextView;
+        }
+
+        //============================================================
+        private Button CreateButton()
+        {
+            _popupButton = new Button(this)
+            {
+                TextSize = 6,
+                Text = "Button",
+                LayoutParameters = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WrapContent,
+                    ViewGroup.LayoutParams.WrapContent)
+            };
+            _popupButton.SetPadding(3,3,3,3);
+            return _popupButton;
         }
 
         //============================================================
@@ -51,10 +96,10 @@ namespace DrivingAssistant.AndroidApp.Activities
             var startPoint = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("startPoint"));
             var endPoint = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("endPoint"));
 
-            var startPointConverted = SphericalMercator.FromLonLat(startPoint.Longitude, startPoint.Latitude);
-            var endPointConverted = SphericalMercator.FromLonLat(endPoint.Longitude, endPoint.Latitude);
+            var startPointConverted = SphericalMercator.FromLonLat(startPoint.Latitude, startPoint.Longitude);
+            var endPointConverted = SphericalMercator.FromLonLat(endPoint.Latitude, endPoint.Longitude);
 
-            return new[] {startPointConverted, endPointConverted};
+            return new[] { startPointConverted, endPointConverted };
         }
 
         //============================================================
@@ -88,16 +133,31 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             if (e.NumTaps == 1)
             {
-                var zoomWidgetEnvelope = _mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
-                if (!zoomWidgetEnvelope.Contains(e.MapInfo.ScreenPosition))
+                if (e.MapInfo.Feature == null)
                 {
-                    _mapControl.Map.Layers.Remove(_mapControl.Map.Layers.FindLayer("Points").First());
-                    _mapControl.Map.Layers.Add(CreatePointLayer(new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)));
+                    if (_popup != null && _popup.Visibility != ViewStates.Gone)
+                    {
+                        _popup.Visibility = ViewStates.Gone;
+                    }
+
+                    var zoomWidgetEnvelope = _mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
+                    if (!zoomWidgetEnvelope.Contains(e.MapInfo.ScreenPosition))
+                    {
+                        _mapControl.Map.Layers.Remove(_mapControl.Map.Layers.FindLayer("Points").First());
+                        _mapControl.Map.Layers.Add(CreatePointLayer(new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)));
+                    }
                 }
-            }
-            else if (e.NumTaps == 2)
-            {
-                var feature = e.MapInfo.Feature;
+                else
+                {
+                    var screenPosition = _mapControl.Viewport.WorldToScreen(e.MapInfo.Feature.Geometry.BoundingBox.Centroid);
+                    var screenPositionInPixels = _mapControl.ToPixels(screenPosition);
+
+                    _popup.SetX((float)screenPositionInPixels.X);
+                    _popup.SetY((float)screenPositionInPixels.Y);
+
+                    _popup.Visibility = ViewStates.Visible;
+                    _popupTextView.Text = SphericalMercator.ToLonLat(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y).ToString();
+                }
             }
         }
 

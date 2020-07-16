@@ -68,14 +68,10 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var alert = new AlertDialog.Builder(this);
             alert.SetTitle("Choose user role");
-            alert.SetSingleChoiceItems(enumItems.ToArray(), 0, (o, args) =>
+            alert.SetItems(enumItems.ToArray(), (o, args) =>
             {
-                _selectedRole = (UserRole) Enum.Parse(typeof(UserRole), enumItems[args.Which]);
-            });
-
-            alert.SetPositiveButton("Select", (o, args) =>
-            {
-                _labelSelectedRole.Text = "Role: " + _selectedRole.ToString();
+                _selectedRole = (UserRole)Enum.Parse(typeof(UserRole), enumItems[args.Which]);
+                _labelSelectedRole.Text = "Role: " + _selectedRole;
             });
 
             var dialog = alert.Create();

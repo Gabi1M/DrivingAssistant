@@ -105,7 +105,7 @@ namespace DrivingAssistant.WebServer.Controllers
         }
 
         //============================================================
-        [HttpPost]
+        [HttpGet]
         [Route("process_session")]
         public async Task<IActionResult> ProcessSession()
         {

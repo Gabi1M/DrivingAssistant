@@ -25,6 +25,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private Button _addButton;
         private Button _modifyButton;
         private Button _deleteButton;
+        private Button _submitButton;
         private Button _viewMapButton;
 
         private int _selectedPosition = -1;
@@ -58,11 +59,13 @@ namespace DrivingAssistant.AndroidApp.Fragments
             _addButton = view.FindViewById<Button>(Resource.Id.sessionsButtonAdd);
             _modifyButton = view.FindViewById<Button>(Resource.Id.sessionsButtonModify);
             _deleteButton = view.FindViewById<Button>(Resource.Id.sessionsButtonDelete);
+            _submitButton = view.FindViewById<Button>(Resource.Id.sessionsButtonSubmit);
             _viewMapButton = view.FindViewById<Button>(Resource.Id.sessionsButtonViewMap);
 
             _addButton.Click += OnAddButtonClick;
             _modifyButton.Click += OnModifyButtonClick;
             _deleteButton.Click += OnDeleteButtonClick;
+            _submitButton.Click += OnSubmitButtonClick;
             _viewMapButton.Click += OnViewMapButtonClick;
         }
 
@@ -96,13 +99,47 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             var intent = new Intent(Context, typeof(SessionEditActivity));
             intent.PutExtra("user", JsonConvert.SerializeObject(_user));
-            StartActivity(intent);
+            StartActivityForResult(intent, 1234);
+        }
+
+        //============================================================
+        public override async void OnActivityResult(int requestCode, int resultCode, Intent data)
+        {
+            if (requestCode == 1234)
+            {
+                await RefreshDataSource();
+            }
         }
 
         //============================================================
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
-            
+            if (_selectedPosition == -1)
+            {
+                Toast.MakeText(Context, "No session selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var session = _currentSessions.ElementAt(_selectedPosition);
+            var intent = new Intent(Context, typeof(SessionEditActivity));
+            intent.PutExtra("user", JsonConvert.SerializeObject(_user));
+            intent.PutExtra("session", JsonConvert.SerializeObject(session));
+            StartActivityForResult(intent, 1234);
+        }
+
+        //============================================================
+        private async void OnSubmitButtonClick(object sender, EventArgs e)
+        {
+            if (_selectedPosition == -1)
+            {
+                Toast.MakeText(Context, "No session selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var session = _currentSessions.ElementAt(_selectedPosition);
+            var progressDialog = ProgressDialog.Show(Context, "Submit", "Submitting...");
+            await _sessionService.SubmitAsync(session);
+            progressDialog.Dismiss();
         }
 
         //============================================================

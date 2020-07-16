@@ -9,6 +9,18 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
+using Mapsui;
+using Mapsui.Geometries;
+using Mapsui.Layers;
+using Mapsui.Projection;
+using Mapsui.Providers;
+using Mapsui.Styles;
+using Mapsui.UI;
+using Mapsui.UI.Android;
+using Mapsui.Utilities;
+using Mapsui.Widgets;
+using Mapsui.Widgets.ScaleBar;
+using Mapsui.Widgets.Zoom;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -16,30 +28,13 @@ namespace DrivingAssistant.AndroidApp.Activities
     [Activity(Label = "SessionEditActivity")]
     public class SessionEditActivity : Activity
     {
-        private TextView _labelDescription;
         private TextInputEditText _textDescription;
-
-        private TextView _labelStartDateTime;
         private TextView _labelStartDateTimeValue;
-
-        private TextView _labelEndDateTime;
         private TextView _labelEndDateTimeValue;
-
-        private TextView _labelStartLocation;
-        private TextView _labelStartLocationX;
-        private TextView _labelStartLocationY;
-        private EditText _textStartLocationX;
-        private EditText _textStartLocationY;
-
-        private TextView _labelEndLocation;
-        private TextView _labelEndLocationX;
-        private TextView _labelEndLocationY;
-        private EditText _textEndLocationX;
-        private EditText _textEndLocationY;
-
+        private TextView _labelSelectedStartLocation;
+        private TextView _labelSelectedEndLocation;
         private TextView _labelSelectedMedia;
         private Button _buttonSelectMedia;
-
         private Button _buttonSubmit;
 
         private User _user;
@@ -49,6 +44,8 @@ namespace DrivingAssistant.AndroidApp.Activities
         private readonly List<Media> _selectedMedia = new List<Media>();
         private DateTime _selectedStartDateTime;
         private DateTime _selectedEndDateTime;
+        private Point _selectedStartPoint;
+        private Point _selectedEndPoint;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -61,30 +58,143 @@ namespace DrivingAssistant.AndroidApp.Activities
             _mediaService = new MediaService("http://192.168.100.234:3287");
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
 
-            _labelDescription = FindViewById<TextView>(Resource.Id.sessionEditLabelDescription);
             _textDescription = FindViewById<TextInputEditText>(Resource.Id.sessionEditTextDescription);
-            _labelStartDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelStartDateTime);
             _labelStartDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartDateTime);
-            _labelEndDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelEndDateTime);
             _labelEndDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
-            _labelStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelStartPosition);
-            _labelStartLocationX = FindViewById<TextView>(Resource.Id.sessionEditLabelStartX);
-            _labelStartLocationY = FindViewById<TextView>(Resource.Id.sessionEditLabelStartY);
-            _textStartLocationX = FindViewById<EditText>(Resource.Id.sessionEditTextStartX);
-            _textStartLocationY = FindViewById<EditText>(Resource.Id.sessionEditTextStartY);
-            _labelEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelEndPosition);
-            _labelEndLocationX = FindViewById<TextView>(Resource.Id.sessionEditLabelEndX);
-            _labelEndLocationY = FindViewById<TextView>(Resource.Id.sessionEditLabelEndY);
-            _textEndLocationX = FindViewById<EditText>(Resource.Id.sessionEditTextEndX);
-            _textEndLocationY = FindViewById<EditText>(Resource.Id.sessionEditTextEndY);
+            _labelSelectedStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
+            _labelSelectedEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
             _labelSelectedMedia = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedMedia);
             _buttonSelectMedia = FindViewById<Button>(Resource.Id.sessionEditButtonSelectMedia);
             _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
+
+            if (Intent.HasExtra("session"))
+            {
+                var session = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
+                _textDescription.Text = session.Description;
+                _selectedStartDateTime = session.StartDateTime;
+                _selectedEndDateTime = session.EndDateTime;
+                _selectedStartPoint = new Point(session.StartCoordinates.Latitude, session.StartCoordinates.Longitude);
+                _selectedEndPoint = new Point(session.EndCoordinates.Latitude, session.EndCoordinates.Longitude);
+                _labelStartDateTimeValue.Text = _selectedStartDateTime.ToString();
+                _labelEndDateTimeValue.Text = _selectedEndDateTime.ToString();
+                _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+            }
 
             _buttonSelectMedia.Click += OnButtonSelectMediaClick;
             _buttonSubmit.Click += OnButtonSubmitClick;
             _labelStartDateTimeValue.Click += ButtonSelectStartDateOnClick;
             _labelEndDateTimeValue.Click += ButtonSelectEndDateOnClick;
+            _labelSelectedStartLocation.Click += LabelSelectedStartLocationOnClick;
+            _labelSelectedEndLocation.Click += LabelSelectedEndLocationOnClick;
+        }
+
+        //============================================================
+        private void LabelSelectedEndLocationOnClick(object sender, EventArgs e)
+        {
+            var alert = new AlertDialog.Builder(this);
+            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
+            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var map = new Map
+            {
+                CRS = "EPSG:3857",
+                Transformation = new MinimalTransformation()
+            };
+            map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Widgets.Add(new ScaleBarWidget(map)
+            {
+                TextAlignment = Alignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
+            });
+            map.Widgets.Add(new ZoomInOutWidget()
+            {
+                MarginX = 20,
+                MarginY = 20
+            });
+            mapControl.Map = map;
+            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Info += (o, args) =>
+            {
+                var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
+                if (!zoomWidgetEnvelope.Contains(args.MapInfo.ScreenPosition))
+                {
+                    if (mapControl.Map.Layers.Any(x => x.Name == "Points"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
+                    }
+                    mapControl.Map.Layers.Add(CreatePointLayer(new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    _selectedEndPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
+                    _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                }
+            };
+            alert.SetView(view);
+            alert.SetPositiveButton("Ok", (o, args) => { });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
+            var dialog = alert.Create();
+            dialog.Show();
+        }
+
+        //============================================================
+        private void LabelSelectedStartLocationOnClick(object sender, EventArgs e)
+        {
+            var alert = new AlertDialog.Builder(this);
+            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
+            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var map = new Map
+            {
+                CRS = "EPSG:3857",
+                Transformation = new MinimalTransformation()
+            };
+            map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Widgets.Add(new ScaleBarWidget(map)
+            {
+                TextAlignment = Alignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
+            });
+            map.Widgets.Add(new ZoomInOutWidget()
+            {
+                MarginX = 20,
+                MarginY = 20
+            });
+            mapControl.Map = map;
+            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Info += (o, args) =>
+            {
+                var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
+                if (!zoomWidgetEnvelope.Contains(args.MapInfo.ScreenPosition))
+                {
+                    if (mapControl.Map.Layers.Any(x => x.Name == "Points"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
+                    }
+                    mapControl.Map.Layers.Add(CreatePointLayer(new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    _selectedStartPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
+                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                }
+            };
+            alert.SetView(view);
+            alert.SetPositiveButton("Ok", (o, args) => { });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
+            var dialog = alert.Create();
+            dialog.Show();
+        }
+
+        //============================================================
+        private static MemoryLayer CreatePointLayer(params Point[] points)
+        {
+            return new MemoryLayer
+            {
+                Name = "Points",
+                IsMapInfoLayer = true,
+                DataSource = new MemoryProvider(points),
+                Style = new SymbolStyle
+                {
+                    Fill = new Brush(Color.Red),
+                    SymbolScale = 0.5
+                }
+            };
         }
 
         //============================================================
@@ -172,19 +282,18 @@ namespace DrivingAssistant.AndroidApp.Activities
             }
 
             if (_selectedStartDateTime == null || _selectedEndDateTime == null ||
-                string.IsNullOrEmpty(_textDescription.Text) || string.IsNullOrEmpty(_textStartLocationX.Text) ||
-                string.IsNullOrEmpty(_textStartLocationY.Text) || string.IsNullOrEmpty(_textEndLocationX.Text) ||
-                string.IsNullOrEmpty(_textEndLocationY.Text))
+                string.IsNullOrEmpty(_textDescription.Text) || _selectedStartPoint == null ||
+                _selectedEndPoint == null)
             {
                 Toast.MakeText(this, "Some fields were left blank!", ToastLength.Short).Show();
                 return;
             }
 
             var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime, _selectedEndDateTime,
-                new Coordinates(Convert.ToSingle(_textStartLocationX.Text.Trim()),
-                    Convert.ToSingle(_textStartLocationY.Text.Trim())),
-                new Coordinates(Convert.ToSingle(_textEndLocationX.Text.Trim()),
-                    Convert.ToSingle(_textEndLocationY.Text.Trim())), default, _user.Id);
+                new Coordinates(Convert.ToSingle(_selectedStartPoint.X),
+                    Convert.ToSingle(_selectedStartPoint.Y)),
+                new Coordinates(Convert.ToSingle(_selectedEndPoint.X),
+                    Convert.ToSingle(_selectedEndPoint.Y)), default, _user.Id);
             session.Id = await _sessionService.SetAsync(session);
             foreach (var media in _selectedMedia)
             {

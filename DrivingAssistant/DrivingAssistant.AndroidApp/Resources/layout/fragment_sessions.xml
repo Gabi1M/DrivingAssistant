@@ -12,7 +12,7 @@
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="55.0dp"
-        android:weightSum="4"
+        android:weightSum="5"
         android:id="@+id/sessionsButtonsLayout" >
         <Button
             android:text="Add"
@@ -32,6 +32,12 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/sessionsButtonDelete" />
+        <Button
+            android:text="Submit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/sessionsButtonSubmit" />
         <Button
             android:text="View on Map"
             android:layout_width="0dp"

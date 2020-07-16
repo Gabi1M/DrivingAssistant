@@ -97,35 +97,12 @@
             android:id="@+id/sessionEditLabelStartPosition"
             android:gravity="center" />
         <TextView
-            android:text="X  "
+            android:text="Tap to Edit"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditLabelStartX"
-            android:gravity="center" />
-        <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="70.0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditTextStartX"
-            android:gravity="center" />
-        <TextView
-            android:text="Y  "
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditLabelStartY"
-            android:gravity="center" />
-        <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="70.0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditTextStartY"
-            android:gravity="center" />
-        <Space
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/space1" />
+            android:id="@+id/sessionEditLabelSelectedStartPosition"
+            android:gravity="center" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -144,35 +121,12 @@
             android:id="@+id/sessionEditLabelEndPosition"
             android:gravity="center" />
         <TextView
-            android:text="X  "
+            android:text="Tap to Edit"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditLabelEndX"
-            android:gravity="center" />
-        <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="70.0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditTextEndX"
-            android:gravity="center" />
-        <TextView
-            android:text="Y  "
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditLabelEndY"
-            android:gravity="center" />
-        <EditText
-            android:inputType="numberDecimal"
-            android:layout_width="70.0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/sessionEditTextEndY"
-            android:gravity="center" />
-        <Space
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/space2" />
+            android:id="@+id/sessionEditLabelSelectedEndPosition"
+            android:gravity="center" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
