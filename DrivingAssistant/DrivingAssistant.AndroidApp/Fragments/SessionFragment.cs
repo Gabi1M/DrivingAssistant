@@ -11,6 +11,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Fragment = Android.Support.V4.App.Fragment;
@@ -32,7 +33,6 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private View _selectedView;
 
         private SessionService _sessionService;
-        private MediaService _mediaService;
         private ICollection<Session> _currentSessions;
 
         //============================================================
@@ -45,8 +45,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_sessions, container, false);
-            _sessionService = new SessionService("http://192.168.100.234:3287");
-            _mediaService = new MediaService("http://192.168.100.234:3287");
+            _sessionService = new SessionService(Constants.ServerUri);
             SetupFragmentFields(view);
             SetupListAdapter();
             return view;
@@ -179,11 +178,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 await RefreshDataSource();
             });
 
-            alert.SetNegativeButton("Cancel", (o, args) =>
-            {
-                //NOTHING
-            });
-
+            alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
             dialog.Show();
         }

@@ -11,6 +11,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
@@ -46,7 +47,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_images, container, false);
-            _mediaService = new MediaService("http://192.168.100.234:3287");
+            _mediaService = new MediaService(Constants.ServerUri);
             SetupFragmentFields(view);
             SetupListAdapter();
             return view;

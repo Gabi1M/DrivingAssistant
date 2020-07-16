@@ -138,24 +138,13 @@
         android:layout_marginLeft="15.0dp"
         android:layout_marginRight="15.0dp">
         <TextView
-            android:text="Selected media"
+            android:text="Tap to Select Media"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/sessionEditLabelSelectedMedia"
             android:gravity="center" />
     </LinearLayout>
-    <Button
-        android:text="Select media"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionEditButtonSelectMedia"
-        android:layout_marginLeft="15.0dp"
-        android:layout_marginRight="15.0dp"/>
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="30.0dp"
-        android:id="@+id/space3" />
     <Button
         android:text="Submit"
         android:layout_width="match_parent"

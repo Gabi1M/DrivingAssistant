@@ -40,7 +40,12 @@ namespace DrivingAssistant.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_register);
+            SetupActivityFields();
+        }
 
+        //============================================================
+        private void SetupActivityFields()
+        {
             _textInputFirstName = FindViewById<TextInputEditText>(Resource.Id.registerInputFirstName);
             _textInputLastName = FindViewById<TextInputEditText>(Resource.Id.registerInputLastName);
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.registerInputUsername);
@@ -70,7 +75,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetTitle("Choose user role");
             alert.SetItems(enumItems.ToArray(), (o, args) =>
             {
-                _selectedRole = (UserRole)Enum.Parse(typeof(UserRole), enumItems[args.Which]);
+                _selectedRole = (UserRole) Enum.Parse(typeof(UserRole), enumItems[args.Which]);
                 _labelSelectedRole.Text = "Role: " + _selectedRole;
             });
 
@@ -98,19 +103,19 @@ namespace DrivingAssistant.AndroidApp.Activities
         private async void OnRegisterButtonClick(object sender, EventArgs e)
         {
             var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
-            inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
+            inputManager?.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
 
             if (ValidateFields())
             {
                 var progressDialog = ProgressDialog.Show(this, "Register", "Registering user...");
-                if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
+                if (!await Utils.CheckConnectionAsync(Constants.ServerUri))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
                     progressDialog.Dismiss();
                     return;
                 }
 
-                var userService = new UserService("http://192.168.100.234:3287");
+                var userService = new UserService(Constants.ServerUri);
                 var users = await userService.GetAsync();
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
                 {

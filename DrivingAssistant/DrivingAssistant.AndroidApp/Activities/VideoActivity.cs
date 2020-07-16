@@ -21,9 +21,15 @@ namespace DrivingAssistant.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_video);
+            SetupActivityFields();
+            LoadVideo();
+        }
+
+        //============================================================
+        private void SetupActivityFields()
+        {
             _videoView = FindViewById<VideoView>(Resource.Id.videoView);
             _video = JsonConvert.DeserializeObject<Media>(Intent.GetStringExtra("video"));
-            LoadVideo();
         }
 
         //============================================================

@@ -11,6 +11,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
@@ -46,7 +47,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_videos, container, false);
-            _mediaService = new MediaService("http://192.168.100.234:3287");
+            _mediaService = new MediaService(Constants.ServerUri);
             SetupFragmentFields(view);
             SetupListAdapter();
             return view;
@@ -103,15 +104,14 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
             if (Path.GetExtension(filedata.FilePath) != ".mp4")
             {
-                Toast.MakeText(Context, "Selected file is not a Mp4 video file!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "Selected file is not a MP4 video file!", ToastLength.Short).Show();
                 return;
             }
 
             var progressDialog = ProgressDialog.Show(Context, "Video Upload", "Uploading...");
             await using var stream = filedata.GetStream();
-            var mediaService = new MediaService("http://192.168.100.234:3287");
             Toast.MakeText(Context, "Uploading video...", ToastLength.Short).Show();
-            await mediaService.SetMediaStreamAsync(stream, MediaType.Video, _user.Id);
+            await _mediaService.SetMediaStreamAsync(stream, MediaType.Video, _user.Id);
             progressDialog.Dismiss();
             Toast.MakeText(Context, "Video uploaded!", ToastLength.Short).Show();
             await RefreshDataSource();
@@ -143,11 +143,8 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 Toast.MakeText(Context, "Video deleted!", ToastLength.Short).Show();
                 await RefreshDataSource();
             });
-            alert.SetNegativeButton("Cancel", (o, args) =>
-            {
-                //NOTHING
-            });
 
+            alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
             dialog.Show();
         }

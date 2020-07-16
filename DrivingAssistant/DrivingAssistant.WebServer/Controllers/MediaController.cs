@@ -167,7 +167,9 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                Logger.Log("Received PUT images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" + Request.HttpContext.Connection.RemotePort, LogType.Info, true);
+                Logger.Log(
+                    "Received PUT images from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());

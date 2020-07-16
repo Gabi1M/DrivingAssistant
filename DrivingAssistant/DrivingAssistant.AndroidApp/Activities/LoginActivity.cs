@@ -4,7 +4,6 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
-using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
@@ -32,17 +31,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             SimpleStorage.SetContext(ApplicationContext);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_login);
-
-            _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.loginInputUsername);
-            _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.loginInputPassword);
-            _labelUsername = FindViewById<TextView>(Resource.Id.loginLabelUsername);
-            _labelPassword = FindViewById<TextView>(Resource.Id.loginLabelPassword);
-            _loginButton = FindViewById<Button>(Resource.Id.loginButton);
-            _registerButton = FindViewById<Button>(Resource.Id.loginRegisterButton);
-
-            _loginButton.Click += OnLoginButtonClick;
-            _registerButton.Click += OnRegisterButtonClick;
-            //_textInputPassword.EditorAction += OnTextInputPasswordEditorAction;
+            SetupActivityFields();
         }
 
         //============================================================
@@ -57,19 +46,17 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private void OnTextInputPasswordEditorAction(object sender, TextView.EditorActionEventArgs e)
+        private void SetupActivityFields()
         {
-            try
-            {
-                if (e.Event.KeyCode == Keycode.Enter)
-                {
-                    _loginButton.Selected = true;
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.loginInputUsername);
+            _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.loginInputPassword);
+            _labelUsername = FindViewById<TextView>(Resource.Id.loginLabelUsername);
+            _labelPassword = FindViewById<TextView>(Resource.Id.loginLabelPassword);
+            _loginButton = FindViewById<Button>(Resource.Id.loginButton);
+            _registerButton = FindViewById<Button>(Resource.Id.loginRegisterButton);
+
+            _loginButton.Click += OnLoginButtonClick;
+            _registerButton.Click += OnRegisterButtonClick;
         }
 
         //============================================================
@@ -83,20 +70,19 @@ namespace DrivingAssistant.AndroidApp.Activities
         private async void OnLoginButtonClick(object sender, EventArgs e)
         {
             var inputManager = GetSystemService(Context.InputMethodService) as InputMethodManager;
-            inputManager.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
+            inputManager?.HideSoftInputFromWindow(_textInputPassword.WindowToken, 0);
 
             if (ValidateFields())
             {
                 var progressDialog = ProgressDialog.Show(this, "Login", "Logging in...");
-
-                if (!await Utils.CheckConnectionAsync("http://192.168.100.234:3287"))
+                if (!await Utils.CheckConnectionAsync(Constants.ServerUri))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();
                     progressDialog.Dismiss();
                     return;
                 }
 
-                var userService = new UserService("http://192.168.100.234:3287");
+                var userService = new UserService(Constants.ServerUri);
                 var users = await userService.GetAsync();
                 if (users.Any(x =>
                     x.Username.Trim() == _textInputUsername.Text.Trim() &&

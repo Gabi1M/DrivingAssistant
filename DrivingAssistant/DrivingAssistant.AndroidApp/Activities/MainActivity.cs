@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
@@ -19,6 +18,12 @@ namespace DrivingAssistant.AndroidApp.Activities
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false, ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
+        private Android.Support.V7.Widget.Toolbar _toolbar;
+        private DrawerLayout _drawer;
+        private NavigationView _navigationView;
+        private TextView _textViewUser;
+        private TextView _textViewUserRole;
+
         private User _user;
 
         //============================================================
@@ -27,23 +32,26 @@ namespace DrivingAssistant.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
-            var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
-            SetSupportActionBar(toolbar);
+            SetupActivityFields();
+            SetSupportActionBar(_toolbar);
 
-            var drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            var toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
-            drawer.AddDrawerListener(toggle);
+            _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
+            var toggle = new ActionBarDrawerToggle(this, _drawer, _toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
+            _drawer.AddDrawerListener(toggle);
             toggle.SyncState();
+            _navigationView.SetNavigationItemSelectedListener(this);
+            _textViewUser.Text = _user.FirstName + " " + _user.LastName;
+            _textViewUserRole.Text = _user.Role.ToString();
+        }
 
-            var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
-            navigationView.SetNavigationItemSelectedListener(this);
-
-            var user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
-            var userText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
-            var userRoleText = navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserRole);
-            userText.Text = user.FirstName + " " + user.LastName;
-            userRoleText.Text = user.Role.ToString();
-            _user = user;
+        //============================================================
+        private void SetupActivityFields()
+        {
+            _toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
+            _drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            _navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            _textViewUser = _navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
+            _textViewUserRole = _navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserRole);
         }
 
         //============================================================
@@ -121,7 +129,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 case Resource.Id.nav_logout:
                 {
                     Toast.MakeText(Application.Context, "Logging out...", ToastLength.Short).Show();
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                     Finish();
                     break;
                 }

@@ -33,8 +33,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 tableAdapter.Fill(_dataset.Get_Users);
                 using DataTable dataTable = _dataset.Get_Users;
                 var result = from DataRow row in dataTable.AsEnumerable()
-                    select new User(row["Username"].ToString(), row["Password"].ToString(), row["FirstName"].ToString(),
-                        row["LastName"].ToString(), row["Role"].ToString(), Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
+                    select new User(row["Username"].ToString(), row["Password"].ToString(), 
+                        row["FirstName"].ToString(),
+                        row["LastName"].ToString(), row["Role"].ToString(),
+                        Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
                 return result.ToList();
             });
         }
@@ -51,8 +53,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 tableAdapter.Fill(_dataset.Get_User_By_Id, id);
                 using DataTable dataTable = _dataset.Get_User_By_Id;
                 var result = from DataRow row in dataTable.AsEnumerable()
-                    select new User(row["Username"].ToString(), row["Password"].ToString(), row["FirstName"].ToString(),
-                        row["LastName"].ToString(),row["Role"].ToString(), Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
+                    select new User(row["Username"].ToString(), row["Password"].ToString(), 
+                        row["FirstName"].ToString(),
+                        row["LastName"].ToString(), row["Role"].ToString(),
+                        Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
                 return result.First();
             });
         }
@@ -67,7 +71,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Connection = new SqlConnection(_connectionString)
                 };
                 long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_User, null, user.Username, user.Password, user.FirstName, user.LastName, user.Role.ToString(), user.JoinDate, ref idOut);
+                tableAdapter.Fill(_dataset.Set_User, null, user.Username, user.Password, 
+                    user.FirstName, user.LastName, user.Role.ToString(), user.JoinDate, ref idOut);
                 return idOut.Value;
             });
         }
@@ -82,7 +87,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Connection = new SqlConnection(_connectionString)
                 };
                 long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_User, user.Id, user.Username, user.Password, user.FirstName, user.LastName, user.Role.ToString(), user.JoinDate, ref idOut);
+                tableAdapter.Fill(_dataset.Set_User, user.Id, user.Username, user.Password, 
+                    user.FirstName, user.LastName, user.Role.ToString(), user.JoinDate, ref idOut);
             });
         }
 

@@ -15,13 +15,13 @@ using Mapsui.Layers;
 using Mapsui.Projection;
 using Mapsui.Providers;
 using Mapsui.Styles;
-using Mapsui.UI;
 using Mapsui.UI.Android;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
 using Newtonsoft.Json;
+using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -34,16 +34,16 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelSelectedStartLocation;
         private TextView _labelSelectedEndLocation;
         private TextView _labelSelectedMedia;
-        private Button _buttonSelectMedia;
         private Button _buttonSubmit;
 
         private User _user;
+        private Session _session;
         private SessionService _sessionService;
         private MediaService _mediaService;
 
         private readonly List<Media> _selectedMedia = new List<Media>();
-        private DateTime _selectedStartDateTime;
-        private DateTime _selectedEndDateTime;
+        private DateTime? _selectedStartDateTime;
+        private DateTime? _selectedEndDateTime;
         private Point _selectedStartPoint;
         private Point _selectedEndPoint;
 
@@ -53,35 +53,39 @@ namespace DrivingAssistant.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_session_edit);
+            SetupActivityFields();
 
             _sessionService = new SessionService("http://192.168.100.234:3287");
             _mediaService = new MediaService("http://192.168.100.234:3287");
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
 
+            if (Intent.HasExtra("session"))
+            {
+                _session = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
+                _textDescription.Text = _session.Description;
+                _selectedStartDateTime = _session.StartDateTime;
+                _selectedEndDateTime = _session.EndDateTime;
+                _selectedStartPoint = new Point(_session.StartCoordinates.Latitude, _session.StartCoordinates.Longitude);
+                _selectedEndPoint = new Point(_session.EndCoordinates.Latitude, _session.EndCoordinates.Longitude);
+                _labelStartDateTimeValue.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+            }
+        }
+
+        //============================================================
+        private void SetupActivityFields()
+        {
             _textDescription = FindViewById<TextInputEditText>(Resource.Id.sessionEditTextDescription);
             _labelStartDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartDateTime);
             _labelEndDateTimeValue = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
             _labelSelectedStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
             _labelSelectedEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
             _labelSelectedMedia = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedMedia);
-            _buttonSelectMedia = FindViewById<Button>(Resource.Id.sessionEditButtonSelectMedia);
             _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
 
-            if (Intent.HasExtra("session"))
-            {
-                var session = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                _textDescription.Text = session.Description;
-                _selectedStartDateTime = session.StartDateTime;
-                _selectedEndDateTime = session.EndDateTime;
-                _selectedStartPoint = new Point(session.StartCoordinates.Latitude, session.StartCoordinates.Longitude);
-                _selectedEndPoint = new Point(session.EndCoordinates.Latitude, session.EndCoordinates.Longitude);
-                _labelStartDateTimeValue.Text = _selectedStartDateTime.ToString();
-                _labelEndDateTimeValue.Text = _selectedEndDateTime.ToString();
-                _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
-                _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-            }
-
-            _buttonSelectMedia.Click += OnButtonSelectMediaClick;
+            _labelSelectedMedia.Click += OnLabelSelectedMediaClick;
             _buttonSubmit.Click += OnButtonSubmitClick;
             _labelStartDateTimeValue.Click += ButtonSelectStartDateOnClick;
             _labelEndDateTimeValue.Click += ButtonSelectEndDateOnClick;
@@ -101,6 +105,15 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            if (_selectedEndPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
+            }
+
+            if (_selectedStartPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
+            }
             map.Widgets.Add(new ScaleBarWidget(map)
             {
                 TextAlignment = Alignment.Center,
@@ -123,13 +136,18 @@ namespace DrivingAssistant.AndroidApp.Activities
                     {
                         mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
                     }
-                    mapControl.Map.Layers.Add(CreatePointLayer(new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+
+                    if (mapControl.Map.Layers.Any(x => x.Name == "EndPoint"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("EndPoint").First());
+                    }
+                    mapControl.Map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                     _selectedEndPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
                     _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 }
             };
             alert.SetView(view);
-            alert.SetPositiveButton("Ok", (o, args) => { });
+            alert.SetPositiveButton("Confirm", (o, args) => { });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
             dialog.Show();
@@ -147,6 +165,15 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            if (_selectedEndPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
+            }
+
+            if (_selectedStartPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
+            }
             map.Widgets.Add(new ScaleBarWidget(map)
             {
                 TextAlignment = Alignment.Center,
@@ -169,32 +196,20 @@ namespace DrivingAssistant.AndroidApp.Activities
                     {
                         mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
                     }
-                    mapControl.Map.Layers.Add(CreatePointLayer(new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    if (mapControl.Map.Layers.Any(x => x.Name == "StartPoint"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("StartPoint").First());
+                    }
+                    mapControl.Map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                     _selectedStartPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
                     _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 }
             };
             alert.SetView(view);
-            alert.SetPositiveButton("Ok", (o, args) => { });
+            alert.SetPositiveButton("Confirm", (o, args) => { });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
             dialog.Show();
-        }
-
-        //============================================================
-        private static MemoryLayer CreatePointLayer(params Point[] points)
-        {
-            return new MemoryLayer
-            {
-                Name = "Points",
-                IsMapInfoLayer = true,
-                DataSource = new MemoryProvider(points),
-                Style = new SymbolStyle
-                {
-                    Fill = new Brush(Color.Red),
-                    SymbolScale = 0.5
-                }
-            };
         }
 
         //============================================================
@@ -205,12 +220,14 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartDateTime = args.Date;
                 var timePickerDialog = new TimePickerDialog(this, (sender1, eventArgs) =>
                 {
-                    _selectedStartDateTime = _selectedStartDateTime.AddHours(eventArgs.HourOfDay);
-                    _selectedStartDateTime = _selectedStartDateTime.AddMinutes(eventArgs.Minute);
-                    _labelStartDateTimeValue.Text = _selectedStartDateTime.ToString();
+                    _selectedStartDateTime = _selectedStartDateTime?.AddHours(eventArgs.HourOfDay);
+                    _selectedStartDateTime = _selectedStartDateTime?.AddMinutes(eventArgs.Minute);
+                    _labelStartDateTimeValue.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true);
+
                 timePickerDialog.Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+
             datePickerDialog.Show();
         }
 
@@ -222,17 +239,19 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedEndDateTime = args.Date;
                 var timePickerDialog = new TimePickerDialog(this, (sender1, eventArgs) =>
                 {
-                    _selectedEndDateTime = _selectedEndDateTime.AddHours(eventArgs.HourOfDay);
-                    _selectedEndDateTime = _selectedEndDateTime.AddMinutes(eventArgs.Minute);
-                    _labelEndDateTimeValue.Text = _selectedEndDateTime.ToString();
+                    _selectedEndDateTime = _selectedEndDateTime?.AddHours(eventArgs.HourOfDay);
+                    _selectedEndDateTime = _selectedEndDateTime?.AddMinutes(eventArgs.Minute);
+                    _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true);
+
                 timePickerDialog.Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+
             datePickerDialog.Show();
         }
 
         //============================================================
-        private async void OnButtonSelectMediaClick(object sender, EventArgs e)
+        private async void OnLabelSelectedMediaClick(object sender, EventArgs e)
         {
             var images = (await _mediaService.GetImagesAsync(_user.Id)).Where(x => !x.IsInSession()); 
             var videos = (await _mediaService.GetVideosAsync(_user.Id)).Where(x => !x.IsInSession());
@@ -289,7 +308,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                 return;
             }
 
-            var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime, _selectedEndDateTime,
+            var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime.Value,
+                _selectedEndDateTime.Value,
                 new Coordinates(Convert.ToSingle(_selectedStartPoint.X),
                     Convert.ToSingle(_selectedStartPoint.Y)),
                 new Coordinates(Convert.ToSingle(_selectedEndPoint.X),
@@ -298,17 +318,38 @@ namespace DrivingAssistant.AndroidApp.Activities
             foreach (var media in _selectedMedia)
             {
                 media.SessionId = session.Id;
-                if (media.Type == MediaType.Image)
+                switch (media.Type)
                 {
-                    await _mediaService.UpdateImageAsync(media);
-                }
-                else if (media.Type == MediaType.Video)
-                {
-                    await _mediaService.UpdateVideoAsync(media);
+                    case MediaType.Image:
+                    {
+                        await _mediaService.UpdateImageAsync(media);
+                        break;
+                    }
+                    case MediaType.Video:
+                    {
+                        await _mediaService.UpdateVideoAsync(media);
+                        break;
+                    }
                 }
             }
 
             Finish();
+        }
+
+        //============================================================
+        private static MemoryLayer CreatePointLayer(string name, Color markerColor, double markerScale, params Point[] points)
+        {
+            return new MemoryLayer
+            {
+                Name = name,
+                IsMapInfoLayer = true,
+                DataSource = new MemoryProvider(points),
+                Style = new SymbolStyle
+                {
+                    Fill = new Brush(markerColor),
+                    SymbolScale = markerScale
+                }
+            };
         }
     }
 }
