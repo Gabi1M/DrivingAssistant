@@ -66,7 +66,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/users?id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/users?Id=" + id))
             {
                 Method = "DELETE"
             };

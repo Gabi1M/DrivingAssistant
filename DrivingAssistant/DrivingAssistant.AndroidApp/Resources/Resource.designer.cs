@@ -3531,152 +3531,152 @@ namespace DrivingAssistant.AndroidApp
 			// aapt resource value: 0x7F080058
 			public const int image = 2131230808;
 			
-			// aapt resource value: 0x7F08005E
-			public const int imagesButtonDelete = 2131230814;
-			
-			// aapt resource value: 0x7F08005F
-			public const int imagesButtonModify = 2131230815;
-			
-			// aapt resource value: 0x7F080062
-			public const int imagesButtonsLayout = 2131230818;
-			
-			// aapt resource value: 0x7F080060
-			public const int imagesButtonUpload = 2131230816;
-			
-			// aapt resource value: 0x7F080061
-			public const int imagesButtonView = 2131230817;
-			
-			// aapt resource value: 0x7F080063
-			public const int imagesListView = 2131230819;
-			
 			// aapt resource value: 0x7F080059
-			public const int imageTextDateTime = 2131230809;
+			public const int imageView = 2131230809;
 			
 			// aapt resource value: 0x7F08005A
-			public const int imageTextSource = 2131230810;
+			public const int imageView1 = 2131230810;
 			
 			// aapt resource value: 0x7F08005B
-			public const int imageTextStatus = 2131230811;
+			public const int info = 2131230811;
 			
 			// aapt resource value: 0x7F08005C
-			public const int imageView = 2131230812;
+			public const int italic = 2131230812;
 			
 			// aapt resource value: 0x7F08005D
-			public const int imageView1 = 2131230813;
+			public const int item_touch_helper_previous_elevation = 2131230813;
+			
+			// aapt resource value: 0x7F08005E
+			public const int labeled = 2131230814;
+			
+			// aapt resource value: 0x7F08005F
+			public const int largeLabel = 2131230815;
+			
+			// aapt resource value: 0x7F080060
+			public const int left = 2131230816;
+			
+			// aapt resource value: 0x7F080061
+			public const int line1 = 2131230817;
+			
+			// aapt resource value: 0x7F080062
+			public const int line3 = 2131230818;
+			
+			// aapt resource value: 0x7F080063
+			public const int linearLayout1 = 2131230819;
 			
 			// aapt resource value: 0x7F080064
-			public const int info = 2131230820;
+			public const int linearLayout2 = 2131230820;
 			
 			// aapt resource value: 0x7F080065
-			public const int italic = 2131230821;
+			public const int linearLayout3 = 2131230821;
 			
 			// aapt resource value: 0x7F080066
-			public const int item_touch_helper_previous_elevation = 2131230822;
+			public const int linearLayout4 = 2131230822;
 			
 			// aapt resource value: 0x7F080067
-			public const int labeled = 2131230823;
+			public const int linearLayout5 = 2131230823;
 			
 			// aapt resource value: 0x7F080068
-			public const int largeLabel = 2131230824;
+			public const int linearLayout6 = 2131230824;
 			
 			// aapt resource value: 0x7F080069
-			public const int left = 2131230825;
+			public const int listMode = 2131230825;
 			
 			// aapt resource value: 0x7F08006A
-			public const int line1 = 2131230826;
+			public const int list_item = 2131230826;
 			
 			// aapt resource value: 0x7F08006B
-			public const int line3 = 2131230827;
+			public const int loginButton = 2131230827;
 			
 			// aapt resource value: 0x7F08006C
-			public const int linearLayout1 = 2131230828;
+			public const int loginInputPassword = 2131230828;
 			
 			// aapt resource value: 0x7F08006D
-			public const int linearLayout2 = 2131230829;
+			public const int loginInputUsername = 2131230829;
 			
 			// aapt resource value: 0x7F08006E
-			public const int linearLayout3 = 2131230830;
+			public const int loginLabelPassword = 2131230830;
 			
 			// aapt resource value: 0x7F08006F
-			public const int linearLayout4 = 2131230831;
+			public const int loginLabelUsername = 2131230831;
 			
 			// aapt resource value: 0x7F080070
-			public const int linearLayout5 = 2131230832;
+			public const int loginRegisterButton = 2131230832;
 			
 			// aapt resource value: 0x7F080071
-			public const int linearLayout6 = 2131230833;
+			public const int mapControl = 2131230833;
 			
 			// aapt resource value: 0x7F080072
-			public const int listMode = 2131230834;
+			public const int mapLayout = 2131230834;
 			
 			// aapt resource value: 0x7F080073
-			public const int list_item = 2131230835;
-			
-			// aapt resource value: 0x7F080074
-			public const int loginButton = 2131230836;
-			
-			// aapt resource value: 0x7F080075
-			public const int loginInputPassword = 2131230837;
-			
-			// aapt resource value: 0x7F080076
-			public const int loginInputUsername = 2131230838;
-			
-			// aapt resource value: 0x7F080077
-			public const int loginLabelPassword = 2131230839;
+			public const int masked = 2131230835;
 			
 			// aapt resource value: 0x7F080078
-			public const int loginLabelUsername = 2131230840;
+			public const int mediasButtonDelete = 2131230840;
 			
 			// aapt resource value: 0x7F080079
-			public const int loginRegisterButton = 2131230841;
-			
-			// aapt resource value: 0x7F08007A
-			public const int mapControl = 2131230842;
-			
-			// aapt resource value: 0x7F08007B
-			public const int mapLayout = 2131230843;
+			public const int mediasButtonModify = 2131230841;
 			
 			// aapt resource value: 0x7F08007C
-			public const int masked = 2131230844;
+			public const int mediasButtonsLayout = 2131230844;
+			
+			// aapt resource value: 0x7F08007A
+			public const int mediasButtonUpload = 2131230842;
+			
+			// aapt resource value: 0x7F08007B
+			public const int mediasButtonView = 2131230843;
 			
 			// aapt resource value: 0x7F08007D
-			public const int message = 2131230845;
+			public const int mediasListView = 2131230845;
+			
+			// aapt resource value: 0x7F080074
+			public const int mediaTextDateTime = 2131230836;
+			
+			// aapt resource value: 0x7F080075
+			public const int mediaTextSource = 2131230837;
+			
+			// aapt resource value: 0x7F080076
+			public const int mediaTextStatus = 2131230838;
+			
+			// aapt resource value: 0x7F080077
+			public const int mediaTextType = 2131230839;
+			
+			// aapt resource value: 0x7F08007E
+			public const int message = 2131230846;
 			
 			// aapt resource value: 0x7F080003
 			public const int META = 2131230723;
 			
-			// aapt resource value: 0x7F08007E
-			public const int middle = 2131230846;
-			
 			// aapt resource value: 0x7F08007F
-			public const int mini = 2131230847;
+			public const int middle = 2131230847;
 			
 			// aapt resource value: 0x7F080080
-			public const int mtrl_child_content_container = 2131230848;
+			public const int mini = 2131230848;
 			
 			// aapt resource value: 0x7F080081
-			public const int mtrl_internal_children_alpha_tag = 2131230849;
+			public const int mtrl_child_content_container = 2131230849;
 			
 			// aapt resource value: 0x7F080082
-			public const int multiply = 2131230850;
+			public const int mtrl_internal_children_alpha_tag = 2131230850;
+			
+			// aapt resource value: 0x7F080083
+			public const int multiply = 2131230851;
 			
 			// aapt resource value: 0x7F080089
 			public const int navigation_header_container = 2131230857;
 			
-			// aapt resource value: 0x7F080083
-			public const int nav_images = 2131230851;
-			
 			// aapt resource value: 0x7F080084
-			public const int nav_logout = 2131230852;
+			public const int nav_images = 2131230852;
 			
 			// aapt resource value: 0x7F080085
-			public const int nav_map = 2131230853;
+			public const int nav_logout = 2131230853;
 			
 			// aapt resource value: 0x7F080086
-			public const int nav_sessions = 2131230854;
+			public const int nav_map = 2131230854;
 			
 			// aapt resource value: 0x7F080087
-			public const int nav_videos = 2131230855;
+			public const int nav_sessions = 2131230855;
 			
 			// aapt resource value: 0x7F080088
 			public const int nav_view = 2131230856;
@@ -4056,47 +4056,20 @@ namespace DrivingAssistant.AndroidApp
 			// aapt resource value: 0x7F080104
 			public const int useLogo = 2131230980;
 			
-			// aapt resource value: 0x7F080109
-			public const int videosButtonDelete = 2131230985;
-			
-			// aapt resource value: 0x7F08010A
-			public const int videosButtonModify = 2131230986;
-			
-			// aapt resource value: 0x7F08010D
-			public const int videosButtonsLayout = 2131230989;
-			
-			// aapt resource value: 0x7F08010B
-			public const int videosButtonUpload = 2131230987;
-			
-			// aapt resource value: 0x7F08010C
-			public const int videosButtonView = 2131230988;
-			
-			// aapt resource value: 0x7F08010E
-			public const int videosListView = 2131230990;
-			
 			// aapt resource value: 0x7F080105
-			public const int videoTextDateTime = 2131230981;
+			public const int videoView = 2131230981;
 			
 			// aapt resource value: 0x7F080106
-			public const int videoTextSource = 2131230982;
+			public const int view_offset_helper = 2131230982;
 			
 			// aapt resource value: 0x7F080107
-			public const int videoTextStatus = 2131230983;
+			public const int visible = 2131230983;
 			
 			// aapt resource value: 0x7F080108
-			public const int videoView = 2131230984;
+			public const int withText = 2131230984;
 			
-			// aapt resource value: 0x7F08010F
-			public const int view_offset_helper = 2131230991;
-			
-			// aapt resource value: 0x7F080110
-			public const int visible = 2131230992;
-			
-			// aapt resource value: 0x7F080111
-			public const int withText = 2131230993;
-			
-			// aapt resource value: 0x7F080112
-			public const int wrap_content = 2131230994;
+			// aapt resource value: 0x7F080109
+			public const int wrap_content = 2131230985;
 			
 			static Id()
 			{
@@ -4354,61 +4327,55 @@ namespace DrivingAssistant.AndroidApp
 			public const int design_text_input_password_icon = 2131427380;
 			
 			// aapt resource value: 0x7F0B0035
-			public const int fragment_images = 2131427381;
+			public const int fragment_medias = 2131427381;
 			
 			// aapt resource value: 0x7F0B0036
 			public const int fragment_sessions = 2131427382;
 			
 			// aapt resource value: 0x7F0B0037
-			public const int fragment_videos = 2131427383;
+			public const int mtrl_layout_snackbar = 2131427383;
 			
 			// aapt resource value: 0x7F0B0038
-			public const int mtrl_layout_snackbar = 2131427384;
+			public const int mtrl_layout_snackbar_include = 2131427384;
 			
 			// aapt resource value: 0x7F0B0039
-			public const int mtrl_layout_snackbar_include = 2131427385;
+			public const int nav_header_main = 2131427385;
 			
 			// aapt resource value: 0x7F0B003A
-			public const int nav_header_main = 2131427386;
+			public const int notification_action = 2131427386;
 			
 			// aapt resource value: 0x7F0B003B
-			public const int notification_action = 2131427387;
+			public const int notification_action_tombstone = 2131427387;
 			
 			// aapt resource value: 0x7F0B003C
-			public const int notification_action_tombstone = 2131427388;
+			public const int notification_template_custom_big = 2131427388;
 			
 			// aapt resource value: 0x7F0B003D
-			public const int notification_template_custom_big = 2131427389;
+			public const int notification_template_icon_group = 2131427389;
 			
 			// aapt resource value: 0x7F0B003E
-			public const int notification_template_icon_group = 2131427390;
+			public const int notification_template_part_chronometer = 2131427390;
 			
 			// aapt resource value: 0x7F0B003F
-			public const int notification_template_part_chronometer = 2131427391;
+			public const int notification_template_part_time = 2131427391;
 			
 			// aapt resource value: 0x7F0B0040
-			public const int notification_template_part_time = 2131427392;
+			public const int select_dialog_item_material = 2131427392;
 			
 			// aapt resource value: 0x7F0B0041
-			public const int select_dialog_item_material = 2131427393;
+			public const int select_dialog_multichoice_material = 2131427393;
 			
 			// aapt resource value: 0x7F0B0042
-			public const int select_dialog_multichoice_material = 2131427394;
+			public const int select_dialog_singlechoice_material = 2131427394;
 			
 			// aapt resource value: 0x7F0B0043
-			public const int select_dialog_singlechoice_material = 2131427395;
+			public const int support_simple_spinner_dropdown_item = 2131427395;
 			
 			// aapt resource value: 0x7F0B0044
-			public const int support_simple_spinner_dropdown_item = 2131427396;
+			public const int view_model_media_list = 2131427396;
 			
 			// aapt resource value: 0x7F0B0045
-			public const int view_model_image_list = 2131427397;
-			
-			// aapt resource value: 0x7F0B0046
-			public const int view_model_session_list = 2131427398;
-			
-			// aapt resource value: 0x7F0B0047
-			public const int view_model_video_list = 2131427399;
+			public const int view_model_session_list = 2131427397;
 			
 			static Layout()
 			{

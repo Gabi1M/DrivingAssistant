@@ -41,27 +41,28 @@ namespace DrivingAssistant.AndroidApp.Activities
         private SessionService _sessionService;
         private MediaService _mediaService;
 
-        private readonly List<Media> _selectedMedia = new List<Media>();
+        private List<Media> _selectedMedia = new List<Media>();
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
         private Point _selectedStartPoint;
         private Point _selectedEndPoint;
 
         //============================================================
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_session_edit);
             SetupActivityFields();
 
-            _sessionService = new SessionService("http://192.168.100.234:3287");
-            _mediaService = new MediaService("http://192.168.100.234:3287");
+            _sessionService = new SessionService(Constants.ServerUri);
+            _mediaService = new MediaService(Constants.ServerUri);
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
 
             if (Intent.HasExtra("session"))
             {
                 _session = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
+                _selectedMedia = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _session.Id).ToList();
                 _textDescription.Text = _session.Description;
                 _selectedStartDateTime = _session.StartDateTime;
                 _selectedEndDateTime = _session.EndDateTime;
@@ -71,6 +72,14 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                if (_selectedMedia.Count == 0)
+                {
+                    _labelSelectedMedia.Text = "Tap to Select Media";
+                }
+                else
+                {
+                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " items!";
+                }
             }
         }
 
@@ -253,37 +262,42 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void OnLabelSelectedMediaClick(object sender, EventArgs e)
         {
-            var images = (await _mediaService.GetImagesAsync(_user.Id)).Where(x => !x.IsInSession()); 
-            var videos = (await _mediaService.GetVideosAsync(_user.Id)).Where(x => !x.IsInSession());
-
-            var medias = new List<Media>();
-            medias.AddRange(images);
-            medias.AddRange(videos);
-            medias = medias.OrderBy(x => x.DateAdded).ToList();
+            var medias = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.IsProcessed() == false).OrderBy(x => x.DateAdded).ToList();
             var mediasString = medias.Select(x => x.Type + ", " + x.DateAdded.ToString(CultureInfo.InvariantCulture)).ToArray();
 
-            var selectedItems = new List<int>();
+            var checkedItems = medias.Select(media => _selectedMedia.Any(x => x.Id == media.Id)).ToArray();
             var alert = new AlertDialog.Builder(this);
             alert.SetTitle("Choose media to include in this session");
-            alert.SetMultiChoiceItems(mediasString, new bool[mediasString.Length], (o, args) =>
+            alert.SetMultiChoiceItems(mediasString, checkedItems, (o, args) =>
             {
-                if (args.IsChecked == false && selectedItems.Contains(args.Which))
+                if (args.IsChecked == false && checkedItems[args.Which])
                 {
-                    selectedItems.Remove(args.Which);
+                    checkedItems[args.Which] = false;
                 }
 
-                if (args.IsChecked && !selectedItems.Contains(args.Which))
+                if (args.IsChecked && !checkedItems[args.Which])
                 {
-                    selectedItems.Add(args.Which);
+                    checkedItems[args.Which] = true;
                 }
             });
 
             alert.SetPositiveButton("Ok", (o, args) =>
             {
-                _labelSelectedMedia.Text = "Selected " + selectedItems.Count + " items!";
-                foreach (var selectedItem in selectedItems)
+                _selectedMedia.Clear();
+                for (var i = 0; i < checkedItems.Length; i++)
                 {
-                    _selectedMedia.Add(medias.ElementAt(selectedItem));
+                    if (checkedItems[i])
+                    {
+                        _selectedMedia.Add(medias.ElementAt(i));
+                    }
+                }
+                if (_selectedMedia.Count == 0)
+                {
+                    _labelSelectedMedia.Text = "Tap to Select Media";
+                }
+                else
+                {
+                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " items!";
                 }
             });
 
@@ -318,19 +332,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             foreach (var media in _selectedMedia)
             {
                 media.SessionId = session.Id;
-                switch (media.Type)
-                {
-                    case MediaType.Image:
-                    {
-                        await _mediaService.UpdateImageAsync(media);
-                        break;
-                    }
-                    case MediaType.Video:
-                    {
-                        await _mediaService.UpdateVideoAsync(media);
-                        break;
-                    }
-                }
+                await _mediaService.UpdateMediaAsync(media);
             }
 
             Finish();

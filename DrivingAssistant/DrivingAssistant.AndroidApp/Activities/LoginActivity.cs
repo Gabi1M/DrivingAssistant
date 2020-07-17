@@ -19,8 +19,6 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
-        private TextView _labelUsername;
-        private TextView _labelPassword;
         private Button _loginButton;
         private Button _registerButton;
 
@@ -50,8 +48,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.loginInputUsername);
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.loginInputPassword);
-            _labelUsername = FindViewById<TextView>(Resource.Id.loginLabelUsername);
-            _labelPassword = FindViewById<TextView>(Resource.Id.loginLabelPassword);
             _loginButton = FindViewById<Button>(Resource.Id.loginButton);
             _registerButton = FindViewById<Button>(Resource.Id.loginRegisterButton);
 

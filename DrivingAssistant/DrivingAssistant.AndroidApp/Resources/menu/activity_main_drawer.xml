@@ -7,11 +7,7 @@
         <item
             android:id="@+id/nav_images"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Images" />
-        <item
-            android:id="@+id/nav_videos"
-            android:icon="@drawable/ic_menu_video"
-            android:title="Videos" />
+            android:title="Medias" />
         <item
           android:id="@+id/nav_sessions"
           android:title="Sessions" />

@@ -64,22 +64,22 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task SubmitAsync(Session session)
+        public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/process_session?id=" + session.Id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions?Id=" + id))
             {
-                Method = "GET"
+                Method = "DELETE"
             };
 
             await request.GetResponseAsync();
         }
 
         //============================================================
-        public async Task DeleteAsync(long id)
+        public async Task SubmitAsync(Session session)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions?id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/process_session?Id=" + session.Id))
             {
-                Method = "DELETE"
+                Method = "GET"
             };
 
             await request.GetResponseAsync();

@@ -8,18 +8,23 @@
     android:layout_height="match_parent"
     android:id="@+id/linearLayout1">
     <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageTextSource" />
+        android:id="@+id/mediaTextType" />
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageTextDateTime" />
+        android:id="@+id/mediaTextSource" />
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mediaTextDateTime" />
     <TextView
       android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageTextStatus" />
+        android:id="@+id/mediaTextStatus" />
 </LinearLayout>

@@ -24,11 +24,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
         private TextInputEditText _textInputConfirmPassword;
-        private TextView _labelFirstname;
-        private TextView _labelLastName;
-        private TextView _labelUsername;
-        private TextView _labelPassword;
-        private TextView _labelConfirmPassword;
         private TextView _labelSelectedRole;
         private Button _registerButton;
 
@@ -51,11 +46,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.registerInputUsername);
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.registerInputPassword);
             _textInputConfirmPassword = FindViewById<TextInputEditText>(Resource.Id.registerInputConfirmPassword);
-            _labelFirstname = FindViewById<TextView>(Resource.Id.registerLabelFirstName);
-            _labelLastName = FindViewById<TextView>(Resource.Id.registerLabelLastName);
-            _labelUsername = FindViewById<TextView>(Resource.Id.registerLabelUsername);
-            _labelPassword = FindViewById<TextView>(Resource.Id.registerLabelPassword);
-            _labelConfirmPassword = FindViewById<TextView>(Resource.Id.registerLabelConfirmPassword);
             _labelSelectedRole = FindViewById<TextView>(Resource.Id.registerSelectRole);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
 

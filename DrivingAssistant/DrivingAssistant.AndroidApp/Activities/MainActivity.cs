@@ -106,13 +106,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 case Resource.Id.nav_images:
                 {
-                    var fragment = new ImageFragment(_user);
-                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-                    break;
-                }
-                case Resource.Id.nav_videos:
-                {
-                    var fragment = new VideoFragment(_user);
+                    var fragment = new MediaFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }

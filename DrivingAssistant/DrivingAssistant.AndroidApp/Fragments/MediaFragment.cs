@@ -21,7 +21,7 @@ using Path = System.IO.Path;
 
 namespace DrivingAssistant.AndroidApp.Fragments
 {
-    public class VideoFragment : Fragment
+    public class MediaFragment : Fragment
     {
         private readonly User _user;
 
@@ -35,10 +35,10 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private View _selectedView;
 
         private MediaService _mediaService;
-        private ICollection<Media> _currentVideos;
+        private ICollection<Media> _currentMedias;
 
         //============================================================
-        public VideoFragment(User user)
+        public MediaFragment(User user)
         {
             _user = user;
         }
@@ -46,7 +46,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.fragment_videos, container, false);
+            var view = inflater.Inflate(Resource.Layout.fragment_medias, container, false);
             _mediaService = new MediaService(Constants.ServerUri);
             SetupFragmentFields(view);
             SetupListAdapter();
@@ -56,11 +56,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void SetupFragmentFields(View view)
         {
-            _listView = view.FindViewById<ListView>(Resource.Id.videosListView);
-            _addButton = view.FindViewById<Button>(Resource.Id.videosButtonUpload);
-            _modifyButton = view.FindViewById<Button>(Resource.Id.videosButtonModify);
-            _deleteButton = view.FindViewById<Button>(Resource.Id.videosButtonDelete);
-            _viewButton = view.FindViewById<Button>(Resource.Id.videosButtonView);
+            _listView = view.FindViewById<ListView>(Resource.Id.mediasListView);
+            _addButton = view.FindViewById<Button>(Resource.Id.mediasButtonUpload);
+            _modifyButton = view.FindViewById<Button>(Resource.Id.mediasButtonModify);
+            _deleteButton = view.FindViewById<Button>(Resource.Id.mediasButtonDelete);
+            _viewButton = view.FindViewById<Button>(Resource.Id.mediasButtonView);
 
             _addButton.Click += OnAddButtonClick;
             _modifyButton.Click += OnModifyButtonClick;
@@ -79,9 +79,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
-            _currentVideos = await _mediaService.GetVideosAsync(_user.Id);
+            _currentMedias = await _mediaService.GetMediaAsync(_user.Id);
             _listView.Adapter?.Dispose();
-            _listView.Adapter = new VideoViewModelAdapter(Activity, _currentVideos);
+            _listView.Adapter = new MediaViewModelAdapter(Activity, _currentMedias);
         }
 
         //============================================================
@@ -96,31 +96,31 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async void OnAddButtonClick(object sender, EventArgs e)
         {
-            var filedata = await CrossFilePicker.Current.PickFile(new[] { "*.mp4" });
+            var filedata = await CrossFilePicker.Current.PickFile();
             if (filedata == null)
             {
                 return;
             }
 
-            if (Path.GetExtension(filedata.FilePath) != ".mp4")
+            if (Path.GetExtension(filedata.FilePath) != ".jpg" && Path.GetExtension(filedata.FilePath) != ".mp4")
             {
-                Toast.MakeText(Context, "Selected file is not a MP4 video file!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "Selected file is not a Jpeg image file or MP4 video file!", ToastLength.Short).Show();
                 return;
             }
 
-            var progressDialog = ProgressDialog.Show(Context, "Video Upload", "Uploading...");
+            var mediaType = Path.GetExtension(filedata.FilePath) == ".jpg" ? MediaType.Image : MediaType.Video;
+
+            var progressDialog = ProgressDialog.Show(Context, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
             await using var stream = filedata.GetStream();
-            Toast.MakeText(Context, "Uploading video...", ToastLength.Short).Show();
-            await _mediaService.SetMediaStreamAsync(stream, MediaType.Video, _user.Id);
+            await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id);
             progressDialog.Dismiss();
-            Toast.MakeText(Context, "Video uploaded!", ToastLength.Short).Show();
             await RefreshDataSource();
         }
 
         //============================================================
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
-            
+            throw new NotImplementedException();
         }
 
         //============================================================
@@ -128,7 +128,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             if (_selectedPosition == -1)
             {
-                Toast.MakeText(Context, "No videos selected!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "No media selected!", ToastLength.Short).Show();
                 return;
             }
 
@@ -137,14 +137,16 @@ namespace DrivingAssistant.AndroidApp.Fragments
             alert.SetMessage("Action cannot be undone");
             alert.SetPositiveButton("Delete", async (o, args) =>
             {
-                var video = _currentVideos.ElementAt(_selectedPosition);
-                var mediaService = new MediaService("http://192.168.100.234:3287");
-                await mediaService.DeleteVideoAsync(video.Id);
-                Toast.MakeText(Context, "Video deleted!", ToastLength.Short).Show();
+                var media = _currentMedias.ElementAt(_selectedPosition);
+                await _mediaService.DeleteMediaAsync(media.Id);
+                Toast.MakeText(Context, "Media deleted!", ToastLength.Short).Show();
                 await RefreshDataSource();
             });
+            alert.SetNegativeButton("Cancel", (o, args) =>
+            {
+                //NOTHING
+            });
 
-            alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
             dialog.Show();
         }
@@ -154,14 +156,23 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             if (_selectedPosition == -1)
             {
-                Toast.MakeText(Context, "No video selected!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "No media selected!", ToastLength.Short).Show();
                 return;
             }
 
-            var video = _currentVideos.ElementAt(_selectedPosition);
-            var intent = new Intent(Context, typeof(VideoActivity));
-            intent.PutExtra("video", JsonConvert.SerializeObject(video));
-            StartActivity(intent);
+            var media = _currentMedias.ElementAt(_selectedPosition);
+            if (media.Type == MediaType.Image)
+            {
+                var intent = new Intent(Context, typeof(GalleryActivity));
+                intent.PutExtra("image", JsonConvert.SerializeObject(media));
+                StartActivity(intent);
+            }
+            else if (media.Type == MediaType.Video)
+            {
+                var intent = new Intent(Context, typeof(VideoActivity));
+                intent.PutExtra("video", JsonConvert.SerializeObject(media));
+                StartActivity(intent);
+            }
         }
     }
 }

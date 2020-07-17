@@ -90,13 +90,11 @@
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\SessionEditActivity.cs" />
     <Compile Include="Activities\VideoActivity.cs" />
-    <Compile Include="Adapters\ViewModelAdapters\ImageViewModelAdapter.cs" />
+    <Compile Include="Adapters\ViewModelAdapters\MediaViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
-    <Compile Include="Adapters\ViewModelAdapters\VideoViewModelAdapter.cs" />
-    <Compile Include="Fragments\ImageFragment.cs" />
     <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Fragments\MediaFragment.cs" />
     <Compile Include="Fragments\SessionFragment.cs" />
-    <Compile Include="Fragments\VideoFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\MediaService.cs" />
@@ -187,12 +185,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\view_model_image_list.xml">
+    <AndroidResource Include="Resources\layout\view_model_media_list.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\fragment_images.xml">
+    <AndroidResource Include="Resources\layout\fragment_medias.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -208,16 +206,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_register.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\view_model_video_list.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\fragment_videos.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

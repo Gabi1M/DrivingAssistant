@@ -91,7 +91,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var id = Convert.ToInt64(Request.Query["id"].First());
+                var id = Convert.ToInt64(Request.Query["Id"].First());
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
                 var user = await _userService.GetByIdAsync(id);
                 await _userService.DeleteAsync(user);

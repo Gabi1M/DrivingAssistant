@@ -93,7 +93,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var id = Convert.ToInt64(Request.Query["id"].First());
+                var id = Convert.ToInt64(Request.Query["Id"].First());
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var session = await _sessionService.GetByIdAsync(id);
@@ -122,7 +122,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received POST process_session from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var id = Convert.ToInt64(Request.Query["id"].First());
+                var id = Convert.ToInt64(Request.Query["Id"].First());
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
                 var mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var session = await _sessionService.GetByIdAsync(id);
