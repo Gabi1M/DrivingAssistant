@@ -18,7 +18,9 @@ using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
 using Newtonsoft.Json;
+using Xamarin.Essentials;
 using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
+using Map = Mapsui.Map;
 using Point = DrivingAssistant.Core.Models.Point;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -39,6 +41,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private Session _session;
         private SessionService _sessionService;
         private MediaService _mediaService;
+        private Location _currentLocation;
 
         private List<Media> _selectedMedia = new List<Media>();
         private DateTime? _selectedStartDateTime;
@@ -58,6 +61,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             _sessionService = new SessionService(Constants.ServerUri);
             _mediaService = new MediaService(Constants.ServerUri);
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
+            _currentLocation = await Geolocation.GetLocationAsync();
 
             if (Intent.HasExtra("session"))
             {
@@ -73,7 +77,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-                _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Points";
                 if (_selectedMedia.Count == 0)
                 {
                     _labelSelectedMedia.Text = "Tap to Select Media";
@@ -118,6 +122,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Layers.Add(CreatePointLayer("CurrentLocation", Color.Blue, 0.5, SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude)));
 
             if (_selectedEndPoint != null)
             {
@@ -146,7 +151,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                 MarginY = 20
             });
             mapControl.Map = map;
-            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), map.Resolutions[9]);
+            var selectedStartPoint = _selectedStartPoint;
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -158,13 +164,25 @@ namespace DrivingAssistant.AndroidApp.Activities
                     }
                     mapControl.Map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-                    _selectedStartPoint = new Point(tempPoint.X, tempPoint.Y);
-                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                    selectedStartPoint = new Point(tempPoint.X, tempPoint.Y);
                 }
             };
             alert.SetView(view);
-            alert.SetPositiveButton("Confirm", (o, args) => { });
-            alert.SetNegativeButton("Cancel", (o, args) => { });
+            alert.SetPositiveButton("Confirm", (o, args) =>
+            {
+                _selectedStartPoint = selectedStartPoint;
+                if (_selectedStartPoint != null)
+                {
+                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                }
+            });
+            alert.SetNegativeButton("Cancel", (o, args) =>
+            {
+                if (mapControl.Map.Layers.All(x => x.Name != "StartPoint") && _selectedStartPoint != null)
+                {
+                    mapControl.Map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
+                }
+            });
             var dialog = alert.Create();
             dialog.Show();
         }
@@ -181,6 +199,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Layers.Add(CreatePointLayer("CurrentLocation", Color.Blue, 0.5, SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude)));
 
             if (_selectedEndPoint != null)
             {
@@ -209,7 +228,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                 MarginY = 20
             });
             mapControl.Map = map;
-            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), map.Resolutions[9]);
+            var selectedEndPoint = _selectedEndPoint;
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -221,13 +241,25 @@ namespace DrivingAssistant.AndroidApp.Activities
                     }
                     mapControl.Map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-                    _selectedEndPoint = new Point(tempPoint.X, tempPoint.Y);
-                    _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                    selectedEndPoint = new Point(tempPoint.X, tempPoint.Y);
                 }
             };
             alert.SetView(view);
-            alert.SetPositiveButton("Confirm", (o, args) => { });
-            alert.SetNegativeButton("Cancel", (o, args) => { });
+            alert.SetPositiveButton("Confirm", (o, args) =>
+            {
+                _selectedEndPoint = selectedEndPoint;
+                if (_selectedEndPoint != null)
+                {
+                    _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                }
+            });
+            alert.SetNegativeButton("Cancel", (o, args) =>
+            {
+                if (mapControl.Map.Layers.All(x => x.Name != "EndPoint") && _selectedEndPoint != null)
+                {
+                    mapControl.Map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
+                }
+            });
             var dialog = alert.Create();
             dialog.Show();
         }
@@ -244,6 +276,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Layers.Add(CreatePointLayer("CurrentLocation", Color.Blue, 0.5, SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude)));
 
             if (_selectedEndPoint != null)
             {
@@ -272,7 +305,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                 MarginY = 20
             });
             mapControl.Map = map;
-            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), map.Resolutions[9]);
+            var selectedIntermediaries = new List<Point>(_selectedIntermediaries);
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -288,20 +322,30 @@ namespace DrivingAssistant.AndroidApp.Activities
                     if (args.MapInfo.Feature != null && args.MapInfo.Layer.Name == "Intermediaries")
                     {
                         var featurePoint = args.MapInfo.Feature.Geometry.AllVertices().First();
-                        var point = _selectedIntermediaries.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y)));
-                        _selectedIntermediaries.Remove(point);
-                        map.Layers.Add(CreatePointLayer("Intermediaries", Color.Yellow, 0.5, _selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
+                        var point = selectedIntermediaries.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y)));
+                        selectedIntermediaries.Remove(point);
+                        map.Layers.Add(CreatePointLayer("Intermediaries", Color.Yellow, 0.5, selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
                     }
                     else
                     {
-                        _selectedIntermediaries.Add(new Point(tempPoint.X, tempPoint.Y));
-                        map.Layers.Add(CreatePointLayer("Intermediaries", Color.Yellow, 0.5, _selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
+                        selectedIntermediaries.Add(new Point(tempPoint.X, tempPoint.Y));
+                        map.Layers.Add(CreatePointLayer("Intermediaries", Color.Yellow, 0.5, selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
                     }
                 }
             };
             alert.SetView(view);
-            alert.SetPositiveButton("Confirm", (o, args) => { });
-            alert.SetNegativeButton("Cancel", (o, args) => { });
+            alert.SetPositiveButton("Confirm", (o, args) =>
+            {
+                _selectedIntermediaries = new List<Point>(selectedIntermediaries);
+                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Points";
+            });
+            alert.SetNegativeButton("Cancel", (o, args) =>
+            {
+                if (mapControl.Map.Layers.All(x => x.Name != "Intermediaries"))
+                {
+                    mapControl.Map.Layers.Add(CreatePointLayer("Intermediaries", Color.Yellow, 0.5, _selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
+                }
+            });
             var dialog = alert.Create();
             dialog.Show();
         }

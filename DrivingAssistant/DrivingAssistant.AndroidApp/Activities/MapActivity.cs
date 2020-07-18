@@ -14,7 +14,9 @@ using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
 using Newtonsoft.Json;
+using Xamarin.Essentials;
 using Color = Mapsui.Styles.Color;
+using Map = Mapsui.Map;
 using Point = Mapsui.Geometries.Point;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -24,7 +26,7 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private MapControl _mapControl;
         private Point[] _sessionPoints;
-
+        
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -43,14 +45,16 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private void SetupMap()
+        private async void SetupMap()
         {
+            var location = await Geolocation.GetLocationAsync();
             var map = new Map
             {
                 CRS = "EPSG:3857",
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            map.Layers.Add(CreatePointLayer("CurrentLocation", Color.Blue, 0.5, ConvertFromLonLat(new Point(location.Longitude, location.Latitude))));
             map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, ConvertFromLonLat(_sessionPoints.First())));
             map.Layers.Add(CreatePointLayer("IntermediatePoints", Color.Yellow, 0.5, ConvertFromLonLat(_sessionPoints.Skip(1).Take(_sessionPoints.Length - 2).ToArray())));
             map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, ConvertFromLonLat(_sessionPoints.Last())));
@@ -65,8 +69,11 @@ namespace DrivingAssistant.AndroidApp.Activities
                 MarginX = 20,
                 MarginY = 20
             });
+
+            var middlePoint = new Point((_sessionPoints.First().X + _sessionPoints.Last().X) / 2, (_sessionPoints.First().Y + _sessionPoints.Last().Y) / 2);
+
             _mapControl.Map = map;
-            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            _mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(middlePoint.X, middlePoint.Y), map.Resolutions[9]);
             _mapControl.Info += MapControlOnInfo;
         }
 
