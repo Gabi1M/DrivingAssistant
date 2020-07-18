@@ -50,8 +50,8 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             textDescription.Text = "Description: " + currentSession.Description;
             textStartDateTime.Text = "Start: " + currentSession.StartDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textEndDateTime.Text = "End: " + currentSession.EndDateTime.ToString("dd.MM.yyyy HH:mm:ss");
-            textStartCoordinates.Text = "Start position: " + currentSession.StartCoordinates;
-            textEndCoordinates.Text = "End position: " + currentSession.EndCoordinates;
+            textStartCoordinates.Text = "Start position: " + currentSession.StartPoint.X + ", " + currentSession.StartPoint.Y;
+            textEndCoordinates.Text = "End position: " + currentSession.EndPoint.X + ", " + currentSession.EndPoint.Y;
 
             return view;
         }

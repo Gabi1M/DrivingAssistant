@@ -3050,13 +3050,11 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             private global::System.Data.DataColumn columnEndDateTime;
             
-            private global::System.Data.DataColumn columnStartLatitude;
+            private global::System.Data.DataColumn columnStartPoint;
             
-            private global::System.Data.DataColumn columnStartLongitude;
+            private global::System.Data.DataColumn columnEndPoint;
             
-            private global::System.Data.DataColumn columnEndLatitude;
-            
-            private global::System.Data.DataColumn columnEndLongitude;
+            private global::System.Data.DataColumn columnIntermediatePoints;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -3133,33 +3131,25 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn StartLatitudeColumn {
+            public global::System.Data.DataColumn StartPointColumn {
                 get {
-                    return this.columnStartLatitude;
+                    return this.columnStartPoint;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn StartLongitudeColumn {
+            public global::System.Data.DataColumn EndPointColumn {
                 get {
-                    return this.columnStartLongitude;
+                    return this.columnEndPoint;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn EndLatitudeColumn {
+            public global::System.Data.DataColumn IntermediatePointsColumn {
                 get {
-                    return this.columnEndLatitude;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn EndLongitudeColumn {
-                get {
-                    return this.columnEndLongitude;
+                    return this.columnIntermediatePoints;
                 }
             }
             
@@ -3200,7 +3190,7 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public Get_SessionsRow AddGet_SessionsRow(long UserId, string Description, System.DateTime StartDateTime, System.DateTime EndDateTime, double StartLatitude, double StartLongitude, double EndLatitude, double EndLongitude) {
+            public Get_SessionsRow AddGet_SessionsRow(long UserId, string Description, System.DateTime StartDateTime, System.DateTime EndDateTime, string StartPoint, string EndPoint, string IntermediatePoints) {
                 Get_SessionsRow rowGet_SessionsRow = ((Get_SessionsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -3208,10 +3198,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                         Description,
                         StartDateTime,
                         EndDateTime,
-                        StartLatitude,
-                        StartLongitude,
-                        EndLatitude,
-                        EndLongitude};
+                        StartPoint,
+                        EndPoint,
+                        IntermediatePoints};
                 rowGet_SessionsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowGet_SessionsRow);
                 return rowGet_SessionsRow;
@@ -3246,10 +3235,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                 this.columnDescription = base.Columns["Description"];
                 this.columnStartDateTime = base.Columns["StartDateTime"];
                 this.columnEndDateTime = base.Columns["EndDateTime"];
-                this.columnStartLatitude = base.Columns["StartLatitude"];
-                this.columnStartLongitude = base.Columns["StartLongitude"];
-                this.columnEndLatitude = base.Columns["EndLatitude"];
-                this.columnEndLongitude = base.Columns["EndLongitude"];
+                this.columnStartPoint = base.Columns["StartPoint"];
+                this.columnEndPoint = base.Columns["EndPoint"];
+                this.columnIntermediatePoints = base.Columns["IntermediatePoints"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3265,14 +3253,12 @@ namespace DrivingAssistant.WebServer.Dataset {
                 base.Columns.Add(this.columnStartDateTime);
                 this.columnEndDateTime = new global::System.Data.DataColumn("EndDateTime", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnEndDateTime);
-                this.columnStartLatitude = new global::System.Data.DataColumn("StartLatitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnStartLatitude);
-                this.columnStartLongitude = new global::System.Data.DataColumn("StartLongitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnStartLongitude);
-                this.columnEndLatitude = new global::System.Data.DataColumn("EndLatitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnEndLatitude);
-                this.columnEndLongitude = new global::System.Data.DataColumn("EndLongitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnEndLongitude);
+                this.columnStartPoint = new global::System.Data.DataColumn("StartPoint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStartPoint);
+                this.columnEndPoint = new global::System.Data.DataColumn("EndPoint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnEndPoint);
+                this.columnIntermediatePoints = new global::System.Data.DataColumn("IntermediatePoints", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIntermediatePoints);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
                 this.columnId.AutoIncrement = true;
@@ -3282,6 +3268,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnDescription.MaxLength = 2147483647;
+                this.columnStartPoint.MaxLength = 2147483647;
+                this.columnEndPoint.MaxLength = 2147483647;
+                this.columnIntermediatePoints.MaxLength = 2147483647;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3425,13 +3414,11 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             private global::System.Data.DataColumn columnEndDateTime;
             
-            private global::System.Data.DataColumn columnStartLatitude;
+            private global::System.Data.DataColumn columnStartPoint;
             
-            private global::System.Data.DataColumn columnStartLongitude;
+            private global::System.Data.DataColumn columnEndPoint;
             
-            private global::System.Data.DataColumn columnEndLatitude;
-            
-            private global::System.Data.DataColumn columnEndLongitude;
+            private global::System.Data.DataColumn columnIntermediatePoints;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
@@ -3508,33 +3495,25 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn StartLatitudeColumn {
+            public global::System.Data.DataColumn StartPointColumn {
                 get {
-                    return this.columnStartLatitude;
+                    return this.columnStartPoint;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn StartLongitudeColumn {
+            public global::System.Data.DataColumn EndPointColumn {
                 get {
-                    return this.columnStartLongitude;
+                    return this.columnEndPoint;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn EndLatitudeColumn {
+            public global::System.Data.DataColumn IntermediatePointsColumn {
                 get {
-                    return this.columnEndLatitude;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public global::System.Data.DataColumn EndLongitudeColumn {
-                get {
-                    return this.columnEndLongitude;
+                    return this.columnIntermediatePoints;
                 }
             }
             
@@ -3575,7 +3554,7 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public Get_Session_By_idRow AddGet_Session_By_idRow(long UserId, string Description, System.DateTime StartDateTime, System.DateTime EndDateTime, double StartLatitude, double StartLongitude, double EndLatitude, double EndLongitude) {
+            public Get_Session_By_idRow AddGet_Session_By_idRow(long UserId, string Description, System.DateTime StartDateTime, System.DateTime EndDateTime, string StartPoint, string EndPoint, string IntermediatePoints) {
                 Get_Session_By_idRow rowGet_Session_By_idRow = ((Get_Session_By_idRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -3583,10 +3562,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                         Description,
                         StartDateTime,
                         EndDateTime,
-                        StartLatitude,
-                        StartLongitude,
-                        EndLatitude,
-                        EndLongitude};
+                        StartPoint,
+                        EndPoint,
+                        IntermediatePoints};
                 rowGet_Session_By_idRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowGet_Session_By_idRow);
                 return rowGet_Session_By_idRow;
@@ -3621,10 +3599,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                 this.columnDescription = base.Columns["Description"];
                 this.columnStartDateTime = base.Columns["StartDateTime"];
                 this.columnEndDateTime = base.Columns["EndDateTime"];
-                this.columnStartLatitude = base.Columns["StartLatitude"];
-                this.columnStartLongitude = base.Columns["StartLongitude"];
-                this.columnEndLatitude = base.Columns["EndLatitude"];
-                this.columnEndLongitude = base.Columns["EndLongitude"];
+                this.columnStartPoint = base.Columns["StartPoint"];
+                this.columnEndPoint = base.Columns["EndPoint"];
+                this.columnIntermediatePoints = base.Columns["IntermediatePoints"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3640,14 +3617,12 @@ namespace DrivingAssistant.WebServer.Dataset {
                 base.Columns.Add(this.columnStartDateTime);
                 this.columnEndDateTime = new global::System.Data.DataColumn("EndDateTime", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnEndDateTime);
-                this.columnStartLatitude = new global::System.Data.DataColumn("StartLatitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnStartLatitude);
-                this.columnStartLongitude = new global::System.Data.DataColumn("StartLongitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnStartLongitude);
-                this.columnEndLatitude = new global::System.Data.DataColumn("EndLatitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnEndLatitude);
-                this.columnEndLongitude = new global::System.Data.DataColumn("EndLongitude", typeof(double), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnEndLongitude);
+                this.columnStartPoint = new global::System.Data.DataColumn("StartPoint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStartPoint);
+                this.columnEndPoint = new global::System.Data.DataColumn("EndPoint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnEndPoint);
+                this.columnIntermediatePoints = new global::System.Data.DataColumn("IntermediatePoints", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIntermediatePoints);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnId}, true));
                 this.columnId.AutoIncrement = true;
@@ -3657,6 +3632,9 @@ namespace DrivingAssistant.WebServer.Dataset {
                 this.columnId.ReadOnly = true;
                 this.columnId.Unique = true;
                 this.columnDescription.MaxLength = 2147483647;
+                this.columnStartPoint.MaxLength = 2147483647;
+                this.columnEndPoint.MaxLength = 2147483647;
+                this.columnIntermediatePoints.MaxLength = 2147483647;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5260,65 +5238,49 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double StartLatitude {
+            public string StartPoint {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Sessions.StartLatitudeColumn]));
+                        return ((string)(this[this.tableGet_Sessions.StartPointColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'StartLatitude\' in table \'Get_Sessions\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'StartPoint\' in table \'Get_Sessions\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Sessions.StartLatitudeColumn] = value;
+                    this[this.tableGet_Sessions.StartPointColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double StartLongitude {
+            public string EndPoint {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Sessions.StartLongitudeColumn]));
+                        return ((string)(this[this.tableGet_Sessions.EndPointColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'StartLongitude\' in table \'Get_Sessions\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'EndPoint\' in table \'Get_Sessions\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Sessions.StartLongitudeColumn] = value;
+                    this[this.tableGet_Sessions.EndPointColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double EndLatitude {
+            public string IntermediatePoints {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Sessions.EndLatitudeColumn]));
+                        return ((string)(this[this.tableGet_Sessions.IntermediatePointsColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'EndLatitude\' in table \'Get_Sessions\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'IntermediatePoints\' in table \'Get_Sessions\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Sessions.EndLatitudeColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double EndLongitude {
-                get {
-                    try {
-                        return ((double)(this[this.tableGet_Sessions.EndLongitudeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'EndLongitude\' in table \'Get_Sessions\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableGet_Sessions.EndLongitudeColumn] = value;
+                    this[this.tableGet_Sessions.IntermediatePointsColumn] = value;
                 }
             }
             
@@ -5372,50 +5334,38 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsStartLatitudeNull() {
-                return this.IsNull(this.tableGet_Sessions.StartLatitudeColumn);
+            public bool IsStartPointNull() {
+                return this.IsNull(this.tableGet_Sessions.StartPointColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetStartLatitudeNull() {
-                this[this.tableGet_Sessions.StartLatitudeColumn] = global::System.Convert.DBNull;
+            public void SetStartPointNull() {
+                this[this.tableGet_Sessions.StartPointColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsStartLongitudeNull() {
-                return this.IsNull(this.tableGet_Sessions.StartLongitudeColumn);
+            public bool IsEndPointNull() {
+                return this.IsNull(this.tableGet_Sessions.EndPointColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetStartLongitudeNull() {
-                this[this.tableGet_Sessions.StartLongitudeColumn] = global::System.Convert.DBNull;
+            public void SetEndPointNull() {
+                this[this.tableGet_Sessions.EndPointColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsEndLatitudeNull() {
-                return this.IsNull(this.tableGet_Sessions.EndLatitudeColumn);
+            public bool IsIntermediatePointsNull() {
+                return this.IsNull(this.tableGet_Sessions.IntermediatePointsColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetEndLatitudeNull() {
-                this[this.tableGet_Sessions.EndLatitudeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsEndLongitudeNull() {
-                return this.IsNull(this.tableGet_Sessions.EndLongitudeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetEndLongitudeNull() {
-                this[this.tableGet_Sessions.EndLongitudeColumn] = global::System.Convert.DBNull;
+            public void SetIntermediatePointsNull() {
+                this[this.tableGet_Sessions.IntermediatePointsColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -5510,65 +5460,50 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double StartLatitude {
+            public string StartPoint {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Session_By_id.StartLatitudeColumn]));
+                        return ((string)(this[this.tableGet_Session_By_id.StartPointColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'StartLatitude\' in table \'Get_Session_By_id\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'StartPoint\' in table \'Get_Session_By_id\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Session_By_id.StartLatitudeColumn] = value;
+                    this[this.tableGet_Session_By_id.StartPointColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double StartLongitude {
+            public string EndPoint {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Session_By_id.StartLongitudeColumn]));
+                        return ((string)(this[this.tableGet_Session_By_id.EndPointColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'StartLongitude\' in table \'Get_Session_By_id\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'EndPoint\' in table \'Get_Session_By_id\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Session_By_id.StartLongitudeColumn] = value;
+                    this[this.tableGet_Session_By_id.EndPointColumn] = value;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double EndLatitude {
+            public string IntermediatePoints {
                 get {
                     try {
-                        return ((double)(this[this.tableGet_Session_By_id.EndLatitudeColumn]));
+                        return ((string)(this[this.tableGet_Session_By_id.IntermediatePointsColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'EndLatitude\' in table \'Get_Session_By_id\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'IntermediatePoints\' in table \'Get_Session_By_id\' is DBNull." +
+                                "", e);
                     }
                 }
                 set {
-                    this[this.tableGet_Session_By_id.EndLatitudeColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public double EndLongitude {
-                get {
-                    try {
-                        return ((double)(this[this.tableGet_Session_By_id.EndLongitudeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'EndLongitude\' in table \'Get_Session_By_id\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableGet_Session_By_id.EndLongitudeColumn] = value;
+                    this[this.tableGet_Session_By_id.IntermediatePointsColumn] = value;
                 }
             }
             
@@ -5622,50 +5557,38 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsStartLatitudeNull() {
-                return this.IsNull(this.tableGet_Session_By_id.StartLatitudeColumn);
+            public bool IsStartPointNull() {
+                return this.IsNull(this.tableGet_Session_By_id.StartPointColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetStartLatitudeNull() {
-                this[this.tableGet_Session_By_id.StartLatitudeColumn] = global::System.Convert.DBNull;
+            public void SetStartPointNull() {
+                this[this.tableGet_Session_By_id.StartPointColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsStartLongitudeNull() {
-                return this.IsNull(this.tableGet_Session_By_id.StartLongitudeColumn);
+            public bool IsEndPointNull() {
+                return this.IsNull(this.tableGet_Session_By_id.EndPointColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetStartLongitudeNull() {
-                this[this.tableGet_Session_By_id.StartLongitudeColumn] = global::System.Convert.DBNull;
+            public void SetEndPointNull() {
+                this[this.tableGet_Session_By_id.EndPointColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsEndLatitudeNull() {
-                return this.IsNull(this.tableGet_Session_By_id.EndLatitudeColumn);
+            public bool IsIntermediatePointsNull() {
+                return this.IsNull(this.tableGet_Session_By_id.IntermediatePointsColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetEndLatitudeNull() {
-                this[this.tableGet_Session_By_id.EndLatitudeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public bool IsEndLongitudeNull() {
-                return this.IsNull(this.tableGet_Session_By_id.EndLongitudeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public void SetEndLongitudeNull() {
-                this[this.tableGet_Session_By_id.EndLongitudeColumn] = global::System.Convert.DBNull;
+            public void SetIntermediatePointsNull() {
+                this[this.tableGet_Session_By_id.IntermediatePointsColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -7658,10 +7581,9 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             tableMapping.ColumnMappings.Add("Description", "Description");
             tableMapping.ColumnMappings.Add("StartDateTime", "StartDateTime");
             tableMapping.ColumnMappings.Add("EndDateTime", "EndDateTime");
-            tableMapping.ColumnMappings.Add("StartLatitude", "StartLatitude");
-            tableMapping.ColumnMappings.Add("StartLongitude", "StartLongitude");
-            tableMapping.ColumnMappings.Add("EndLatitude", "EndLatitude");
-            tableMapping.ColumnMappings.Add("EndLongitude", "EndLongitude");
+            tableMapping.ColumnMappings.Add("StartPoint", "StartPoint");
+            tableMapping.ColumnMappings.Add("EndPoint", "EndPoint");
+            tableMapping.ColumnMappings.Add("IntermediatePoints", "IntermediatePoints");
             this._adapter.TableMappings.Add(tableMapping);
         }
         
@@ -7807,10 +7729,9 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             tableMapping.ColumnMappings.Add("Description", "Description");
             tableMapping.ColumnMappings.Add("StartDateTime", "StartDateTime");
             tableMapping.ColumnMappings.Add("EndDateTime", "EndDateTime");
-            tableMapping.ColumnMappings.Add("StartLatitude", "StartLatitude");
-            tableMapping.ColumnMappings.Add("StartLongitude", "StartLongitude");
-            tableMapping.ColumnMappings.Add("EndLatitude", "EndLatitude");
-            tableMapping.ColumnMappings.Add("EndLongitude", "EndLongitude");
+            tableMapping.ColumnMappings.Add("StartPoint", "StartPoint");
+            tableMapping.ColumnMappings.Add("EndPoint", "EndPoint");
+            tableMapping.ColumnMappings.Add("IntermediatePoints", "IntermediatePoints");
             this._adapter.TableMappings.Add(tableMapping);
         }
         
@@ -7985,10 +7906,9 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 2147483647, global::System.Data.ParameterDirection.Input, 0, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartDateTime", global::System.Data.SqlDbType.DateTime, 8, global::System.Data.ParameterDirection.Input, 23, 3, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@EndDateTime", global::System.Data.SqlDbType.DateTime, 8, global::System.Data.ParameterDirection.Input, 23, 3, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartLatitude", global::System.Data.SqlDbType.Float, 8, global::System.Data.ParameterDirection.Input, 53, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartLongitude", global::System.Data.SqlDbType.Float, 8, global::System.Data.ParameterDirection.Input, 53, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@EndLatitude", global::System.Data.SqlDbType.Float, 8, global::System.Data.ParameterDirection.Input, 53, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@EndLongitude", global::System.Data.SqlDbType.Float, 8, global::System.Data.ParameterDirection.Input, 53, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartPoint", global::System.Data.SqlDbType.NVarChar, 2147483647, global::System.Data.ParameterDirection.Input, 0, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@EndPoint", global::System.Data.SqlDbType.NVarChar, 2147483647, global::System.Data.ParameterDirection.Input, 0, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IntermediatePoints", global::System.Data.SqlDbType.NVarChar, 2147483647, global::System.Data.ParameterDirection.Input, 0, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._commandCollection[0].Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@IdOut", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.InputOutput, 19, 0, null, global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
@@ -7996,7 +7916,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(DrivingAssistant.Set_SessionDataTable dataTable, global::System.Nullable<long> Id, global::System.Nullable<long> UserId, string Description, global::System.Nullable<global::System.DateTime> StartDateTime, global::System.Nullable<global::System.DateTime> EndDateTime, global::System.Nullable<double> StartLatitude, global::System.Nullable<double> StartLongitude, global::System.Nullable<double> EndLatitude, global::System.Nullable<double> EndLongitude, ref global::System.Nullable<long> IdOut) {
+        public virtual int Fill(DrivingAssistant.Set_SessionDataTable dataTable, global::System.Nullable<long> Id, global::System.Nullable<long> UserId, string Description, global::System.Nullable<global::System.DateTime> StartDateTime, global::System.Nullable<global::System.DateTime> EndDateTime, string StartPoint, string EndPoint, string IntermediatePoints, ref global::System.Nullable<long> IdOut) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((Id.HasValue == true)) {
                 this.Adapter.SelectCommand.Parameters[1].Value = ((long)(Id.Value));
@@ -8028,46 +7948,40 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             else {
                 this.Adapter.SelectCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
-            if ((StartLatitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[6].Value = ((double)(StartLatitude.Value));
-            }
-            else {
+            if ((StartPoint == null)) {
                 this.Adapter.SelectCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
-            if ((StartLongitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[7].Value = ((double)(StartLongitude.Value));
-            }
             else {
+                this.Adapter.SelectCommand.Parameters[6].Value = ((string)(StartPoint));
+            }
+            if ((EndPoint == null)) {
                 this.Adapter.SelectCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
-            if ((EndLatitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[8].Value = ((double)(EndLatitude.Value));
-            }
             else {
+                this.Adapter.SelectCommand.Parameters[7].Value = ((string)(EndPoint));
+            }
+            if ((IntermediatePoints == null)) {
                 this.Adapter.SelectCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
-            if ((EndLongitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[9].Value = ((double)(EndLongitude.Value));
+            else {
+                this.Adapter.SelectCommand.Parameters[8].Value = ((string)(IntermediatePoints));
+            }
+            if ((IdOut.HasValue == true)) {
+                this.Adapter.SelectCommand.Parameters[9].Value = ((long)(IdOut.Value));
             }
             else {
                 this.Adapter.SelectCommand.Parameters[9].Value = global::System.DBNull.Value;
-            }
-            if ((IdOut.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[10].Value = ((long)(IdOut.Value));
-            }
-            else {
-                this.Adapter.SelectCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
             }
             int returnValue = this.Adapter.Fill(dataTable);
-            if (((this.Adapter.SelectCommand.Parameters[10].Value == null) 
-                        || (this.Adapter.SelectCommand.Parameters[10].Value.GetType() == typeof(global::System.DBNull)))) {
+            if (((this.Adapter.SelectCommand.Parameters[9].Value == null) 
+                        || (this.Adapter.SelectCommand.Parameters[9].Value.GetType() == typeof(global::System.DBNull)))) {
                 IdOut = new global::System.Nullable<long>();
             }
             else {
-                IdOut = new global::System.Nullable<long>(((long)(this.Adapter.SelectCommand.Parameters[10].Value)));
+                IdOut = new global::System.Nullable<long>(((long)(this.Adapter.SelectCommand.Parameters[9].Value)));
             }
             return returnValue;
         }
@@ -8076,7 +7990,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual DrivingAssistant.Set_SessionDataTable GetData(global::System.Nullable<long> Id, global::System.Nullable<long> UserId, string Description, global::System.Nullable<global::System.DateTime> StartDateTime, global::System.Nullable<global::System.DateTime> EndDateTime, global::System.Nullable<double> StartLatitude, global::System.Nullable<double> StartLongitude, global::System.Nullable<double> EndLatitude, global::System.Nullable<double> EndLongitude, ref global::System.Nullable<long> IdOut) {
+        public virtual DrivingAssistant.Set_SessionDataTable GetData(global::System.Nullable<long> Id, global::System.Nullable<long> UserId, string Description, global::System.Nullable<global::System.DateTime> StartDateTime, global::System.Nullable<global::System.DateTime> EndDateTime, string StartPoint, string EndPoint, string IntermediatePoints, ref global::System.Nullable<long> IdOut) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((Id.HasValue == true)) {
                 this.Adapter.SelectCommand.Parameters[1].Value = ((long)(Id.Value));
@@ -8108,44 +8022,38 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             else {
                 this.Adapter.SelectCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
-            if ((StartLatitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[6].Value = ((double)(StartLatitude.Value));
-            }
-            else {
+            if ((StartPoint == null)) {
                 this.Adapter.SelectCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
-            if ((StartLongitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[7].Value = ((double)(StartLongitude.Value));
-            }
             else {
+                this.Adapter.SelectCommand.Parameters[6].Value = ((string)(StartPoint));
+            }
+            if ((EndPoint == null)) {
                 this.Adapter.SelectCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
-            if ((EndLatitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[8].Value = ((double)(EndLatitude.Value));
-            }
             else {
+                this.Adapter.SelectCommand.Parameters[7].Value = ((string)(EndPoint));
+            }
+            if ((IntermediatePoints == null)) {
                 this.Adapter.SelectCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
-            if ((EndLongitude.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[9].Value = ((double)(EndLongitude.Value));
+            else {
+                this.Adapter.SelectCommand.Parameters[8].Value = ((string)(IntermediatePoints));
+            }
+            if ((IdOut.HasValue == true)) {
+                this.Adapter.SelectCommand.Parameters[9].Value = ((long)(IdOut.Value));
             }
             else {
                 this.Adapter.SelectCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
-            if ((IdOut.HasValue == true)) {
-                this.Adapter.SelectCommand.Parameters[10].Value = ((long)(IdOut.Value));
-            }
-            else {
-                this.Adapter.SelectCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
             DrivingAssistant.Set_SessionDataTable dataTable = new DrivingAssistant.Set_SessionDataTable();
             this.Adapter.Fill(dataTable);
-            if (((this.Adapter.SelectCommand.Parameters[10].Value == null) 
-                        || (this.Adapter.SelectCommand.Parameters[10].Value.GetType() == typeof(global::System.DBNull)))) {
+            if (((this.Adapter.SelectCommand.Parameters[9].Value == null) 
+                        || (this.Adapter.SelectCommand.Parameters[9].Value.GetType() == typeof(global::System.DBNull)))) {
                 IdOut = new global::System.Nullable<long>();
             }
             else {
-                IdOut = new global::System.Nullable<long>(((long)(this.Adapter.SelectCommand.Parameters[10].Value)));
+                IdOut = new global::System.Nullable<long>(((long)(this.Adapter.SelectCommand.Parameters[9].Value)));
             }
             return dataTable;
         }

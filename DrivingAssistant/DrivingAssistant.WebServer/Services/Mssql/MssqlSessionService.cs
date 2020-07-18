@@ -33,14 +33,11 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 tableAdapter.Fill(_dataset.Get_Sessions);
                 using DataTable dataTable = _dataset.Get_Sessions;
                 var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Session(row["Description"].ToString(),
-                        Convert.ToDateTime(row["StartDateTime"].ToString()),
-                        Convert.ToDateTime(row["EndDateTime"].ToString()),
-                        new Coordinates(Convert.ToSingle(row["StartLatitude"]),
-                            Convert.ToSingle(row["StartLongitude"])),
-                        new Coordinates(Convert.ToSingle(row["EndLatitude"]), 
-                            Convert.ToSingle(row["EndLongitude"])),
-                        Convert.ToInt64(row["Id"]), Convert.ToInt64(row["UserId"]));
+                    select new Session(row["Description"].ToString(), Convert.ToDateTime(row["StartDateTime"]),
+                        Convert.ToDateTime(row["EndDateTime"]),
+                        row["StartPoint"].ToString().StringToPoint(),
+                        row["EndPoint"].ToString().StringToPoint(),
+                        row["IntermediatePoints"].ToString().StringToPointCollection(), Convert.ToInt64(row["Id"]));
                 return result.ToList();
             });
         }
@@ -57,14 +54,11 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 tableAdapter.Fill(_dataset.Get_Session_By_id, id);
                 using DataTable dataTable = _dataset.Get_Session_By_id;
                 var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Session(row["Description"].ToString(),
-                        Convert.ToDateTime(row["StartDateTime"].ToString()),
-                        Convert.ToDateTime(row["EndDateTime"].ToString()),
-                        new Coordinates(Convert.ToSingle(row["StartLatitude"]), 
-                            Convert.ToSingle(row["StartLongitude"])),
-                        new Coordinates(Convert.ToSingle(row["EndLatitude"]), 
-                            Convert.ToSingle(row["EndLongitude"])),
-                        Convert.ToInt64(row["Id"]), Convert.ToInt64(row["UserId"]));
+                    select new Session(row["Description"].ToString(), Convert.ToDateTime(row["StartDateTime"]),
+                        Convert.ToDateTime(row["EndDateTime"]),
+                        row["StartPoint"].ToString().StringToPoint(),
+                        row["EndPoint"].ToString().StringToPoint(),
+                        row["IntermediatePoints"].ToString().StringToPointCollection(), Convert.ToInt64(row["Id"]));
                 return result.First();
             });
         }
@@ -81,10 +75,11 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 long? idOut = 0;
                 tableAdapter.Fill(_dataset.Set_Session, null, session.UserId, session.Description,
                     session.StartDateTime,
-                    session.EndDateTime, session.StartCoordinates.Latitude, 
-                    session.StartCoordinates.Longitude,
-                    session.EndCoordinates.Latitude,
-                    session.EndCoordinates.Longitude, ref idOut);
+                    session.EndDateTime,
+                    session.StartPoint.PointToString(),
+                    session.EndPoint.PointToString(),
+                    session.IntermediatePoints.PointCollectionToString(),
+                    ref idOut);
                 return idOut.Value;
             });
         }
@@ -101,10 +96,11 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 long? idOut = 0;
                 tableAdapter.Fill(_dataset.Set_Session, session.Id, session.UserId, session.Description,
                     session.StartDateTime,
-                    session.EndDateTime, session.StartCoordinates.Latitude, 
-                    session.StartCoordinates.Longitude,
-                    session.EndCoordinates.Latitude,
-                    session.EndCoordinates.Longitude, ref idOut);
+                    session.EndDateTime,
+                    session.StartPoint.PointToString(),
+                    session.EndPoint.PointToString(),
+                    session.IntermediatePoints.PointCollectionToString(),
+                    ref idOut);
             });
         }
 

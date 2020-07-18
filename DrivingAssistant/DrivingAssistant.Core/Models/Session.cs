@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
@@ -17,21 +19,25 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("EndDateTime")]
         public DateTime EndDateTime { get; set; }
 
-        [JsonProperty("StartCoordinates")]
-        public Coordinates StartCoordinates { get; set; }
+        [JsonProperty("StartPoint")]
+        public Point StartPoint { get; set; }
 
-        [JsonProperty("EndCoordinates")]
-        public Coordinates EndCoordinates { get; set; }
+        [JsonProperty("EndPoint")]
+        public Point EndPoint { get; set; }
+
+        [JsonProperty("IntermediatePoints")]
+        public ICollection<Point> IntermediatePoints { get; set; }
 
         //============================================================
-        public Session(string description, DateTime startDateTime, DateTime endDateTime, Coordinates startCoordinates,
-            Coordinates endCoordinates, long id = default, long userid = default)
+        public Session(string description, DateTime startDateTime, DateTime endDateTime, Point startPoint,
+            Point endPoint, ICollection<Point> intermediatePoints, long id = default, long userid = default)
         {
             Description = description;
             StartDateTime = startDateTime;
             EndDateTime = endDateTime;
-            StartCoordinates = startCoordinates;
-            EndCoordinates = endCoordinates;
+            StartPoint = startPoint;
+            EndPoint = endPoint;
+            IntermediatePoints = intermediatePoints;
             Id = id;
             UserId = userid;
         }

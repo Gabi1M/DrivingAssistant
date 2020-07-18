@@ -29,7 +29,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
-                return Ok(await _sessionService.GetAsync());
+                return Ok(JsonConvert.SerializeObject(await _sessionService.GetAsync(), Formatting.Indented));
             }
             catch (Exception ex)
             {

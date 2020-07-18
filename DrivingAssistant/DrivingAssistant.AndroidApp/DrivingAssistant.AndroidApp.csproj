@@ -105,7 +105,6 @@
     <Compile Include="Tools\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\romania.routerdb" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -238,9 +237,6 @@
     <AndroidResource Include="Resources\layout\activity_map.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\map-pin.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\custom_border.xml">

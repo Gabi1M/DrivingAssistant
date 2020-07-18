@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Android.App;
 using Android.OS;
-using Itinero.LocalGeo;
 using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Projection;
@@ -51,7 +51,9 @@ namespace DrivingAssistant.AndroidApp.Activities
                 Transformation = new MinimalTransformation()
             };
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            map.Layers.Add(CreatePointLayer("SessionPoints", Color.Green, 0.5, ConvertFromLonLat(_sessionPoints)));
+            map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, ConvertFromLonLat(_sessionPoints.First())));
+            map.Layers.Add(CreatePointLayer("IntermediatePoints", Color.Yellow, 0.5, ConvertFromLonLat(_sessionPoints.Skip(1).Take(_sessionPoints.Length - 2).ToArray())));
+            map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, ConvertFromLonLat(_sessionPoints.Last())));
             map.Widgets.Add(new ScaleBarWidget(map)
             {
                 TextAlignment = Alignment.Center,
@@ -107,13 +109,20 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private Point[] GetPointsFromIntent()
         {
-            var startPointLonLat = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("startPoint"));
-            var endPointLonLat = JsonConvert.DeserializeObject<Coordinate>(Intent.GetStringExtra("endPoint"));
+            var pointList = new List<Mapsui.Geometries.Point>();
 
-            var startPoint = new Point(startPointLonLat.Latitude, startPointLonLat.Longitude);
-            var endPoint = new Point(endPointLonLat.Latitude, endPointLonLat.Longitude);
+            var startPointLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("startPoint"));
+            var endPointLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("endPoint"));
+            var intermediatePointsLonLat = JsonConvert.DeserializeObject<ICollection<Core.Models.Point>>(Intent.GetStringExtra("intermediatePoints"));
 
-            return new[] { startPoint, endPoint };
+            var startPoint = new Mapsui.Geometries.Point(startPointLonLat.X, startPointLonLat.Y);
+            var endPoint = new Mapsui.Geometries.Point(endPointLonLat.X, endPointLonLat.Y);
+
+            pointList.Add(startPoint);
+            pointList.AddRange(intermediatePointsLonLat.Select(intermediatePoint => new Mapsui.Geometries.Point(intermediatePoint.X, intermediatePoint.Y)));
+            pointList.Add(endPoint);
+
+            return pointList.ToArray();
         }
 
         //============================================================

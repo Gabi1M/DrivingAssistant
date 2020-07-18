@@ -85,7 +85,7 @@
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="80.0dp"
+        android:layout_height="50.0dp"
         android:id="@+id/linearLayout2"
         android:layout_marginLeft="15.0dp"
         android:layout_marginRight="15.0dp">
@@ -109,7 +109,7 @@
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="80.0dp"
+        android:layout_height="50.0dp"
         android:id="@+id/linearLayout3"
         android:layout_marginLeft="15.0dp"
         android:layout_marginRight="15.0dp">
@@ -126,6 +126,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/sessionEditLabelSelectedEndPosition"
+            android:gravity="center" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="50.0dp"
+        android:id="@+id/linearLayout7"
+        android:layout_marginLeft="15.0dp"
+        android:layout_marginRight="15.0dp">
+        <TextView
+            android:text="Intermediaries:   "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionEditLabelIntermediaries"
+            android:gravity="center" />
+        <TextView
+            android:text="Tap to Edit"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/sessionEditLabelSelectedIntermediaries"
             android:gravity="center" />
     </LinearLayout>
     <LinearLayout

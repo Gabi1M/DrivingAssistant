@@ -153,8 +153,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
             var session = _currentSessions.ElementAt(_selectedPosition);
             var intent = new Intent(Context, typeof(MapActivity));
 
-            intent.PutExtra("startPoint", JsonConvert.SerializeObject(session.StartCoordinates));
-            intent.PutExtra("endPoint", JsonConvert.SerializeObject(session.EndCoordinates));
+            intent.PutExtra("startPoint", JsonConvert.SerializeObject(session.StartPoint));
+            intent.PutExtra("endPoint", JsonConvert.SerializeObject(session.EndPoint));
+            intent.PutExtra("intermediatePoints", JsonConvert.SerializeObject(session.IntermediatePoints));
             StartActivity(intent);
         }
 
