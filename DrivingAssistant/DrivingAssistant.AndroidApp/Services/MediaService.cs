@@ -52,11 +52,11 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type, long userId)
+        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type, long userId, string description)
         {
             var request = type == MediaType.Image
-                ? (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/image_stream?UserId=" + userId))
-                : (HttpWebRequest) new HttpWebRequest(new Uri(_serverUri + "/video_stream?UserId=" + userId));
+                ? new HttpWebRequest(new Uri(_serverUri + "/image_stream?UserId=" + userId + "&Description=" + description))
+                : new HttpWebRequest(new Uri(_serverUri + "/video_stream?UserId=" + userId + "&Description=" + description));
             request.Method = "POST";
 
             await using var requestStream = await request.GetRequestStreamAsync();

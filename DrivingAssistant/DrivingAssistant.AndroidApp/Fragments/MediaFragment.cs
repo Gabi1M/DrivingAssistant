@@ -110,11 +110,24 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
             var mediaType = Path.GetExtension(filedata.FilePath) == ".jpg" ? MediaType.Image : MediaType.Video;
 
-            var progressDialog = ProgressDialog.Show(Context, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
-            await using var stream = filedata.GetStream();
-            await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id);
-            progressDialog.Dismiss();
-            await RefreshDataSource();
+            var alert = new AlertDialog.Builder(Context);
+            alert.SetTitle("Choose a unique description for this media");
+            var textEdit = new EditText(Context);
+            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+            textEdit.LayoutParameters = layoutParams;
+            textEdit.Gravity = GravityFlags.Center;
+            alert.SetView(textEdit);
+            alert.SetPositiveButton("Ok", async  (o, args) =>
+            {
+                var progressDialog = ProgressDialog.Show(Context, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
+                await using var stream = filedata.GetStream();
+                await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id, textEdit.Text);
+                progressDialog.Dismiss();
+                await RefreshDataSource();
+            });
+
+            var dialog = alert.Create();
+            dialog.Show();
         }
 
         //============================================================

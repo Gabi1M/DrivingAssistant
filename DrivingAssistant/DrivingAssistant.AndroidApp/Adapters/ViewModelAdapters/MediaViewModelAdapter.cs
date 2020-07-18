@@ -40,6 +40,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         {
             var view = convertView ?? _activity.LayoutInflater.Inflate(Resource.Layout.view_model_media_list, parent, false);
             var textType = view.FindViewById<TextView>(Resource.Id.mediaTextType);
+            var textDescription = view.FindViewById<TextView>(Resource.Id.mediaTextDescription);
             var textSource = view.FindViewById<TextView>(Resource.Id.mediaTextSource);
             var textDateTime = view.FindViewById<TextView>(Resource.Id.mediaTextDateTime);
             var textStatus = view.FindViewById<TextView>(Resource.Id.mediaTextStatus);
@@ -47,6 +48,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var currentImage = _images.ElementAt(position);
 
             textType.Text = currentImage.Type.ToString();
+            textDescription.Text = "Description: " + currentImage.Description;
             textSource.Text = "Source: " + currentImage.Source;
             textDateTime.Text = "Date added: " + currentImage.DateAdded.ToString("dd.MM.yyyy HH:mm:ss");
             textStatus.Text = currentImage.ProcessedId == default ? "Status: Media not yet processed!" : "Status: Media processed!";

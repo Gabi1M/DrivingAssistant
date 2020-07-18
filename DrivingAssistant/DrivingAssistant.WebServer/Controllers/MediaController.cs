@@ -99,10 +99,11 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST images_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
+                var description = Request.Query["Description"].First();
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
                 var media = new Media(MediaType.Image, filepath,
-                    Request.HttpContext.Connection.RemoteIpAddress.ToString(), string.Empty, DateTime.Now, default,
+                    Request.HttpContext.Connection.RemoteIpAddress.ToString(), description, DateTime.Now, default,
                     default, default, userId);
                 return Ok(await _mediaService.SetAsync(media));
             }
@@ -125,10 +126,11 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST videos_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
+                var description = Request.Query["Description"].First();
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
                 var media = new Media(MediaType.Video, filepath,
-                    Request.HttpContext.Connection.RemoteIpAddress.ToString(), string.Empty, DateTime.Now, default,
+                    Request.HttpContext.Connection.RemoteIpAddress.ToString(), description, DateTime.Now, default,
                     default, default, userId);
                 return Ok(await _mediaService.SetAsync(media));
             }

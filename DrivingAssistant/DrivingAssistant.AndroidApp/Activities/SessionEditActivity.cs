@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Mapsui;
 using Mapsui.Geometries;
@@ -71,6 +69,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _labelStartDateTimeValue.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
                 _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 _labelEndDateTimeValue.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 if (_selectedMedia.Count == 0)
                 {
@@ -100,6 +99,64 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelEndDateTimeValue.Click += ButtonSelectEndDateOnClick;
             _labelSelectedStartLocation.Click += LabelSelectedStartLocationOnClick;
             _labelSelectedEndLocation.Click += LabelSelectedEndLocationOnClick;
+        }
+        //============================================================
+        private void LabelSelectedStartLocationOnClick(object sender, EventArgs e)
+        {
+            var alert = new AlertDialog.Builder(this);
+            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
+            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var map = new Map
+            {
+                CRS = "EPSG:3857",
+                Transformation = new MinimalTransformation()
+            };
+            map.Layers.Add(OpenStreetMap.CreateTileLayer());
+            if (_selectedEndPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
+            }
+
+            if (_selectedStartPoint != null)
+            {
+                map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
+            }
+            map.Widgets.Add(new ScaleBarWidget(map)
+            {
+                TextAlignment = Alignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
+            });
+            map.Widgets.Add(new ZoomInOutWidget()
+            {
+                MarginX = 20,
+                MarginY = 20
+            });
+            mapControl.Map = map;
+            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
+            mapControl.Info += (o, args) =>
+            {
+                var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
+                if (!zoomWidgetEnvelope.Contains(args.MapInfo.ScreenPosition))
+                {
+                    if (mapControl.Map.Layers.Any(x => x.Name == "Points"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
+                    }
+                    if (mapControl.Map.Layers.Any(x => x.Name == "StartPoint"))
+                    {
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("StartPoint").First());
+                    }
+                    mapControl.Map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    _selectedStartPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
+                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                }
+            };
+            alert.SetView(view);
+            alert.SetPositiveButton("Confirm", (o, args) => { });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
+            var dialog = alert.Create();
+            dialog.Show();
         }
 
         //============================================================
@@ -163,65 +220,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private void LabelSelectedStartLocationOnClick(object sender, EventArgs e)
-        {
-            var alert = new AlertDialog.Builder(this);
-            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
-            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
-            var map = new Map
-            {
-                CRS = "EPSG:3857",
-                Transformation = new MinimalTransformation()
-            };
-            map.Layers.Add(OpenStreetMap.CreateTileLayer());
-            if (_selectedEndPoint != null)
-            {
-                map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
-            }
-
-            if (_selectedStartPoint != null)
-            {
-                map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
-            }
-            map.Widgets.Add(new ScaleBarWidget(map)
-            {
-                TextAlignment = Alignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top
-            });
-            map.Widgets.Add(new ZoomInOutWidget()
-            {
-                MarginX = 20,
-                MarginY = 20
-            });
-            mapControl.Map = map;
-            map.Home = n => n.NavigateTo(SphericalMercator.FromLonLat(23.598892, 46.765887), map.Resolutions[9]);
-            mapControl.Info += (o, args) =>
-            {
-                var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
-                if (!zoomWidgetEnvelope.Contains(args.MapInfo.ScreenPosition))
-                {
-                    if (mapControl.Map.Layers.Any(x => x.Name == "Points"))
-                    {
-                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Points").First());
-                    }
-                    if (mapControl.Map.Layers.Any(x => x.Name == "StartPoint"))
-                    {
-                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("StartPoint").First());
-                    }
-                    mapControl.Map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
-                    _selectedStartPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
-                }
-            };
-            alert.SetView(view);
-            alert.SetPositiveButton("Confirm", (o, args) => { });
-            alert.SetNegativeButton("Cancel", (o, args) => { });
-            var dialog = alert.Create();
-            dialog.Show();
-        }
-
-        //============================================================
         private void ButtonSelectStartDateOnClick(object sender, EventArgs e)
         {
             var datePickerDialog = new DatePickerDialog(this, (o, args) =>
@@ -263,7 +261,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private async void OnLabelSelectedMediaClick(object sender, EventArgs e)
         {
             var medias = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.IsProcessed() == false).OrderBy(x => x.DateAdded).ToList();
-            var mediasString = medias.Select(x => x.Type + ", " + x.DateAdded.ToString(CultureInfo.InvariantCulture)).ToArray();
+            var mediasString = medias.Select(x => x.Type + ", " + x.Description).ToArray();
 
             var checkedItems = medias.Select(media => _selectedMedia.Any(x => x.Id == media.Id)).ToArray();
             var alert = new AlertDialog.Builder(this);

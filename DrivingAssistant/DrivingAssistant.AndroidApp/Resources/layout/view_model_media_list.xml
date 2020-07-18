@@ -16,6 +16,11 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/mediaTextDescription" />
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/mediaTextSource" />
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
