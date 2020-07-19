@@ -42,6 +42,9 @@ namespace DrivingAssistant.AndroidApp.Activities
             _navigationView.SetNavigationItemSelectedListener(this);
             _textViewUser.Text = _user.FirstName + " " + _user.LastName;
             _textViewUserRole.Text = _user.Role.ToString();
+
+            var fragment = new MediaFragment(_user);
+            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
         }
 
         //============================================================
@@ -114,10 +117,6 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     var fragment = new SessionFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-                    break;
-                }
-                case Resource.Id.nav_map:
-                {
                     break;
                 }
                 case Resource.Id.nav_logout:

@@ -6,30 +6,38 @@
     android:minHeight="25px"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/linearLayout1">
+    android:paddingLeft="10.0dp"
+    android:paddingRight="10.0dp"
+    android:id="@+id/linearLayout1"
+    android:background="@color/mainColor2">
     <TextView
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextType" />
+        android:id="@+id/mediaTextType"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextDescription" />
+        android:id="@+id/mediaTextDescription"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextSource" />
+        android:id="@+id/mediaTextSource"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextDateTime" />
+        android:id="@+id/mediaTextDateTime"
+        android:textColor="@color/mainColor1"/>
     <TextView
-      android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextStatus" />
+        android:id="@+id/mediaTextStatus"
+        android:textColor="@color/mainColor1"/>
 </LinearLayout>

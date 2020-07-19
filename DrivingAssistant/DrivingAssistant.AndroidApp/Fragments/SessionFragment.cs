@@ -87,8 +87,8 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void OnItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            _selectedView?.SetBackgroundColor(Color.White);
-            e.View.SetBackgroundColor(Color.Aqua);
+            _selectedView?.SetBackgroundResource(0);
+            e.View.SetBackgroundResource(Resource.Drawable.list_element_border);
             _selectedPosition = e.Position;
             _selectedView = e.View;
         }

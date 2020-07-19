@@ -29,7 +29,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 _sessionService = SessionService.NewInstance(typeof(MssqlSessionService));
-                return Ok(JsonConvert.SerializeObject(await _sessionService.GetAsync(), Formatting.Indented));
+                var sessions = await _sessionService.GetAsync();
+                return Ok(JsonConvert.SerializeObject(sessions, Formatting.Indented));
             }
             catch (Exception ex)
             {

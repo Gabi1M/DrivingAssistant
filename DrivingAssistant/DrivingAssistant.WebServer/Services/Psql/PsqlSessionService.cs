@@ -22,17 +22,20 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<ICollection<Session>> GetAsync()
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetSessionsCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetSessionsCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var sessions = new List<Session>();
             while (await result.ReadAsync())
             {
-                /*sessions.Add(new Session(result["description"].ToString(),
-                    Convert.ToDateTime(result["startdatetime"]),
-                    Convert.ToDateTime(result["enddatetime"]),
-                    new Coordinates(Convert.ToSingle(result["startx"]), Convert.ToSingle(result["starty"])),
-                new Coordinates(Convert.ToSingle(result["endx"]), Convert.ToSingle(result["endy"])),
-                    Convert.ToInt64(result["id"])));*/
+                var session = new Session(result["description"].ToString(),
+                    Convert.ToDateTime(result["start_date_time"]),
+                    Convert.ToDateTime(result["end_date_time"]),
+                    result["start_point"].ToString().StringToPoint(),
+                    result["end_point"].ToString().StringToPoint(),
+                    result["intermediate_points"].ToString().StringToPointCollection(),
+                    Convert.ToInt64(result["id"]),
+                    Convert.ToInt64(result["user_id"]));
+                sessions.Add(session);
             }
 
             await _connection.CloseAsync();
@@ -43,62 +46,61 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<Session> GetByIdAsync(long id)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetSessionByIdCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetSessionByIdCommand, _connection);
             command.Parameters.AddWithValue("id", id);
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
-            /*var session = new Session(result["description"].ToString(),
-                Convert.ToDateTime(result["startdatetime"]),
-                Convert.ToDateTime(result["enddatetime"]),
-                new Coordinates(Convert.ToSingle(result["startx"]), Convert.ToSingle(result["starty"])),
-                new Coordinates(Convert.ToSingle(result["endx"]), Convert.ToSingle(result["endy"])),
-                Convert.ToInt64(result["id"]));*/
+            var session = new Session(result["description"].ToString(),
+                Convert.ToDateTime(result["start_date_time"]),
+                Convert.ToDateTime(result["end_date_time"]),
+                result["start_point"].ToString().StringToPoint(),
+                result["end_point"].ToString().StringToPoint(),
+                result["intermediate_points"].ToString().StringToPointCollection(),
+                Convert.ToInt64(result["id"]),
+                Convert.ToInt64(result["user_id"]));
             await _connection.CloseAsync();
-            return null;
+            return session;
         }
 
         //============================================================
         public override async Task<long> SetAsync(Session session)
         {
-            /*await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddSessionCommand, _connection);
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.AddSessionCommand, _connection);
             command.Parameters.AddWithValue("user_id", session.UserId);
             command.Parameters.AddWithValue("description", session.Description);
-            command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
-            command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
-            command.Parameters.AddWithValue("startx", session.StartPoint.Latitude);
-            command.Parameters.AddWithValue("starty", session.StartPoint.Longitude);
-            command.Parameters.AddWithValue("endx", session.EndPoint.Latitude);
-            command.Parameters.AddWithValue("endy", session.EndPoint.Longitude);
+            command.Parameters.AddWithValue("start_date_time", session.StartDateTime);
+            command.Parameters.AddWithValue("end_date_time", session.EndDateTime);
+            command.Parameters.AddWithValue("start_point", session.StartPoint.PointToString());
+            command.Parameters.AddWithValue("end_point", session.EndPoint.PointToString());
+            command.Parameters.AddWithValue("intermediate_points", session.IntermediatePoints.PointCollectionToString());
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
-            return result;*/
-            return default;
+            return result;
         }
 
         //============================================================
         public override async Task UpdateAsync(Session session)
         {
-            /*await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateSessionCommand, _connection);
+            await _connection.OpenAsync();
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.UpdateSessionCommand, _connection);
             command.Parameters.AddWithValue("id", session.Id);
             command.Parameters.AddWithValue("user_id", session.UserId);
             command.Parameters.AddWithValue("description", session.Description);
-            command.Parameters.AddWithValue("startdatetime", session.StartDateTime);
-            command.Parameters.AddWithValue("enddatetime", session.EndDateTime);
-            command.Parameters.AddWithValue("startx", session.StartPoint.Latitude);
-            command.Parameters.AddWithValue("starty", session.StartPoint.Longitude);
-            command.Parameters.AddWithValue("endx", session.EndPoint.Latitude);
-            command.Parameters.AddWithValue("endy", session.EndPoint.Longitude);
+            command.Parameters.AddWithValue("start_date_time", session.StartDateTime);
+            command.Parameters.AddWithValue("end_date_time", session.EndDateTime);
+            command.Parameters.AddWithValue("start_point", session.StartPoint.PointToString());
+            command.Parameters.AddWithValue("end_point", session.EndPoint.PointToString());
+            command.Parameters.AddWithValue("intermediate_points", session.IntermediatePoints.PointCollectionToString());
             await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();*/
+            await _connection.CloseAsync();
         }
 
         //============================================================
         public override async Task DeleteAsync(Session session)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteSessionCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.DeleteSessionCommand, _connection);
             command.Parameters.AddWithValue("id", session.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();

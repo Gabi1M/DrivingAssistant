@@ -3,23 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_images"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Medias" />
-        <item
-          android:id="@+id/nav_sessions"
-          android:title="Sessions" />
-        <item
-          android:id="@+id/nav_map"
-          android:title="Map" />
-        <item
-            android:id="@+id/nav_logout"
-            android:title="Logout" />
-    </group>
+  <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/nav_images"
+        android:icon="@drawable/ic_menu_camera"
+        android:title="Medias" />
+    <item
+        android:id="@+id/nav_sessions"
+        android:title="Sessions" />
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout" />
+  </group>
 
-    <!--<item android:title="Communicate">
+  <!--<item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"

@@ -4,47 +4,91 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minWidth="25px"
-    android:minHeight="25px">
+    android:background="@color/mainColor2">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10.0dp"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="55.0dp"
+        android:layout_height="35.0dp"
         android:weightSum="5"
-        android:id="@+id/sessionsButtonsLayout" >
+        android:id="@+id/sessionsButtonsLayout">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
         <Button
             android:text="Add"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonAdd" />
+            android:id="@+id/sessionsButtonAdd"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
         <Button
             android:text="Modify"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonModify" />
+            android:id="@+id/sessionsButtonModify"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
         <Button
             android:text="Delete"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonDelete" />
+            android:id="@+id/sessionsButtonDelete"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
         <Button
             android:text="Submit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonSubmit" />
+            android:id="@+id/sessionsButtonSubmit"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
         <Button
             android:text="View on Map"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonViewMap" />
+            android:id="@+id/sessionsButtonViewMap"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
     </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10.0dp"/>
+
     <ListView
         android:minWidth="25px"
         android:minHeight="25px"

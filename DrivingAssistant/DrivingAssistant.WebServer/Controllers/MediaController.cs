@@ -30,7 +30,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
-                return Ok((await _mediaService.GetAsync()).Where(x => x.UserId == userId));
+                var medias = (await _mediaService.GetAsync()).Where(x => x.UserId == userId);
+                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -47,7 +48,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 Logger.Log(
-                    "Received GET images_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    "Received GET media_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));

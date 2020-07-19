@@ -24,14 +24,20 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<ICollection<Media>> GetAsync()
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetMediaCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetMediaCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var media = new List<Media>();
             while (await result.ReadAsync())
             {
-                media.Add(new Media(result["type"].ToString(), result["filepath"].ToString(),
-                    result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["dateadded"]), Convert.ToInt64(result["id"]),
-                    Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"])));
+                media.Add(new Media(result["type"].ToString(), 
+                    result["filepath"].ToString(),
+                    result["source"].ToString(), 
+                    result["description"].ToString(), 
+                    Convert.ToDateTime(result["date_added"]), 
+                    Convert.ToInt64(result["id"]),
+                    Convert.ToInt64(result["processed_id"]), 
+                    Convert.ToInt64(result["session_id"]), 
+                    Convert.ToInt64(result["user_id"])));
             }
 
             await _connection.CloseAsync();
@@ -42,13 +48,19 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<Media> GetByIdAsync(long id)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetMediaByIdCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetMediaByIdCommand, _connection);
             command.Parameters.AddWithValue("id", id);
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
-            var media = new Media(result["type"].ToString(), result["filepath"].ToString(),
-                result["source"].ToString(), result["description"].ToString(), Convert.ToDateTime(result["dateadded"]), Convert.ToInt64(result["id"]),
-                Convert.ToInt64(result["processed_id"]), Convert.ToInt64(result["session_id"]), Convert.ToInt64(result["user_id"]));
+            var media = new Media(result["type"].ToString(), 
+                result["filepath"].ToString(),
+                result["source"].ToString(), 
+                result["description"].ToString(), 
+                Convert.ToDateTime(result["date_added"]), 
+                Convert.ToInt64(result["id"]),
+                Convert.ToInt64(result["processed_id"]), 
+                Convert.ToInt64(result["session_id"]), 
+                Convert.ToInt64(result["user_id"]));
             await _connection.CloseAsync();
             return media;
         }
@@ -57,7 +69,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<long> SetAsync(Media media)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddMediaCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.AddMediaCommand, _connection);
             command.Parameters.AddWithValue("type", media.Type.ToString());
             command.Parameters.AddWithValue("processed_id", media.ProcessedId);
             command.Parameters.AddWithValue("session_id", media.SessionId);
@@ -65,7 +77,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
             command.Parameters.AddWithValue("description", media.Description);
-            command.Parameters.AddWithValue("dateadded", media.DateAdded);
+            command.Parameters.AddWithValue("date_added", media.DateAdded);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
             return result;
@@ -75,7 +87,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task UpdateAsync(Media media)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateMediaCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.UpdateMediaCommand, _connection);
             command.Parameters.AddWithValue("id", media.Id);
             command.Parameters.AddWithValue("type", media.Type.ToString());
             command.Parameters.AddWithValue("processed_id", media.ProcessedId);
@@ -84,7 +96,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("filepath", media.Filepath);
             command.Parameters.AddWithValue("source", media.Source);
             command.Parameters.AddWithValue("description", media.Description);
-            command.Parameters.AddWithValue("dateadded", media.DateAdded);
+            command.Parameters.AddWithValue("date_added", media.DateAdded);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }
@@ -93,7 +105,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task DeleteAsync(Media media)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteMediaCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.DeleteMediaCommand, _connection);
             command.Parameters.AddWithValue("id", media.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();

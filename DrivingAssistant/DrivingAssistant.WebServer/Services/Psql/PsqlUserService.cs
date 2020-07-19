@@ -22,7 +22,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<ICollection<User>> GetAsync()
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUsersCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetUsersCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             var users = new List<User>();
             while (await result.ReadAsync())
@@ -40,7 +40,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<User> GetByIdAsync(long id)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.GetUserByIdCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetUserByIdCommand, _connection);
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
             var user = new User(result["username"].ToString(), result["password"].ToString(),
@@ -54,7 +54,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task<long> SetAsync(User user)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.AddUserCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.AddUserCommand, _connection);
             command.Parameters.AddWithValue("username", user.Username);
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
@@ -70,7 +70,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task UpdateAsync(User user)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.UpdateUserCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.UpdateUserCommand, _connection);
             command.Parameters.AddWithValue("id", user.Id);
             command.Parameters.AddWithValue("username", user.Username);
             command.Parameters.AddWithValue("password", user.Password);
@@ -86,7 +86,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         public override async Task DeleteAsync(User user)
         {
             await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.DatabaseConstants.DeleteUserCommand, _connection);
+            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.DeleteUserCommand, _connection);
             command.Parameters.AddWithValue("id", user.Id);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();

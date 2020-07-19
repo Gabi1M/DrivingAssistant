@@ -27,7 +27,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 _userService = UserService.NewInstance(typeof(MssqlUserService));
-                return Ok(await _userService.GetAsync());
+                var users = await _userService.GetAsync();
+                return Ok(JsonConvert.SerializeObject(users, Formatting.Indented));
             }
             catch (Exception ex)
             {

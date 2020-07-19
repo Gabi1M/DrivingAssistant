@@ -1,32 +1,41 @@
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="10.0dp"
+    android:paddingRight="10.0dp"
+    android:background="@color/mainColor2">
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextDescription" />
+        android:id="@+id/sessionTextDescription"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextStartDateTime" />
+        android:id="@+id/sessionTextStartDateTime"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextEndDateTime" />
+        android:id="@+id/sessionTextEndDateTime"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextStartCoordinates" />
+        android:id="@+id/sessionTextStartCoordinates"
+        android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextEndCoordinates" />
+        android:id="@+id/sessionTextEndCoordinates"
+        android:textColor="@color/mainColor1"/>
 
 </LinearLayout>

@@ -54,7 +54,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_session_edit);
             SetupActivityFields();
 
@@ -73,18 +73,18 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartPoint = _session.StartPoint;
                 _selectedEndPoint = _session.EndPoint;
                 _selectedIntermediaries = _session.IntermediatePoints;
-                _labelStartDateTimeValue.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
-                _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
-                _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
-                _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Points";
+                _labelStartDateTimeValue.Text = "Start Date: " +  _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                _labelEndDateTimeValue.Text = "End Date: " + _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                _labelSelectedStartLocation.Text = "Start Location: " + _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                _labelSelectedEndLocation.Text = "End Location: " + _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Intermediate Points";
                 if (_selectedMedia.Count == 0)
                 {
                     _labelSelectedMedia.Text = "Tap to Select Media";
                 }
                 else
                 {
-                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " items!";
+                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " Media Items!";
                 }
             }
         }
@@ -173,7 +173,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartPoint = selectedStartPoint;
                 if (_selectedStartPoint != null)
                 {
-                    _labelSelectedStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                    _labelSelectedStartLocation.Text = "Start Location: " + _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) =>
@@ -250,7 +250,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedEndPoint = selectedEndPoint;
                 if (_selectedEndPoint != null)
                 {
-                    _labelSelectedEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                    _labelSelectedEndLocation.Text = "End Location: " + _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) =>
@@ -306,7 +306,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             });
             mapControl.Map = map;
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), map.Resolutions[9]);
-            var selectedIntermediaries = new List<Point>(_selectedIntermediaries);
+            var selectedIntermediaries = new List<Point>(_selectedIntermediaries!);
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -337,7 +337,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
                 _selectedIntermediaries = new List<Point>(selectedIntermediaries);
-                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Points";
+                _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Intermediate Points";
             });
             alert.SetNegativeButton("Cancel", (o, args) =>
             {
@@ -360,7 +360,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     _selectedStartDateTime = _selectedStartDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedStartDateTime = _selectedStartDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelStartDateTimeValue.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                    _labelStartDateTimeValue.Text = "Start Date: " + _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true);
 
                 timePickerDialog.Show();
@@ -379,7 +379,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     _selectedEndDateTime = _selectedEndDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedEndDateTime = _selectedEndDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelEndDateTimeValue.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                    _labelEndDateTimeValue.Text = "End Date: " + _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true);
 
                 timePickerDialog.Show();
@@ -426,7 +426,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 }
                 else
                 {
-                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " items!";
+                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " Media Items!";
                 }
             });
 
