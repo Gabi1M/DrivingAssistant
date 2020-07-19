@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -121,7 +120,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             {
                 var progressDialog = ProgressDialog.Show(Context, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
                 await using var stream = filedata.GetStream();
-                await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id, textEdit.Text);
+                await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id, textEdit.Text.Trim());
                 progressDialog.Dismiss();
                 await RefreshDataSource();
             });
@@ -133,7 +132,29 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void OnModifyButtonClick(object sender, EventArgs e)
         {
-            // TODO
+            if (_selectedPosition == -1)
+            {
+                Toast.MakeText(Context, "No media selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var media = _currentMedias.ElementAt(_selectedPosition);
+            var alert = new AlertDialog.Builder(Context);
+            alert.SetTitle("Choose a unique description for this media");
+            var textEdit = new EditText(Context);
+            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+            textEdit.LayoutParameters = layoutParams;
+            textEdit.Gravity = GravityFlags.Center;
+            alert.SetView(textEdit);
+            alert.SetPositiveButton("Ok", async (o, args) =>
+            {
+                media.Description = textEdit.Text.Trim();
+                await _mediaService.UpdateMediaAsync(media);
+                await RefreshDataSource();
+            });
+
+            var dialog = alert.Create();
+            dialog.Show();
         }
 
         //============================================================
@@ -155,10 +176,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 Toast.MakeText(Context, "Media deleted!", ToastLength.Short).Show();
                 await RefreshDataSource();
             });
-            alert.SetNegativeButton("Cancel", (o, args) =>
-            {
-                //NOTHING
-            });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
 
             var dialog = alert.Create();
             dialog.Show();

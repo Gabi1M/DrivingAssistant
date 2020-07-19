@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Android.App;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.Core.Models;
@@ -44,6 +45,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var textEndDateTime = view.FindViewById<TextView>(Resource.Id.sessionTextEndDateTime);
             var textStartCoordinates = view.FindViewById<TextView>(Resource.Id.sessionTextStartCoordinates);
             var textEndCoordinates = view.FindViewById<TextView>(Resource.Id.sessionTextEndCoordinates);
+            var textProcessed = view.FindViewById<TextView>(Resource.Id.sessionTextProcessed);
 
             var currentSession = _sessions.ElementAt(position);
 
@@ -52,6 +54,17 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             textEndDateTime.Text = "End: " + currentSession.EndDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textStartCoordinates.Text = "Start position: " + currentSession.StartPoint.X + ", " + currentSession.StartPoint.Y;
             textEndCoordinates.Text = "End position: " + currentSession.EndPoint.X + ", " + currentSession.EndPoint.Y;
+
+            if (currentSession.Processed)
+            {
+                textProcessed.Text = "PROCESSED";
+                textProcessed.SetTextColor(Color.Green);
+            }
+            else
+            {
+                textProcessed.Text = "NOT PROCESSED";
+                textProcessed.SetTextColor(Color.Red);
+            }
 
             return view;
         }

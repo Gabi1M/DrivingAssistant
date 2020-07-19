@@ -22,6 +22,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private DrawerLayout _drawer;
         private NavigationView _navigationView;
         private TextView _textViewUser;
+        private TextView _textViewUserEmail;
         private TextView _textViewUserRole;
 
         private User _user;
@@ -33,6 +34,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
             SetupActivityFields();
+            _toolbar.Title = "Driving Assistant";
             SetSupportActionBar(_toolbar);
 
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
@@ -41,6 +43,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             toggle.SyncState();
             _navigationView.SetNavigationItemSelectedListener(this);
             _textViewUser.Text = _user.FirstName + " " + _user.LastName;
+            _textViewUserEmail.Text = _user.Email;
             _textViewUserRole.Text = _user.Role.ToString();
 
             var fragment = new MediaFragment(_user);
@@ -54,6 +57,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             _drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             _navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             _textViewUser = _navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
+            _textViewUserEmail = _navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserEmail);
             _textViewUserRole = _navigationView.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserRole);
         }
 
@@ -68,11 +72,11 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        public override bool OnCreateOptionsMenu(IMenu menu)
+        /*public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
-        }
+        }*/
 
         //============================================================
         public override bool OnOptionsItemSelected(IMenuItem item)

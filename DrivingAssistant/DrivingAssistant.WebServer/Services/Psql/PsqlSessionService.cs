@@ -33,6 +33,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
                     result["start_point"].ToString().StringToPoint(),
                     result["end_point"].ToString().StringToPoint(),
                     result["intermediate_points"].ToString().StringToPointCollection(),
+                    Convert.ToBoolean(result["processed"]),
                     Convert.ToInt64(result["id"]),
                     Convert.ToInt64(result["user_id"]));
                 sessions.Add(session);
@@ -56,6 +57,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
                 result["start_point"].ToString().StringToPoint(),
                 result["end_point"].ToString().StringToPoint(),
                 result["intermediate_points"].ToString().StringToPointCollection(),
+                Convert.ToBoolean(result["processed"]),
                 Convert.ToInt64(result["id"]),
                 Convert.ToInt64(result["user_id"]));
             await _connection.CloseAsync();
@@ -74,6 +76,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("start_point", session.StartPoint.PointToString());
             command.Parameters.AddWithValue("end_point", session.EndPoint.PointToString());
             command.Parameters.AddWithValue("intermediate_points", session.IntermediatePoints.PointCollectionToString());
+            command.Parameters.AddWithValue("processed", session.Processed);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
             await _connection.CloseAsync();
             return result;
@@ -92,6 +95,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("start_point", session.StartPoint.PointToString());
             command.Parameters.AddWithValue("end_point", session.EndPoint.PointToString());
             command.Parameters.AddWithValue("intermediate_points", session.IntermediatePoints.PointCollectionToString());
+            command.Parameters.AddWithValue("processed", session.Processed);
             await command.ExecuteNonQueryAsync();
             await _connection.CloseAsync();
         }

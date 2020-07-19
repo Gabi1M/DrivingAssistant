@@ -28,7 +28,8 @@ namespace DrivingAssistant.WebServer.Services.Psql
             while (await result.ReadAsync())
             {
                 users.Add(new User(result["username"].ToString(), result["password"].ToString(),
-                    result["firstname"].ToString(), result["lastname"].ToString(), result["role"].ToString(),
+                    result["firstname"].ToString(), result["lastname"].ToString(), result["email"].ToString(),
+                    result["role"].ToString(),
                     Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"])));
             }
 
@@ -44,7 +45,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var result = await command.ExecuteReaderAsync();
             await result.ReadAsync();
             var user = new User(result["username"].ToString(), result["password"].ToString(),
-                result["firstname"].ToString(), result["lastname"].ToString(), result["role"].ToString(),
+                result["firstname"].ToString(), result["lastname"].ToString(), result["email"].ToString(), result["role"].ToString(),
                 Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"]));
             await _connection.CloseAsync();
             return user;
@@ -59,6 +60,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
             command.Parameters.AddWithValue("lastname", user.LastName);
+            command.Parameters.AddWithValue("email", user.Email);
             command.Parameters.AddWithValue("role", user.Role.ToString());
             command.Parameters.AddWithValue("joindate", user.JoinDate);
             var result = Convert.ToInt64(await command.ExecuteScalarAsync());
@@ -76,6 +78,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
             command.Parameters.AddWithValue("password", user.Password);
             command.Parameters.AddWithValue("firstname", user.FirstName);
             command.Parameters.AddWithValue("lastname", user.LastName);
+            command.Parameters.AddWithValue("email", user.Email);
             command.Parameters.AddWithValue("role", user.Role.ToString());
             command.Parameters.AddWithValue("joindate", user.JoinDate);
             await command.ExecuteNonQueryAsync();

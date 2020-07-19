@@ -149,6 +149,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     await mediaService.UpdateAsync(media);
                 }
 
+                session.Processed = true;
+                await _sessionService.UpdateAsync(session);
                 return Ok();
             }
             catch (Exception ex)

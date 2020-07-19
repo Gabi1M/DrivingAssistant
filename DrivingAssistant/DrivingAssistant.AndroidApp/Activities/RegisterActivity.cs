@@ -5,7 +5,6 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
-using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
@@ -21,9 +20,9 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private TextInputEditText _textInputFirstName;
         private TextInputEditText _textInputLastName;
+        private TextInputEditText _textInputEmail;
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
-        private TextInputEditText _textInputConfirmPassword;
         private TextView _labelSelectedRole;
         private Button _registerButton;
 
@@ -45,11 +44,10 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textInputLastName = FindViewById<TextInputEditText>(Resource.Id.registerInputLastName);
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.registerInputUsername);
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.registerInputPassword);
-            _textInputConfirmPassword = FindViewById<TextInputEditText>(Resource.Id.registerInputConfirmPassword);
+            _textInputEmail = FindViewById<TextInputEditText>(Resource.Id.registerInputEmail);
             _labelSelectedRole = FindViewById<TextView>(Resource.Id.registerSelectRole);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
 
-            _textInputConfirmPassword.EditorAction += OnTextInputConfirmPasswordEditorAction;
             _labelSelectedRole.Click += LabelSelectedRoleOnClick;
             _registerButton.Click += OnRegisterButtonClick;
         }
@@ -71,22 +69,6 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var dialog = alert.Create();
             dialog.Show();
-        }
-
-        //============================================================
-        private void OnTextInputConfirmPasswordEditorAction(object sender, TextView.EditorActionEventArgs e)
-        {
-            try
-            {
-                if (e.Event.KeyCode == Keycode.Enter)
-                {
-                    _registerButton.PerformClick();
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
         }
 
         //============================================================
@@ -119,6 +101,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()),
                     _textInputFirstName.Text.Trim(),
                     _textInputLastName.Text.Trim(),
+                    _textInputEmail.Text.Trim(),
                     _selectedRole,
                     DateTime.Now);
 
@@ -145,6 +128,12 @@ namespace DrivingAssistant.AndroidApp.Activities
                 return false;
             }
 
+            if (string.IsNullOrEmpty(_textInputEmail.Text))
+            {
+                Toast.MakeText(Application.Context, "Please enter your email!", ToastLength.Short).Show();
+                return false;
+            }
+
             if (string.IsNullOrEmpty(_textInputUsername.Text))
             {
                 Toast.MakeText(Application.Context, "Please enter your username!", ToastLength.Short).Show();
@@ -154,18 +143,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (string.IsNullOrEmpty(_textInputPassword.Text))
             {
                 Toast.MakeText(Application.Context, "Please enter your password!", ToastLength.Short).Show();
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(_textInputConfirmPassword.Text))
-            {
-                Toast.MakeText(Application.Context, "Please confirm your password!", ToastLength.Short).Show();
-                return false;
-            }
-
-            if (_textInputPassword.Text.Trim() != _textInputConfirmPassword.Text.Trim())
-            {
-                Toast.MakeText(Application.Context, "Passwords don't match!", ToastLength.Short).Show();
                 return false;
             }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using Android.App;
 using Android.OS;
 using Mapsui;
+using Mapsui.Geometries;
 using Mapsui.Layers;
 using Mapsui.Projection;
 using Mapsui.Providers;
@@ -56,8 +57,8 @@ namespace DrivingAssistant.AndroidApp.Activities
             map.Layers.Add(OpenStreetMap.CreateTileLayer());
             map.Layers.Add(CreatePointLayer("CurrentLocation", Color.Blue, 0.5, ConvertFromLonLat(new Point(location.Longitude, location.Latitude))));
             map.Layers.Add(CreatePointLayer("StartPoint", Color.Green, 0.5, ConvertFromLonLat(_sessionPoints.First())));
-            map.Layers.Add(CreatePointLayer("IntermediatePoints", Color.Yellow, 0.5, ConvertFromLonLat(_sessionPoints.Skip(1).Take(_sessionPoints.Length - 2).ToArray())));
             map.Layers.Add(CreatePointLayer("EndPoint", Color.Red, 0.5, ConvertFromLonLat(_sessionPoints.Last())));
+            map.Layers.Add(CreateLineLayer("Line", Color.Orange, 3, ConvertFromLonLat(_sessionPoints)));
             map.Widgets.Add(new ScaleBarWidget(map)
             {
                 TextAlignment = Alignment.Center,
@@ -74,7 +75,7 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _mapControl.Map = map;
             _mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(middlePoint.X, middlePoint.Y), map.Resolutions[9]);
-            _mapControl.Info += MapControlOnInfo;
+            //_mapControl.Info += MapControlOnInfo;
         }
 
         //============================================================
@@ -110,6 +111,30 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Fill = new Brush(markerColor),
                     SymbolScale = markerScale
                 }
+            };
+        }
+
+        //============================================================
+        private static MemoryLayer CreateLineLayer(string name, Color lineColor, double lineWidth, params Point[] points)
+        {
+            var feature = new Feature
+            {
+                Geometry = new LineString(points)
+            };
+            feature.Styles.Add(new VectorStyle
+            {
+                Line =
+                {
+                    Color = lineColor,
+                    Width = lineWidth
+                }
+            });
+
+            return new MemoryLayer
+            {
+                Name = name,
+                IsMapInfoLayer = true,
+                DataSource = new MemoryProvider(feature)
             };
         }
 

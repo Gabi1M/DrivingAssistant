@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.Graphics;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -79,7 +78,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
-            _currentSessions = await _sessionService.GetAsync();
+            _currentSessions = (await _sessionService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
             _listView.Adapter?.Dispose();
             _listView.Adapter = new SessionViewModelAdapter(Activity, _currentSessions);
         }
@@ -120,6 +119,13 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             var session = _currentSessions.ElementAt(_selectedPosition);
+
+            if (session.Processed)
+            {
+                Toast.MakeText(Context, "Session already submited!", ToastLength.Short).Show();
+                return;
+            }
+
             var intent = new Intent(Context, typeof(SessionEditActivity));
             intent.PutExtra("user", JsonConvert.SerializeObject(_user));
             intent.PutExtra("session", JsonConvert.SerializeObject(session));
@@ -136,8 +142,15 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             var session = _currentSessions.ElementAt(_selectedPosition);
+            if (session.Processed)
+            {
+                Toast.MakeText(Context, "Session already submited!", ToastLength.Short).Show();
+                return;
+            }
+
             var progressDialog = ProgressDialog.Show(Context, "Submit", "Submitting...");
             await _sessionService.SubmitAsync(session);
+            await RefreshDataSource();
             progressDialog.Dismiss();
         }
 

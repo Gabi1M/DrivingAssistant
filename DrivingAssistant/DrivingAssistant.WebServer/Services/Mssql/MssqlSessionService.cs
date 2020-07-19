@@ -37,7 +37,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                         Convert.ToDateTime(row["EndDateTime"]),
                         row["StartPoint"].ToString().StringToPoint(),
                         row["EndPoint"].ToString().StringToPoint(),
-                        row["IntermediatePoints"].ToString().StringToPointCollection(), Convert.ToInt64(row["Id"]));
+                        row["IntermediatePoints"].ToString().StringToPointCollection(),
+                        Convert.ToBoolean(row["Processed"]), Convert.ToInt64(row["Id"]),
+                        Convert.ToInt64(row["UserID"]));
                 return result.ToList();
             });
         }
@@ -58,7 +60,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                         Convert.ToDateTime(row["EndDateTime"]),
                         row["StartPoint"].ToString().StringToPoint(),
                         row["EndPoint"].ToString().StringToPoint(),
-                        row["IntermediatePoints"].ToString().StringToPointCollection(), Convert.ToInt64(row["Id"]));
+                        row["IntermediatePoints"].ToString().StringToPointCollection(),
+                        Convert.ToBoolean(row["Processed"]), Convert.ToInt64(row["Id"]),
+                        Convert.ToInt64(row["UserID"]));
                 return result.First();
             });
         }
@@ -79,6 +83,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     session.StartPoint.PointToString(),
                     session.EndPoint.PointToString(),
                     session.IntermediatePoints.PointCollectionToString(),
+                    session.Processed,
                     ref idOut);
                 return idOut.Value;
             });
@@ -100,6 +105,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     session.StartPoint.PointToString(),
                     session.EndPoint.PointToString(),
                     session.IntermediatePoints.PointCollectionToString(),
+                    session.Processed,
                     ref idOut);
             });
         }

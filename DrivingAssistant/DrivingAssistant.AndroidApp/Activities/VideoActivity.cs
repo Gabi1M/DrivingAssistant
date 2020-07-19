@@ -1,10 +1,13 @@
 ﻿using Android.App;
 using Android.Content.PM;
+using Android.Media;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Widget;
 using DrivingAssistant.Core.Models;
+using Java.IO;
 using Newtonsoft.Json;
+using File = System.IO.File;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {

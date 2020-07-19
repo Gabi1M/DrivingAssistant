@@ -18,6 +18,9 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("LastName")]
         public string LastName { get; set; }
 
+        [JsonProperty("Email")]
+        public string Email { get; set; }
+
         [JsonProperty("Role")]
         public UserRole Role { get; set; }
 
@@ -27,12 +30,13 @@ namespace DrivingAssistant.Core.Models
         //============================================================
         [JsonConstructor]
         public User(string username, string password, string firstName,
-            string lastName, UserRole role, DateTime joinDate, long id = -1)
+            string lastName, string email,  UserRole role, DateTime joinDate, long id = -1)
         {
             Username = username;
             Password = password;
             FirstName = firstName;
             LastName = lastName;
+            Email = email;
             Role = role;
             JoinDate = joinDate;
             Id = id;
@@ -40,12 +44,13 @@ namespace DrivingAssistant.Core.Models
 
         //============================================================
         public User(string username, string password, string firstName,
-            string lastName, string role, DateTime joinDate, long id = -1)
+            string lastName, string email,  string role, DateTime joinDate, long id = -1)
         {
             Username = username;
             Password = password;
             FirstName = firstName;
             LastName = lastName;
+            Email = email;
             JoinDate = joinDate;
             Id = id;
             try
