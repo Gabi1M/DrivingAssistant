@@ -123,6 +123,12 @@ namespace DrivingAssistant.AndroidApp.Activities
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     break;
                 }
+                case Resource.Id.nav_settings:
+                {
+                    var fragment = new SettingsFragment(_user);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    break;
+                }
                 case Resource.Id.nav_logout:
                 {
                     Toast.MakeText(Application.Context, "Logging out...", ToastLength.Short).Show();

@@ -4,15 +4,25 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using DrivingAssistant.Core.Enums;
+using DrivingAssistant.Core.Models;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Bitmap = System.Drawing.Bitmap;
+using Point = System.Drawing.Point;
 
 namespace DrivingAssistant.WebServer.Tools
 {
-    public static class ImageProcessor
+    public class ImageProcessor
     {
+        private readonly ImageProcessorParameters _parameters;
+
+        //======================================================//
+        public ImageProcessor(ImageProcessorParameters parameters)
+        {
+            _parameters = parameters;
+        }
+
         //======================================================//
         private static ICollection<Point> GetOverlayPoints(int width, int height)
         {
@@ -41,12 +51,14 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        private static Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image)
+        private Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image)
         {
             var processedImage = image.Clone();
-            var cannyImage = processedImage.Canny(100, 150);
-            var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(1);
-            var houghLines = maskedImage.HoughLinesBinary(1, Math.PI / 180, 10, 5, 5)[0];
+            var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
+            var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
+            var houghLines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+                _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
+                _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0];
             foreach (var houghLine in houghLines)
             { 
                 processedImage.Draw(houghLine, new Bgr(0, 255, 0), 2);
@@ -57,7 +69,7 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        private static Bitmap ProcessBitmap(Bitmap bitmap)
+        private Bitmap ProcessBitmap(Bitmap bitmap)
         {
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
             var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
@@ -67,20 +79,7 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        private static Bitmap ToBitmap(this Image<Bgr, byte> image)
-        {
-            var size = image.Size;
-            var bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
-            var bitmapData = bitmap.LockBits(new Rectangle(Point.Empty, size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-            using var mat = new Mat(size.Height, size.Width, DepthType.Cv8U, image.NumberOfChannels, bitmapData.Scan0, bitmapData.Stride);
-            image.Mat.CopyTo(mat);
-            bitmap.UnlockBits(bitmapData);
-            image.Dispose();
-            return bitmap;
-        }
-
-        //======================================================//
-        public static string ProcessImage(string filename, bool loadAsBitmap = false)
+        public string ProcessImage(string filename, bool loadAsBitmap = false)
         {
             if (loadAsBitmap)
             {
@@ -101,7 +100,7 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public static string ProcessVideo(string filename, int framesToSkip = 0)
+        public string ProcessVideo(string filename, int framesToSkip = 0)
         {
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
@@ -141,6 +140,22 @@ namespace DrivingAssistant.WebServer.Tools
 
             videoWriter.Dispose();
             return processedVideoFilename;
+        }
+    }
+
+    public static class ImageProcessorExtender
+    {
+        //======================================================//
+        public static Bitmap ToBitmap(this Image<Bgr, byte> image)
+        {
+            var size = image.Size;
+            var bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
+            var bitmapData = bitmap.LockBits(new Rectangle(Point.Empty, size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+            using var mat = new Mat(size.Height, size.Width, DepthType.Cv8U, image.NumberOfChannels, bitmapData.Scan0, bitmapData.Stride);
+            image.Mat.CopyTo(mat);
+            bitmap.UnlockBits(bitmapData);
+            image.Dispose();
+            return bitmap;
         }
     }
 }

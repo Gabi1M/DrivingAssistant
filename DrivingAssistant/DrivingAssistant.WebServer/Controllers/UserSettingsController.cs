@@ -12,23 +12,23 @@ using Newtonsoft.Json;
 namespace DrivingAssistant.WebServer.Controllers
 {
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserSettingsController : ControllerBase
     {
-        private UserService _userService;
+        private UserSettingsService _userSettingsService;
 
         //============================================================
         [HttpGet]
-        [Route("users")]
+        [Route("user_settings")]
         public async Task<IActionResult> GetAsync()
         {
             try
             {
                 Logger.Log(
-                    "Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    "Received GET user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userService = UserService.NewInstance(typeof(MssqlUserService));
-                var users = await _userService.GetAsync();
-                return Ok(JsonConvert.SerializeObject(users, Formatting.Indented));
+                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                var userSettings = await _userSettingsService.GetAsync();
+                return Ok(JsonConvert.SerializeObject(userSettings, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -39,26 +39,18 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route("users")]
+        [Route("user_settings")]
         public async Task<IActionResult> PostAsync()
         {
             try
             {
                 Logger.Log(
-                    "Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    "Received POST user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
+                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 using var streamReader = new StreamReader(Request.Body);
-                _userService = UserService.NewInstance(typeof(MssqlUserService));
-                var userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
-                var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                user.Id = await _userService.SetAsync(user);
-                var userSettings = new UserSettings
-                {
-                    UserId = user.Id,
-                    ImageProcessorParameters = ImageProcessorParameters.Default()
-                };
-                await userSettingsService.SetAsync(userSettings);
-                return Ok(user.Id);
+                var userSettings = JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
+                return Ok(await _userSettingsService.SetAsync(userSettings));
             }
             catch (Exception ex)
             {
@@ -69,18 +61,18 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPut]
-        [Route("users")]
+        [Route("user_settings")]
         public async Task<IActionResult> PutAsync()
         {
             try
             {
                 Logger.Log(
-                    "Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    "Received PUT user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
+                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 using var streamReader = new StreamReader(Request.Body);
-                _userService = UserService.NewInstance(typeof(MssqlUserService));
-                var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                await _userService.UpdateAsync(user);
+                var userSettings = JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
+                await _userSettingsService.UpdateAsync(userSettings);
                 return Ok();
             }
             catch (Exception ex)
@@ -92,18 +84,18 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpDelete]
-        [Route("users")]
+        [Route("user_settings")]
         public async Task<IActionResult> DeleteAsync()
         {
             try
             {
                 Logger.Log(
-                    "Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
+                    "Received DELETE user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
+                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _userService = UserService.NewInstance(typeof(MssqlUserService));
-                var user = await _userService.GetByIdAsync(id);
-                await _userService.DeleteAsync(user);
+                var userSettings = await _userSettingsService.GetByIdAsync(id);
+                await _userSettingsService.DeleteAsync(userSettings);
                 return Ok();
             }
             catch (Exception ex)

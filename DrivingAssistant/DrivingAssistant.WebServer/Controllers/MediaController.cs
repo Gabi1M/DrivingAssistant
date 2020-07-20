@@ -207,16 +207,17 @@ namespace DrivingAssistant.WebServer.Controllers
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 _mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var media = await _mediaService.GetByIdAsync(id);
+                var imageProcessor = new ImageProcessor(ImageProcessorParameters.Default());
                 Media processedMedia;
                 if (media.Type == MediaType.Image)
                 {
-                    var processedFilename = ImageProcessor.ProcessImage(media.Filepath);
+                    var processedFilename = imageProcessor.ProcessImage(media.Filepath);
                     processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description,
                         DateTime.Now, default, default, media.SessionId, media.UserId);
                 }
                 else
                 {
-                    var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
+                    var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10);
                     processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description,
                         DateTime.Now, default, default, media.SessionId, media.UserId);
                 }

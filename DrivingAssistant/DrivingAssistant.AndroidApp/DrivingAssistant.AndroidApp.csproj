@@ -95,11 +95,13 @@
     <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Fragments\MediaFragment.cs" />
     <Compile Include="Fragments\SessionFragment.cs" />
+    <Compile Include="Fragments\SettingsFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\MediaService.cs" />
     <Compile Include="Services\SessionService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UserSettingsService.cs" />
     <Compile Include="Tools\CacheManager.cs" />
     <Compile Include="Tools\Constants.cs" />
     <Compile Include="Tools\Utils.cs" />
@@ -257,6 +259,20 @@
     <AndroidResource Include="Resources\drawable\textbox_border.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_settings.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-v21\ic_menu_settings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-v21\ic_menu_sessions.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-v21\ic_menu_logout.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

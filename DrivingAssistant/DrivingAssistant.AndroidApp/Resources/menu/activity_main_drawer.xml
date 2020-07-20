@@ -10,9 +10,15 @@
         android:title="Medias" />
     <item
         android:id="@+id/nav_sessions"
+        android:icon="@drawable/ic_menu_sessions"
         android:title="Sessions" />
     <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_menu_settings"
+        android:title="Settings" />
+    <item
         android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_menu_logout"
         android:title="Logout" />
   </group>
 

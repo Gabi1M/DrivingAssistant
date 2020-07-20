@@ -8,7 +8,6 @@ using Mapsui.Layers;
 using Mapsui.Projection;
 using Mapsui.Providers;
 using Mapsui.Styles;
-using Mapsui.UI;
 using Mapsui.UI.Android;
 using Mapsui.Utilities;
 using Mapsui.Widgets;
@@ -75,27 +74,6 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _mapControl.Map = map;
             _mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(middlePoint.X, middlePoint.Y), map.Resolutions[9]);
-            //_mapControl.Info += MapControlOnInfo;
-        }
-
-        //============================================================
-        private void MapControlOnInfo(object sender, MapInfoEventArgs e)
-        {
-            if (e.NumTaps == 1)
-            {
-                if (e.MapInfo.Feature == null)
-                {
-                    var zoomWidgetEnvelope = _mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
-                    if (!zoomWidgetEnvelope.Contains(e.MapInfo.ScreenPosition))
-                    {
-                        if (_mapControl.Map.Layers.Any(x => x.Name == "PlacedPoint"))
-                        {
-                            _mapControl.Map.Layers.Remove(_mapControl.Map.Layers.FindLayer("PlacedPoint").First());
-                        }
-                        _mapControl.Map.Layers.Add(CreatePointLayer("PlacedPoint", Color.Red, 0.5, new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)));
-                    }
-                }
-            }
         }
 
         //============================================================

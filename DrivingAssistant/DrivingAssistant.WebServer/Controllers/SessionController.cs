@@ -128,18 +128,19 @@ namespace DrivingAssistant.WebServer.Controllers
                 var mediaService = MediaService.NewInstance(typeof(MssqlMediaService));
                 var session = await _sessionService.GetByIdAsync(id);
                 var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
+                var imageProcessor = new ImageProcessor(ImageProcessorParameters.Default());
                 foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
                 {
                     Media processedMedia;
                     if (media.Type == MediaType.Image)
                     {
-                        var processedFilename = ImageProcessor.ProcessImage(media.Filepath);
+                        var processedFilename = imageProcessor.ProcessImage(media.Filepath);
                         processedMedia = new Media(MediaType.Image, processedFilename, media.Source, media.Description,
                             DateTime.Now, default, default, media.SessionId, media.UserId);
                     }
                     else
                     {
-                        var processedFilename = ImageProcessor.ProcessVideo(media.Filepath, 10);
+                        var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10);
                         processedMedia = new Media(MediaType.Video, processedFilename, media.Source, media.Description,
                             DateTime.Now, default, default, media.SessionId, media.UserId);
                     }

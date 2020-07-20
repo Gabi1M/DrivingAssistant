@@ -26,7 +26,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_UsersTableAdapter()
+                using var tableAdapter = new Get_UsersTableAdapter
                 {
                     Connection = new SqlConnection(_connectionString)
                 };
@@ -46,7 +46,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_User_By_IdTableAdapter()
+                using var tableAdapter = new Get_User_By_IdTableAdapter
                 {
                     Connection = new SqlConnection(_connectionString)
                 };
@@ -66,7 +66,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Set_UserTableAdapter()
+                using var tableAdapter = new Set_UserTableAdapter
                 {
                     Connection = new SqlConnection(_connectionString)
                 };
@@ -82,7 +82,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             await Task.Run(() =>
             {
-                using var tableAdapter = new Set_UserTableAdapter()
+                using var tableAdapter = new Set_UserTableAdapter
                 {
                     Connection = new SqlConnection(_connectionString)
                 };
@@ -97,7 +97,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             await Task.Run(() =>
             {
-                using var tableAdapter = new Delete_UserTableAdapter()
+                using var tableAdapter = new Delete_UserTableAdapter
                 {
                     Connection = new SqlConnection(_connectionString)
                 };

@@ -5,17 +5,17 @@ namespace DrivingAssistant.AndroidApp.Tools
     public static class CacheManager
     {
         //============================================================
-        public static void Set<T>(string key, T values)
+        public static void Set(string key, string value)
         {
             var storage = SimpleStorage.EditGroup("settings");
-            storage.Put(key, values);
+            storage.Put(key, value);
         }
 
         //============================================================
-        public static T Get<T>(string key)
+        public static string Get(string key)
         {
             var storage = SimpleStorage.EditGroup("settings");
-            return storage.Get<T>(key) ?? default;
+            return storage.Get(key);
         }
     }
 }
