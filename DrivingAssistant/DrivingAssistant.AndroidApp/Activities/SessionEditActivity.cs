@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Support.Design.Widget;
+using Android.Views;
 using Android.Widget;
+using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Mapsui;
 using Mapsui.Geometries;
@@ -19,6 +25,7 @@ using Mapsui.Widgets;
 using Mapsui.Widgets.ScaleBar;
 using Mapsui.Widgets.Zoom;
 using Newtonsoft.Json;
+using Plugin.FilePicker;
 using Xamarin.Essentials;
 using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
 using Map = Mapsui.Map;
@@ -35,7 +42,11 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelSelectedStartLocation;
         private TextView _labelSelectedEndLocation;
         private TextView _labelSelectedIntermediaries;
-        private TextView _labelSelectedMedia;
+        private ListView _mediaListView;
+        private Button _mediaButtonAdd;
+        private Button _mediaButtonModify;
+        private Button _mediaButtonDelete;
+        private Button _mediaButtonView;
         private Button _buttonSubmit;
 
         private User _user;
@@ -44,12 +55,15 @@ namespace DrivingAssistant.AndroidApp.Activities
         private MediaService _mediaService;
         private Location _currentLocation;
 
-        private List<Media> _selectedMedia = new List<Media>();
+        private List<Media> _mediaList = new List<Media>();
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
         private Point _selectedStartPoint;
         private Point _selectedEndPoint;
         private ICollection<Point> _selectedIntermediaries = new List<Point>();
+
+        private int _selectedMediaPosition = -1;
+        private View _selectedMediaView;
 
         //============================================================
         protected override async void OnCreate(Bundle savedInstanceState)
@@ -67,7 +81,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (Intent.HasExtra("session"))
             {
                 _session = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                _selectedMedia = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _session.Id).ToList();
+                _mediaList = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _session.Id).ToList();
                 _textDescription.Text = _session.Description;
                 _selectedStartDateTime = _session.StartDateTime;
                 _selectedEndDateTime = _session.EndDateTime;
@@ -79,15 +93,14 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _labelSelectedStartLocation.Text = "Start Location: " + _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 _labelSelectedEndLocation.Text = "End Location: " + _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 _labelSelectedIntermediaries.Text = "Selected " + _selectedIntermediaries.Count + " Intermediate Points";
-                if (_selectedMedia.Count == 0)
-                {
-                    _labelSelectedMedia.Text = "Tap to Select Media";
-                }
-                else
-                {
-                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " Media Items!";
-                }
+                _mediaListView.Adapter = new MediaThumbnailViewModelAdapter(this, _mediaList);
             }
+        }
+
+        //============================================================
+        public override void OnBackPressed()
+        {
+            base.OnBackPressed();
         }
 
         //============================================================
@@ -99,16 +112,142 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelSelectedStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
             _labelSelectedEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
             _labelSelectedIntermediaries = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedIntermediaries);
-            _labelSelectedMedia = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedMedia);
+            _mediaListView = FindViewById<ListView>(Resource.Id.sessionEditMediaList);
+            _mediaButtonAdd = FindViewById<Button>(Resource.Id.mediasButtonAdd);
+            _mediaButtonModify = FindViewById<Button>(Resource.Id.mediasButtonModify);
+            _mediaButtonDelete = FindViewById<Button>(Resource.Id.mediasButtonDelete);
+            _mediaButtonView = FindViewById<Button>(Resource.Id.mediasButtonView);
             _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
 
-            _labelSelectedMedia.Click += OnLabelSelectedMediaClick;
+            _mediaButtonAdd.Click += OnMediaButtonAddClick;
+            _mediaButtonModify.Click += OnMediaButtonModifyClick;
+            _mediaButtonDelete.Click += OnMediaButtonDeleteClick;
+            _mediaButtonView.Click += OnMediaButtonViewClick;
             _buttonSubmit.Click += OnButtonSubmitClick;
             _labelStartDateTimeValue.Click += ButtonSelectStartDateOnClick;
             _labelEndDateTimeValue.Click += ButtonSelectEndDateOnClick;
             _labelSelectedStartLocation.Click += LabelSelectedStartLocationOnClick;
             _labelSelectedEndLocation.Click += LabelSelectedEndLocationOnClick;
             _labelSelectedIntermediaries.Click += LabelSelectedIntermediariesOnClick;
+            _mediaListView.ItemClick += OnMediaListViewItemClick;
+        }
+
+        //============================================================
+        private async Task RefreshDataSource(bool fromServer)
+        {
+            if (fromServer)
+            {
+                _mediaList = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _session.Id).ToList();
+            }
+            _mediaListView.Adapter?.Dispose();
+            _mediaListView.Adapter = new MediaThumbnailViewModelAdapter(this, _mediaList);
+        }
+
+        //============================================================
+        private async void OnMediaButtonAddClick(object sender, EventArgs e)
+        {
+            var filedata = await CrossFilePicker.Current.PickFile();
+            if (filedata == null)
+            {
+                return;
+            }
+
+            if (Path.GetExtension(filedata.FilePath) != ".jpg" && Path.GetExtension(filedata.FilePath) != ".mp4")
+            {
+                Toast.MakeText(this, "Selected file is not a Jpeg image file or MP4 video file!", ToastLength.Short).Show();
+                return;
+            }
+
+            var mediaType = Path.GetExtension(filedata.FilePath) == ".jpg" ? MediaType.Image : MediaType.Video;
+            var progressDialog = ProgressDialog.Show(this, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
+            await using var stream = filedata.GetStream();
+            var mediaId = await _mediaService.SetMediaStreamAsync(stream, mediaType, _user.Id, string.Empty);
+            var media = (await _mediaService.GetMediaAsync(_user.Id)).First(x => x.Id == mediaId);
+            if (Intent.HasExtra("session"))
+            {
+                media.SessionId = _session.Id;
+                await _mediaService.UpdateMediaAsync(media);
+                await RefreshDataSource(true);
+            }
+            else
+            {
+                _mediaList.Add(media);
+                await RefreshDataSource(false);
+            }
+            progressDialog.Dismiss();
+        }
+
+        //============================================================
+        private void OnMediaButtonModifyClick(object sender, EventArgs e)
+        {
+            //TODO DECIDE WHETHER TO KEEP OR NOT
+        }
+
+        //============================================================
+        private void OnMediaButtonDeleteClick(object sender, EventArgs e)
+        {
+            if (_selectedMediaPosition == -1)
+            {
+                Toast.MakeText(this, "No media selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Confirm Delete");
+            alert.SetMessage("Action cannot be undone");
+            alert.SetPositiveButton("Delete", async (o, args) =>
+            {
+                var media = _mediaList.ElementAt(_selectedMediaPosition);
+                await _mediaService.DeleteMediaAsync(media.Id);
+                Toast.MakeText(this, "Media deleted!", ToastLength.Short).Show();
+
+                if (Intent.HasExtra("session"))
+                {
+                    await RefreshDataSource(true);
+                }
+                else
+                {
+                    _mediaList.Remove(media);
+                    await RefreshDataSource(false);
+                }
+            });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
+
+            var dialog = alert.Create();
+            dialog.Show();
+        }
+
+        //============================================================
+        private void OnMediaButtonViewClick(object sender, EventArgs e)
+        {
+            if (_selectedMediaPosition == -1)
+            {
+                Toast.MakeText(this, "No media selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var media = _mediaList.ElementAt(_selectedMediaPosition);
+            if (media.Type == MediaType.Image)
+            {
+                var intent = new Intent(this, typeof(GalleryActivity));
+                intent.PutExtra("image", JsonConvert.SerializeObject(media));
+                StartActivity(intent);
+            }
+            else if (media.Type == MediaType.Video)
+            {
+                var intent = new Intent(this, typeof(VideoActivity));
+                intent.PutExtra("video", JsonConvert.SerializeObject(media));
+                StartActivity(intent);
+            }
+        }
+
+        //============================================================
+        private void OnMediaListViewItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            _selectedMediaView?.SetBackgroundResource(0);
+            e.View.SetBackgroundResource(Resource.Drawable.list_element_border);
+            _selectedMediaPosition = e.Position;
+            _selectedMediaView = e.View;
         }
 
         //============================================================
@@ -318,55 +457,9 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private async void OnLabelSelectedMediaClick(object sender, EventArgs e)
-        {
-            var medias = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.IsProcessed() == false).OrderBy(x => x.DateAdded).ToList();
-            var mediasString = medias.Select(x => x.Type + ", " + x.Description).ToArray();
-
-            var checkedItems = medias.Select(media => _selectedMedia.Any(x => x.Id == media.Id)).ToArray();
-            var alert = new AlertDialog.Builder(this);
-            alert.SetTitle("Choose media to include in this session");
-            alert.SetMultiChoiceItems(mediasString, checkedItems, (o, args) =>
-            {
-                if (args.IsChecked == false && checkedItems[args.Which])
-                {
-                    checkedItems[args.Which] = false;
-                }
-
-                if (args.IsChecked && !checkedItems[args.Which])
-                {
-                    checkedItems[args.Which] = true;
-                }
-            });
-
-            alert.SetPositiveButton("Ok", (o, args) =>
-            {
-                _selectedMedia.Clear();
-                for (var i = 0; i < checkedItems.Length; i++)
-                {
-                    if (checkedItems[i])
-                    {
-                        _selectedMedia.Add(medias.ElementAt(i));
-                    }
-                }
-                if (_selectedMedia.Count == 0)
-                {
-                    _labelSelectedMedia.Text = "Tap to Select Media";
-                }
-                else
-                {
-                    _labelSelectedMedia.Text = "Selected " + _selectedMedia.Count + " Media Items!";
-                }
-            });
-
-            var dialog = alert.Create();
-            dialog.Show();
-        }
-
-        //============================================================
         private async void OnButtonSubmitClick(object sender, EventArgs e)
         {
-            if (_selectedMedia.Count == 0)
+            if (_mediaList.Count == 0)
             {
                 Toast.MakeText(this, "There is no media selected!", ToastLength.Short).Show();
                 return;
@@ -380,16 +473,28 @@ namespace DrivingAssistant.AndroidApp.Activities
                 return;
             }
 
-            var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime.Value,
-                _selectedEndDateTime.Value,
-                _selectedStartPoint,
-                _selectedEndPoint,
-                _selectedIntermediaries, false, default, _user.Id);
-            session.Id = await _sessionService.SetAsync(session);
-            foreach (var media in _selectedMedia)
+            if(!(Intent.HasExtra("session")))
             {
-                media.SessionId = session.Id;
-                await _mediaService.UpdateMediaAsync(media);
+                var session = new Session(_textDescription.Text.Trim(), _selectedStartDateTime.Value,
+                    _selectedEndDateTime.Value,
+                    _selectedStartPoint,
+                    _selectedEndPoint,
+                    _selectedIntermediaries, false, default, _user.Id);
+                session.Id = await _sessionService.SetAsync(session);
+                foreach (var media in _mediaList)
+                {
+                    media.SessionId = session.Id;
+                    await _mediaService.UpdateMediaAsync(media);
+                }
+            }
+            else
+            {
+                await _sessionService.UpdateAsync(_session);
+                foreach (var media in _mediaList.Where(x => x.SessionId != _session.Id))
+                {
+                    media.SessionId = _session.Id;
+                    await _mediaService.UpdateMediaAsync(media);
+                }
             }
 
             Finish();

@@ -112,18 +112,85 @@
         android:layout_width="match_parent"
         android:layout_height="20.0dp"/>
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_marginLeft="35.0dp"
+        android:layout_marginRight="35.0dp"
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedMedia"
-        android:singleLine="true"
-        android:gravity="center"
+        android:weightSum="4"
+        android:id="@+id/mediasButtonsLayout">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/mediasButtonAdd"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Modify"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/mediasButtonModify"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/mediasButtonDelete"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="View"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/mediasButtonView"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20.0dp"/>
+
+    <ListView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="150.0dp"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select Medias"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
+        android:id="@+id/sessionEditMediaList"
+        android:background="@drawable/textbox_border">
+
+    </ListView>
 
     <Space
         android:layout_width="match_parent"
@@ -131,8 +198,8 @@
 
     <Button
         android:text="Submit"
-        android:layout_marginLeft="100.0dp"
-        android:layout_marginRight="100.0dp"
+        android:layout_marginLeft="50.0dp"
+        android:layout_marginRight="50.0dp"
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
         android:id="@+id/sessionEditButtonSubmit"

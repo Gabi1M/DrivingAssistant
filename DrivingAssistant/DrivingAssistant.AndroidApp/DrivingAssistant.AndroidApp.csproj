@@ -90,10 +90,9 @@
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\SessionEditActivity.cs" />
     <Compile Include="Activities\VideoActivity.cs" />
-    <Compile Include="Adapters\ViewModelAdapters\MediaViewModelAdapter.cs" />
+    <Compile Include="Adapters\ViewModelAdapters\MediaThumbnailViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
     <Compile Include="Activities\MainActivity.cs" />
-    <Compile Include="Fragments\MediaFragment.cs" />
     <Compile Include="Fragments\SessionFragment.cs" />
     <Compile Include="Fragments\SettingsFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -191,11 +190,6 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\fragment_medias.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_gallery.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -273,6 +267,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-v21\ic_menu_logout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\view_model_mediaThumbnail_list.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

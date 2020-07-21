@@ -103,5 +103,17 @@ namespace DrivingAssistant.AndroidApp.Services
             var response = request.GetResponse() as HttpWebResponse;
             return await BitmapFactory.DecodeStreamAsync(response?.GetResponseStream());
         }
+
+        //============================================================
+        public Bitmap DownloadImage(long id)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/media_download?id=" + id))
+            {
+                Method = "GET"
+            };
+
+            var response = request.GetResponse() as HttpWebResponse;
+            return BitmapFactory.DecodeStream(response?.GetResponseStream());
+        }
     }
 }

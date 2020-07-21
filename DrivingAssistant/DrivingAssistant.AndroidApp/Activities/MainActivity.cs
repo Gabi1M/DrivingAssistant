@@ -34,7 +34,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
             SetupActivityFields();
-            _toolbar.Title = "Driving Assistant";
             SetSupportActionBar(_toolbar);
 
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
@@ -46,8 +45,9 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textViewUserEmail.Text = _user.Email;
             _textViewUserRole.Text = _user.Role.ToString();
 
-            var fragment = new MediaFragment(_user);
+            var fragment = new SessionFragment(_user);
             SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+            _toolbar.Title = "Driving Sessions";
         }
 
         //============================================================
@@ -111,22 +111,18 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             switch (id)
             {
-                case Resource.Id.nav_images:
-                {
-                    var fragment = new MediaFragment(_user);
-                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-                    break;
-                }
                 case Resource.Id.nav_sessions:
                 {
                     var fragment = new SessionFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    _toolbar.Title = "Driving Sessions";
                     break;
                 }
                 case Resource.Id.nav_settings:
                 {
                     var fragment = new SettingsFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    _toolbar.Title = "User Settings";
                     break;
                 }
                 case Resource.Id.nav_logout:
