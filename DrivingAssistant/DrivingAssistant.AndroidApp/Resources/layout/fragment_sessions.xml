@@ -72,11 +72,11 @@
             android:layout_height="match_parent"/>
 
         <Button
-            android:text="View on Map"
+            android:text="Map"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/sessionsButtonViewMap"
+            android:id="@+id/sessionsButtonMap"
             android:background="@drawable/button_border"/>
 
         <Space

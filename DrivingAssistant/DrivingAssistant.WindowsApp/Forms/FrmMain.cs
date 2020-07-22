@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using System.Net.Http;
 using System.Windows.Forms;
 
@@ -51,6 +52,23 @@ namespace DrivingAssistant.WindowsApp.Forms
                 };
                 await _client.SendAsync(request);
                 MessageBox.Show(@"Finished uploading video!", @"Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        //============================================================
+        private void OnProcessImageToolStripMenuItemClick(object sender, System.EventArgs e)
+        {
+            using var openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false,
+            };
+            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var filename = openFileDialog.FileName;
+                var bitmap = Image.FromFile(filename) as Bitmap;
+                var imageProcessor = new ImageProcessor();
+                var processed = imageProcessor.ProcessBitmap(bitmap);
+                pictureBox1.Image = processed;
             }
         }
     }

@@ -30,9 +30,10 @@
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadVideoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.processImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -53,10 +54,32 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.uploadImageToolStripMenuItem,
-            this.uploadVideoToolStripMenuItem});
+            this.uploadVideoToolStripMenuItem,
+            this.processImageToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // uploadImageToolStripMenuItem
+            // 
+            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
+            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(229, 34);
+            this.uploadImageToolStripMenuItem.Text = "Upload image";
+            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.OnUploadImageToolStripMenuItemClick);
+            // 
+            // uploadVideoToolStripMenuItem
+            // 
+            this.uploadVideoToolStripMenuItem.Name = "uploadVideoToolStripMenuItem";
+            this.uploadVideoToolStripMenuItem.Size = new System.Drawing.Size(229, 34);
+            this.uploadVideoToolStripMenuItem.Text = "Upload video";
+            this.uploadVideoToolStripMenuItem.Click += new System.EventHandler(this.OnUploadVideoToolStripMenuItemClick);
+            // 
+            // processImageToolStripMenuItem
+            // 
+            this.processImageToolStripMenuItem.Name = "processImageToolStripMenuItem";
+            this.processImageToolStripMenuItem.Size = new System.Drawing.Size(229, 34);
+            this.processImageToolStripMenuItem.Text = "Process Image";
+            this.processImageToolStripMenuItem.Click += new System.EventHandler(this.OnProcessImageToolStripMenuItemClick);
             // 
             // pictureBox1
             // 
@@ -67,20 +90,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
-            // 
-            // uploadImageToolStripMenuItem
-            // 
-            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
-            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.uploadImageToolStripMenuItem.Text = "Upload image";
-            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.OnUploadImageToolStripMenuItemClick);
-            // 
-            // uploadVideoToolStripMenuItem
-            // 
-            this.uploadVideoToolStripMenuItem.Name = "uploadVideoToolStripMenuItem";
-            this.uploadVideoToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.uploadVideoToolStripMenuItem.Text = "Upload video";
-            this.uploadVideoToolStripMenuItem.Click += new System.EventHandler(this.OnUploadVideoToolStripMenuItemClick);
             // 
             // FrmMain
             // 
@@ -103,9 +112,10 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uploadVideoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem processImageToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

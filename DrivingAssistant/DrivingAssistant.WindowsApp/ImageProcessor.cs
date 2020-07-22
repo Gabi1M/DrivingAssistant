@@ -3,24 +3,22 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Bitmap = System.Drawing.Bitmap;
 using Point = System.Drawing.Point;
 
-namespace DrivingAssistant.WebServer.Tools
+namespace DrivingAssistant.WindowsApp
 {
     public class ImageProcessor
     {
         private readonly ImageProcessorParameters _parameters;
 
         //======================================================//
-        public ImageProcessor(ImageProcessorParameters parameters)
+        public ImageProcessor()
         {
-            _parameters = parameters;
+            _parameters = ImageProcessorParameters.Default();
         }
 
         //======================================================//
@@ -28,8 +26,8 @@ namespace DrivingAssistant.WebServer.Tools
         {
             return new List<Point>
             {
-                new Point(5, height - 5),
-                new Point(width - 5, height - 5),
+                new Point(5, height - 50),
+                new Point(width - 5, height - 50),
                 new Point(width - 5, height / 2),
                 new Point(3 * width / 4, 2 * height / 4),
                 new Point(width / 3, 2 * height / 4)
@@ -55,30 +53,47 @@ namespace DrivingAssistant.WebServer.Tools
                 _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 
             houghLines = houghLines.Select(x => x.OrientLine());
+            var referenceLine = new LineSegment2D(new Point(image.Width / 2, 5), new Point(image.Width / 2, image.Height - 5));
+            processedImage.Draw(referenceLine, new Bgr(255, 0, 0), 2);
 
-            var leftLines = houghLines.GetLinesBetweenAngles(45, 75);
-            var rightLines = houghLines.GetLinesBetweenAngles(105, 135);
 
-            foreach (var houghLine in rightLines)
-            { 
-                processedImage.Draw(houghLine, new Bgr(0, 255, 0), 2);
+            var leftLines = houghLines.Where(x => x.Side(x.GetCenterPoint()) == 1 && x.GetAngle(referenceLine) > 10 && x.GetAngle(referenceLine) < 55).OrderBy(x => x.P1.Y);
+            var rightLines = houghLines.Where(x => x.Side(x.GetCenterPoint()) == -1 && x.GetAngle(referenceLine) > 55 && x.GetAngle(referenceLine) < 90).OrderBy(x => x.P1.Y);
+
+            processedImage.Draw(leftLines.Last(), new Bgr(0, 255, 255), 2);
+            processedImage.Draw(rightLines.Last(), new Bgr(0, 0, 255), 2);
+
+            var connectingLine = new LineSegment2D(leftLines.Last().GetCenterPoint(), rightLines.Last().GetCenterPoint());
+            processedImage.Draw(connectingLine, new Bgr(255,255,255), 2);
+
+            var intersection = connectingLine.GetIntersection(referenceLine);
+            Console.WriteLine(intersection);
+
+            /*foreach (var line in leftLines)
+            {
+                processedImage.Draw(line, new Bgr(0, 255, 0) , 2);
             }
+
+            foreach (var line in rightLines)
+            {
+                processedImage.Draw(line, new Bgr(0, 0, 255), 2);
+            }*/
 
             image.Dispose();
             return processedImage;
         }
 
         //======================================================//
-        private Bitmap ProcessBitmap(Bitmap bitmap)
+        public Bitmap ProcessBitmap(Bitmap bitmap)
         {
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
             var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
             bitmap.UnlockBits(bitmapData);
-            bitmap.Dispose();
+            //bitmap.Dispose();
             return ProcessCvImage(originalImage).ToBitmap();
         }
 
-        //======================================================//
+        /*//======================================================//
         public string ProcessImage(string filename, bool loadAsBitmap = false)
         {
             if (loadAsBitmap)
@@ -104,7 +119,7 @@ namespace DrivingAssistant.WebServer.Tools
         {
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
-            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width,video.Height), true);
+            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var frameCount = 0;
             while (true)
             {
@@ -124,7 +139,7 @@ namespace DrivingAssistant.WebServer.Tools
                         using var processedImage = ProcessCvImage(bgrImage);
                         videoWriter.Write(processedImage.Mat);
                     }
-                    else if(frameCount % framesToSkip == 0)
+                    else if (frameCount % framesToSkip == 0)
                     {
                         using var bgrImage = capturedImage.ToImage<Bgr, byte>();
 
@@ -140,7 +155,7 @@ namespace DrivingAssistant.WebServer.Tools
 
             videoWriter.Dispose();
             return processedVideoFilename;
-        }
+        }*/
     }
 
     public static class ImageProcessorExtender
@@ -159,28 +174,45 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
+        public static LineSegment2D OrientLine(this LineSegment2D line)
+        {
+            return line.P1.Y > line.P2.Y ? new LineSegment2D(line.P2, line.P1) : line;
+        }
+
+        //======================================================//
         public static Point GetCenterPoint(this LineSegment2D line)
         {
             return new Point((line.P1.X + line.P2.X) / 2, (line.P1.Y + line.P2.Y) / 2);
         }
 
         //======================================================//
-        public static LineSegment2D OrientLine(this LineSegment2D line)
+        public static double GetAngle(this LineSegment2D line, LineSegment2D referenceLine)
         {
-            return line.P1.Y <= line.P2.Y ? line : new LineSegment2D(line.P2, line.P1);
+            var angle = line.GetExteriorAngleDegree(referenceLine);
+            if (angle < 0)
+            {
+                angle *= -1;
+            }
+
+            return angle;
         }
 
         //======================================================//
-        public static double GetAngle(this LineSegment2D line)
+        public static PointF GetIntersection(this LineSegment2D line1, LineSegment2D line2)
         {
-            var referenceLine = new LineSegment2D(new Point(0, 0), new Point(100, 0));
-            return line.GetExteriorAngleDegree(referenceLine);
-        }
 
-        //======================================================//
-        public static IEnumerable<LineSegment2D> GetLinesBetweenAngles(this IEnumerable<LineSegment2D> lines, double angle1, double angle2)
-        {
-            return lines.Where(x => x.GetAngle() > angle1 && x.GetAngle() < angle2);
+            var a1 = (line1.P1.Y - line1.P2.Y) / (double)(line1.P1.X - line1.P2.X);
+            var b1 = line1.P1.Y - a1 * line1.P1.X;
+
+            var a2 = (line2.P1.Y - line2.P2.Y) / (double)(line2.P1.X - line2.P2.X);
+            var b2 = line2.P1.Y - a2 * line2.P1.X;
+
+            if (Math.Abs(a1 - a2) < double.Epsilon)
+                throw new InvalidOperationException();
+
+            var x = (b2 - b1) / (a1 - a2);
+            var y = a1 * x + b1;
+            return new PointF((float)x, (float)y);
         }
     }
 }

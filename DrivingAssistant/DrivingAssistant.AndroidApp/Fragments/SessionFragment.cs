@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Provider;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
@@ -59,7 +58,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             _modifyButton = view.FindViewById<Button>(Resource.Id.sessionsButtonModify);
             _deleteButton = view.FindViewById<Button>(Resource.Id.sessionsButtonDelete);
             _submitButton = view.FindViewById<Button>(Resource.Id.sessionsButtonSubmit);
-            _viewMapButton = view.FindViewById<Button>(Resource.Id.sessionsButtonViewMap);
+            _viewMapButton = view.FindViewById<Button>(Resource.Id.sessionsButtonMap);
 
             _addButton.Click += OnAddButtonClick;
             _modifyButton.Click += OnModifyButtonClick;

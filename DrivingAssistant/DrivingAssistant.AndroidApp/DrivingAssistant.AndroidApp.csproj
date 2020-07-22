@@ -103,6 +103,7 @@
     <Compile Include="Services\UserSettingsService.cs" />
     <Compile Include="Tools\CacheManager.cs" />
     <Compile Include="Tools\Constants.cs" />
+    <Compile Include="Tools\MapTools.cs" />
     <Compile Include="Tools\Utils.cs" />
   </ItemGroup>
   <ItemGroup>

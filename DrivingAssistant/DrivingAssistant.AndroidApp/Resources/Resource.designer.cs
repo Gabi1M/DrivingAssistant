@@ -3871,16 +3871,16 @@ namespace DrivingAssistant.AndroidApp
 			public const int sessionsButtonDelete = 2131230917;
 			
 			// aapt resource value: 0x7F0800C6
-			public const int sessionsButtonModify = 2131230918;
+			public const int sessionsButtonMap = 2131230918;
+			
+			// aapt resource value: 0x7F0800C7
+			public const int sessionsButtonModify = 2131230919;
 			
 			// aapt resource value: 0x7F0800C9
 			public const int sessionsButtonsLayout = 2131230921;
 			
-			// aapt resource value: 0x7F0800C7
-			public const int sessionsButtonSubmit = 2131230919;
-			
 			// aapt resource value: 0x7F0800C8
-			public const int sessionsButtonViewMap = 2131230920;
+			public const int sessionsButtonSubmit = 2131230920;
 			
 			// aapt resource value: 0x7F0800CA
 			public const int sessionsListView = 2131230922;
