@@ -96,14 +96,17 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var user = new User(
-                    _textInputUsername.Text.Trim(),
-                    Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()),
-                    _textInputFirstName.Text.Trim(),
-                    _textInputLastName.Text.Trim(),
-                    _textInputEmail.Text.Trim(),
-                    _selectedRole,
-                    DateTime.Now);
+                var user = new User
+                {
+                    Id = -1,
+                    Username = _textInputUsername.Text.Trim(),
+                    Password = Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()),
+                    Email = _textInputEmail.Text.Trim(),
+                    FirstName = _textInputFirstName.Text.Trim(),
+                    LastName = _textInputLastName.Text.Trim(),
+                    Role = _selectedRole,
+                    JoinDate = DateTime.Now
+                };
 
                 await userService.SetAsync(user);
                 progressDialog.Dismiss();

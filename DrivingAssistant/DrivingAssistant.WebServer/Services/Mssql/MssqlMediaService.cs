@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
@@ -12,115 +13,72 @@ using DrivingAssistant.WebServer.Services.Generic;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
-    public class MssqlMediaService : MediaService
+    public class MssqlMediaService : IMediaService
     {
         private readonly Dataset.DrivingAssistant _dataset = new Dataset.DrivingAssistant();
-        private readonly string _connectionString;
+        private readonly MediaTableAdapter _tableAdapter = new MediaTableAdapter();
 
         //============================================================
         public MssqlMediaService(string connectionString)
         {
-            _connectionString = connectionString;
+            _tableAdapter.Connection = new SqlConnection(connectionString);
         }
 
         //============================================================
-        public override async Task<ICollection<Media>> GetAsync()
+        public async Task<ICollection<Media>> GetAsync()
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_MediaTableAdapter()
+                _tableAdapter.Fill(_dataset.Media);
+                return _dataset.Media.AsEnumerable().Select(row => new Media
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_Media);
-                using DataTable dataTable = _dataset.Get_Media;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Media(row["Type"].ToString(), row["Filepath"].ToString(), row["Source"].ToString(),
-                        row["Description"].ToString(), Convert.ToDateTime(row["DateAdded"]), Convert.ToInt64(row["Id"]),
-                        Convert.ToInt64(row["ProcessedId"]), Convert.ToInt64(row["SessionId"]),
-                        Convert.ToInt64(row["UserId"]));
-                return result.ToList();
+                    Id = row.Id,
+                    ProcessedId = row.ProcessedId,
+                    SessionId = row.SessionId,
+                    UserId = row.UserId,
+                    Type = (MediaType) Enum.Parse(typeof(MediaType), row.Type),
+                    Filepath = row.Filepath,
+                    Source = row.Source,
+                    Description = row.Description,
+                    DateAdded = row.DateAdded
+                }).ToList();
             });
         }
 
         //============================================================
-        public override async Task<Media> GetByIdAsync(long id)
+        public async Task<long> SetAsync(Media media)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Media_By_IdTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_Media_By_Id, id);
-                using DataTable dataTable = _dataset.Get_Media_By_Id;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Media(row["Type"].ToString(), row["Filepath"].ToString(), row["Source"].ToString(),
-                        row["Description"].ToString(), Convert.ToDateTime(row["DateAdded"]), Convert.ToInt64(row["Id"]),
-                        Convert.ToInt64(row["ProcessedId"]), Convert.ToInt64(row["SessionId"]),
-                        Convert.ToInt64(row["UserId"]));
-                return result.First();
-            });
-        }
-
-        //============================================================
-        public override async Task<long> SetAsync(Media media)
-        {
-            return await Task.Run(() =>
-            {
-                using var tableAdapter = new Set_MediaTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
                 long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_Media, null, media.ProcessedId, media.SessionId, media.UserId,
-                    media.Type.ToString(),
+                _tableAdapter.Insert(media.Id, media.ProcessedId, media.SessionId, media.UserId, media.Type.ToString(),
                     media.Filepath, media.Source, media.Description, media.DateAdded, ref idOut);
-                return idOut.Value;
+                return idOut ?? -1;
             });
         }
 
         //============================================================
-        public override async Task UpdateAsync(Media media)
+        public async Task DeleteAsync(Media media)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                using var tableAdapter = new Set_MediaTableAdapter()
+                _tableAdapter.Delete(media.Id);
+                await Task.Delay(1000);
+                try
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_Media, media.Id, media.ProcessedId, media.SessionId, media.UserId,
-                    media.Type.ToString(),
-                    media.Filepath, media.Source, media.Description, media.DateAdded, ref idOut);
-            });
-        }
-
-        //============================================================
-        public override async Task DeleteAsync(Media media)
-        {
-            await Task.Run(() =>
-            {
-                using var tableAdapter = new Delete_MediaTableAdapter()
+                    File.Delete(media.Filepath);
+                }
+                catch (Exception ex)
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Delete_Media, media.Id);
+                    Logger.LogException(ex);
+                }
             });
-            await Task.Delay(1000);
-            try
-            {
-                File.Delete(media.Filepath);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
         }
 
         //============================================================
-        public override void Dispose()
+        public void Dispose()
         {
+            _tableAdapter.Dispose();
             _dataset.Dispose();
         }
     }

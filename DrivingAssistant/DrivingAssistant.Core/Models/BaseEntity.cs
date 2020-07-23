@@ -6,5 +6,7 @@ namespace DrivingAssistant.Core.Models
     {
         [JsonProperty("Id")]
         public long Id { get; set; }
+
+        public abstract override string ToString();
     }
 }

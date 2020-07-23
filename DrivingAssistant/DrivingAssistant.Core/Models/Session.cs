@@ -30,19 +30,10 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("Processed")]
         public bool Processed { get; set; }
 
-        //============================================================
-        public Session(string description, DateTime startDateTime, DateTime endDateTime, Point startPoint,
-            Point endPoint, ICollection<Point> intermediatePoints, bool processed, long id = default, long userid = default)
+        //===========================================================//
+        public override string ToString()
         {
-            Description = description;
-            StartDateTime = startDateTime;
-            EndDateTime = endDateTime;
-            StartPoint = startPoint;
-            EndPoint = endPoint;
-            IntermediatePoints = intermediatePoints;
-            Processed = processed;
-            Id = id;
-            UserId = userid;
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
     }
 }

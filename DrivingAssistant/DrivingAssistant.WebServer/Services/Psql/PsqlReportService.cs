@@ -7,39 +7,38 @@ using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class PsqlUserSettingsService : IUserSettingsService
+    public class PsqlReportService : IReportService
     {
         private readonly NpgsqlConnection _connection;
 
         //============================================================
-        public PsqlUserSettingsService(string connectionString)
+        public PsqlReportService(string connectionString)
         {
             _connection = new NpgsqlConnection(connectionString);
         }
 
         //============================================================
-        public async Task<ICollection<UserSettings>> GetAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        //============================================================
-        public async Task<long> SetAsync(UserSettings data)
+        public async Task<ICollection<Report>> GetAsync()
         {
             throw new NotImplementedException();
         }
 
         //============================================================
-        public async Task DeleteAsync(UserSettings data)
+        public async Task<long> SetAsync(Report data)
         {
             throw new NotImplementedException();
         }
 
         //============================================================
-        public async void Dispose()
+        public async Task DeleteAsync(Report data)
         {
-            await _connection.DisposeAsync();
+            throw new NotImplementedException();
+        }
+
+        //============================================================
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

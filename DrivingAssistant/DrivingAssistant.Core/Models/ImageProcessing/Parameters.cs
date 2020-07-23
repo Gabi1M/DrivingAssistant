@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace DrivingAssistant.Core.Models
+namespace DrivingAssistant.Core.Models.ImageProcessing
 {
-    public class ImageProcessorParameters
+    public class Parameters
     {
         [JsonProperty("CannyThreshold")]
         public double CannyThreshold { get; set; }
@@ -30,9 +30,9 @@ namespace DrivingAssistant.Core.Models
         public int DilateIterations { get; set; }
 
         //======================================================//
-        public static ImageProcessorParameters Default()
+        public static Parameters Default()
         {
-            return new ImageProcessorParameters
+            return new Parameters
             {
                 CannyThreshold = 100,
                 CannyThresholdLinking = 150,

@@ -6,18 +6,18 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public abstract class MediaService : GenericService<Media>
+    public interface IReportService : IGenericService<Report>
     {
         //============================================================
-        public static MediaService NewInstance(Type type)
+        public static IReportService NewInstance(Type type)
         {
-            if (type == typeof(PsqlMediaService))
+            if (type == typeof(PsqlReportService))
             {
-                return new PsqlMediaService(Constants.ServerConstants.GetPsqlConnectionString());
+                return new PsqlReportService(Constants.ServerConstants.GetPsqlConnectionString());
             }
-            else if (type == typeof(MssqlMediaService))
+            else if (type == typeof(MssqlReportService))
             {
-                return new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
+                return new MssqlReportService(Constants.ServerConstants.GetMssqlConnectionString());
             }
             else
             {

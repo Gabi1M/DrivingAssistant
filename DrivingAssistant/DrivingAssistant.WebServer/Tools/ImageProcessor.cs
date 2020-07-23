@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using DrivingAssistant.Core.Enums;
-using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.ImageProcessing;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -15,10 +15,10 @@ namespace DrivingAssistant.WebServer.Tools
 {
     public class ImageProcessor
     {
-        private readonly ImageProcessorParameters _parameters;
+        private readonly Parameters _parameters;
 
         //======================================================//
-        public ImageProcessor(ImageProcessorParameters parameters)
+        public ImageProcessor(Parameters parameters)
         {
             _parameters = parameters;
         }
@@ -28,8 +28,8 @@ namespace DrivingAssistant.WebServer.Tools
         {
             return new List<Point>
             {
-                new Point(5, height - 5),
-                new Point(width - 5, height - 5),
+                new Point(5, height - 50),
+                new Point(width - 5, height - 50),
                 new Point(width - 5, height / 2),
                 new Point(3 * width / 4, 2 * height / 4),
                 new Point(width / 3, 2 * height / 4)
@@ -45,46 +45,74 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        private Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image)
+        private Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image, out ImageReport report)
         {
             var processedImage = image.Clone();
             var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
             var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
-            var houghLines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+            var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
                 _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
                 _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 
-            houghLines = houghLines.Select(x => x.OrientLine());
+            lines = lines.Select(x => x.OrientLine());
+            var middleVerticalLine = new LineSegment2D(new Point(image.Width / 2, 0), new Point(image.Width / 2, image.Height));
 
-            var leftLines = houghLines.GetLinesBetweenAngles(45, 75);
-            var rightLines = houghLines.GetLinesBetweenAngles(105, 135);
+            var leftSideLines = lines.Where(x =>
+                middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) > 10 &&
+                x.GetAngle(middleVerticalLine) < 55).OrderBy(x => x.P1.Y);
 
-            foreach (var houghLine in rightLines)
-            { 
-                processedImage.Draw(houghLine, new Bgr(0, 255, 0), 2);
-            }
+            var rightSideLines = lines.Where(x =>
+                middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) > 55 &&
+                x.GetAngle(middleVerticalLine) < 90).OrderBy(x => x.P1.Y);
+
+            var connectingLine = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), rightSideLines.Last().GetCenterPoint());
+            var intersection = connectingLine.GetIntersection(middleVerticalLine);
+
+            var intersectionLeft = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), intersection);
+            var intersectionRight = new LineSegment2D(rightSideLines.Last().GetCenterPoint(), intersection);
+
+
+            var leftSidePercent = (100 * intersectionLeft.Length) / connectingLine.Length;
+            var rightSidePercent = (100 * intersectionRight.Length) / connectingLine.Length;
+
+            processedImage.Draw(intersectionLeft, new Bgr(255, 0, 0), 2);
+            processedImage.Draw(intersectionRight, new Bgr(0, 0, 255), 2);
+
+            lines.AsParallel().ForAll(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
+
+            report = new ImageReport
+            {
+                LeftSidePercent = leftSidePercent,
+                LeftSideLineLength = intersectionLeft.Length,
+                RightSidePercent = rightSidePercent,
+                RightSideLineLength = intersectionRight.Length,
+                SpanLineAngle = connectingLine.GetAngle(middleVerticalLine),
+                SpanLineLength = connectingLine.Length,
+                LeftSideLineNumber = leftSideLines.Count(),
+                RightSideLineNumber = rightSideLines.Count()
+            };
 
             image.Dispose();
             return processedImage;
         }
 
         //======================================================//
-        private Bitmap ProcessBitmap(Bitmap bitmap)
+        private Bitmap ProcessBitmap(Bitmap bitmap, out ImageReport report)
         {
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
             var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
             bitmap.UnlockBits(bitmapData);
             bitmap.Dispose();
-            return ProcessCvImage(originalImage).ToBitmap();
+            return ProcessCvImage(originalImage, out report).ToBitmap();
         }
 
         //======================================================//
-        public string ProcessImage(string filename, bool loadAsBitmap = false)
+        public string ProcessImage(string filename, bool loadAsBitmap, out ImageReport report)
         {
             if (loadAsBitmap)
             {
                 using var bitmap = Image.FromFile(filename) as Bitmap;
-                using var processedBitmap = ProcessBitmap(bitmap);
+                using var processedBitmap = ProcessBitmap(bitmap, out report);
                 var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
                 processedBitmap.Save(processedFilename);
                 return processedFilename;
@@ -92,7 +120,7 @@ namespace DrivingAssistant.WebServer.Tools
             else
             {
                 using var image = new Image<Bgr, byte>(filename);
-                using var processedImage = ProcessCvImage(image);
+                using var processedImage = ProcessCvImage(image, out report);
                 var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
                 processedImage.Save(processedFilename);
                 return processedFilename;
@@ -100,11 +128,12 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public string ProcessVideo(string filename, int framesToSkip = 0)
+        public string ProcessVideo(string filename, int framesToSkip, out VideoReport report)
         {
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
             var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width,video.Height), true);
+            var imageResultList = new List<ImageReport>();
             var frameCount = 0;
             while (true)
             {
@@ -120,15 +149,15 @@ namespace DrivingAssistant.WebServer.Tools
                     if (framesToSkip == 0)
                     {
                         using var bgrImage = capturedImage.ToImage<Bgr, byte>();
-
-                        using var processedImage = ProcessCvImage(bgrImage);
+                        using var processedImage = ProcessCvImage(bgrImage, out var imageResult);
+                        imageResultList.Add(imageResult);
                         videoWriter.Write(processedImage.Mat);
                     }
                     else if(frameCount % framesToSkip == 0)
                     {
                         using var bgrImage = capturedImage.ToImage<Bgr, byte>();
-
-                        using var processedImage = ProcessCvImage(bgrImage);
+                        using var processedImage = ProcessCvImage(bgrImage, out var imageResult);
+                        imageResultList.Add(imageResult);
                         videoWriter.Write(processedImage.Mat);
                     }
                 }
@@ -138,6 +167,7 @@ namespace DrivingAssistant.WebServer.Tools
                 }
             }
 
+            report = VideoReport.FromImageResultList(imageResultList);
             videoWriter.Dispose();
             return processedVideoFilename;
         }
@@ -167,20 +197,44 @@ namespace DrivingAssistant.WebServer.Tools
         //======================================================//
         public static LineSegment2D OrientLine(this LineSegment2D line)
         {
-            return line.P1.Y <= line.P2.Y ? line : new LineSegment2D(line.P2, line.P1);
+            return line.P1.Y > line.P2.Y ? new LineSegment2D(line.P2, line.P1) : line;
         }
 
         //======================================================//
-        public static double GetAngle(this LineSegment2D line)
+        public static double GetAngle(this LineSegment2D line, LineSegment2D referenceLine)
         {
-            var referenceLine = new LineSegment2D(new Point(0, 0), new Point(100, 0));
-            return line.GetExteriorAngleDegree(referenceLine);
+            var angle = line.GetExteriorAngleDegree(referenceLine);
+            if (angle < 0)
+            {
+                angle *= -1;
+            }
+
+            return angle;
         }
 
         //======================================================//
-        public static IEnumerable<LineSegment2D> GetLinesBetweenAngles(this IEnumerable<LineSegment2D> lines, double angle1, double angle2)
+        public static Point GetIntersection(this LineSegment2D line1, LineSegment2D line2)
         {
-            return lines.Where(x => x.GetAngle() > angle1 && x.GetAngle() < angle2);
+            var a1 = line1.P2.Y - line1.P1.Y;
+            var b1 = line1.P1.X - line1.P2.X;
+            var c1 = a1 * (line1.P1.X) + b1 * (line1.P1.Y);
+
+            var a2 = line2.P2.Y - line2.P1.Y;
+            var b2 = line2.P1.X - line2.P2.X;
+            var c2 = a2 * (line2.P1.X) + b2 * (line2.P1.Y);
+
+            var determinant = a1 * b2 - a2 * b1;
+
+            if (determinant == 0)
+            {
+                return new Point(int.MaxValue, int.MaxValue);
+            }
+            else
+            {
+                var x = (b2 * c1 - b1 * c2) / determinant;
+                var y = (a1 * c2 - a2 * c1) / determinant;
+                return new Point(x, y);
+            }
         }
     }
 }

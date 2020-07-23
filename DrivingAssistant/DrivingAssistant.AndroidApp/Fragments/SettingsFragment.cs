@@ -8,7 +8,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
-using Newtonsoft.Json;
+using DrivingAssistant.Core.Models.ImageProcessing;
 using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments
@@ -68,20 +68,20 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private async void RefreshData()
         {
             _userSettings = (await _userSettingsService.GetAsync()).First(x => x.UserId == _user.Id);
-            _textCannyThreshold.Text = _userSettings.ImageProcessorParameters.CannyThreshold.ToString(CultureInfo.InvariantCulture);
-            _textCannyThresholdLinking.Text = _userSettings.ImageProcessorParameters.CannyThresholdLinking.ToString(CultureInfo.InvariantCulture);
-            _textHoughLinesRhoResolution.Text = _userSettings.ImageProcessorParameters.HoughLinesRhoResolution.ToString(CultureInfo.InvariantCulture);
-            _textHoughLinesThetaResolution.Text = _userSettings.ImageProcessorParameters.HoughLinesThetaResolution.ToString(CultureInfo.InvariantCulture);
-            _textHoughLinesMinimumLineWidth.Text = _userSettings.ImageProcessorParameters.HoughLinesMinimumLineWidth.ToString(CultureInfo.InvariantCulture);
-            _textHoughLinesGapBetweenLines.Text = _userSettings.ImageProcessorParameters.HoughLinesGapBetweenLines.ToString(CultureInfo.InvariantCulture);
-            _textHoughLinesThreshold.Text = _userSettings.ImageProcessorParameters.HoughLinesThreshold.ToString();
-            _textDilateIterations.Text = _userSettings.ImageProcessorParameters.DilateIterations.ToString();
+            _textCannyThreshold.Text = _userSettings.Parameters.CannyThreshold.ToString(CultureInfo.InvariantCulture);
+            _textCannyThresholdLinking.Text = _userSettings.Parameters.CannyThresholdLinking.ToString(CultureInfo.InvariantCulture);
+            _textHoughLinesRhoResolution.Text = _userSettings.Parameters.HoughLinesRhoResolution.ToString(CultureInfo.InvariantCulture);
+            _textHoughLinesThetaResolution.Text = _userSettings.Parameters.HoughLinesThetaResolution.ToString(CultureInfo.InvariantCulture);
+            _textHoughLinesMinimumLineWidth.Text = _userSettings.Parameters.HoughLinesMinimumLineWidth.ToString(CultureInfo.InvariantCulture);
+            _textHoughLinesGapBetweenLines.Text = _userSettings.Parameters.HoughLinesGapBetweenLines.ToString(CultureInfo.InvariantCulture);
+            _textHoughLinesThreshold.Text = _userSettings.Parameters.HoughLinesThreshold.ToString();
+            _textDilateIterations.Text = _userSettings.Parameters.DilateIterations.ToString();
         }
 
         //============================================================
         private async void OnButtonSaveClick(object sender, EventArgs e)
         {
-            var imageProcessorParameters = new ImageProcessorParameters
+            var imageProcessorParameters = new Parameters
             {
                 CannyThreshold = Convert.ToDouble(_textCannyThreshold.Text.Trim()),
                 CannyThresholdLinking = Convert.ToDouble(_textCannyThresholdLinking.Text.Trim()),
@@ -91,7 +91,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 HoughLinesThreshold = Convert.ToInt32(_textHoughLinesThreshold.Text.Trim()),
                 DilateIterations = Convert.ToInt32(_textDilateIterations.Text.Trim())
             };
-            _userSettings.ImageProcessorParameters = imageProcessorParameters;
+            _userSettings.Parameters = imageProcessorParameters;
             await _userSettingsService.UpdateAsync(_userSettings);
             Toast.MakeText(Context, "Settings successfully saved!", ToastLength.Short).Show();
             RefreshData();
@@ -105,7 +105,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             alert.SetMessage("Are you sure?");
             alert.SetPositiveButton("Yes", async (o, args) =>
             {
-                _userSettings.ImageProcessorParameters = ImageProcessorParameters.Default();
+                _userSettings.Parameters = Parameters.Default();
                 await _userSettingsService.UpdateAsync(_userSettings);
                 Toast.MakeText(Context, "Settings successfully saved!", ToastLength.Short).Show();
                 RefreshData();

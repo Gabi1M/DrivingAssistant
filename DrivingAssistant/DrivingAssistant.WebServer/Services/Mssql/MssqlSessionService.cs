@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -10,122 +9,64 @@ using DrivingAssistant.WebServer.Services.Generic;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
-    public class MssqlSessionService : SessionService
+    public class MssqlSessionService : ISessionService
     {
         private readonly Dataset.DrivingAssistant _dataset = new Dataset.DrivingAssistant();
-        private readonly string _connectionString;
+        private readonly SessionTableAdapter _tableAdapter = new SessionTableAdapter();
 
         //============================================================
         public MssqlSessionService(string connectionString)
         {
-            _connectionString = connectionString;
+            _tableAdapter.Connection = new SqlConnection(connectionString);
         }
 
         //============================================================
-        public override async Task<ICollection<Session>> GetAsync()
+        public async Task<ICollection<Session>> GetAsync()
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_SessionsTableAdapter()
+                _tableAdapter.Fill(_dataset.Session);
+                return _dataset.Session.AsEnumerable().Select(row => new Session
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_Sessions);
-                using DataTable dataTable = _dataset.Get_Sessions;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Session(row["Description"].ToString(), Convert.ToDateTime(row["StartDateTime"]),
-                        Convert.ToDateTime(row["EndDateTime"]),
-                        row["StartPoint"].ToString().StringToPoint(),
-                        row["EndPoint"].ToString().StringToPoint(),
-                        row["IntermediatePoints"].ToString().StringToPointCollection(),
-                        Convert.ToBoolean(row["Processed"]), Convert.ToInt64(row["Id"]),
-                        Convert.ToInt64(row["UserID"]));
-                return result.ToList();
+                    Id = row.Id,
+                    UserId = row.UserId,
+                    Description = row.Description,
+                    StartDateTime = row.StartDateTime,
+                    EndDateTime = row.EndDateTime,
+                    StartPoint = row.StartPoint.StringToPoint(),
+                    EndPoint = row.EndPoint.StringToPoint(),
+                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    Processed = row.Processed
+                }).ToList();
             });
         }
 
         //============================================================
-        public override async Task<Session> GetByIdAsync(long id)
+        public async Task<long> SetAsync(Session session)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Session_By_idTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_Session_By_id, id);
-                using DataTable dataTable = _dataset.Get_Session_By_id;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new Session(row["Description"].ToString(), Convert.ToDateTime(row["StartDateTime"]),
-                        Convert.ToDateTime(row["EndDateTime"]),
-                        row["StartPoint"].ToString().StringToPoint(),
-                        row["EndPoint"].ToString().StringToPoint(),
-                        row["IntermediatePoints"].ToString().StringToPointCollection(),
-                        Convert.ToBoolean(row["Processed"]), Convert.ToInt64(row["Id"]),
-                        Convert.ToInt64(row["UserID"]));
-                return result.First();
-            });
-        }
-
-        //============================================================
-        public override async Task<long> SetAsync(Session session)
-        {
-            return await Task.Run(() =>
-            {
-                using var tableAdapter = new Set_SessionTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
                 long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_Session, null, session.UserId, session.Description,
-                    session.StartDateTime,
-                    session.EndDateTime,
-                    session.StartPoint.PointToString(),
-                    session.EndPoint.PointToString(),
-                    session.IntermediatePoints.PointCollectionToString(),
-                    session.Processed,
-                    ref idOut);
-                return idOut.Value;
+                _tableAdapter.Insert(session.Id, session.UserId, session.Description, session.StartDateTime,
+                    session.EndDateTime, session.StartPoint.PointToString(), session.EndPoint.PointToString(),
+                    session.IntermediatePoints.PointCollectionToString(), session.Processed, ref idOut);
+                return idOut ?? -1;
             });
         }
 
         //============================================================
-        public override async Task UpdateAsync(Session session)
+        public async Task DeleteAsync(Session session)
         {
             await Task.Run(() =>
             {
-                using var tableAdapter = new Set_SessionTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_Session, session.Id, session.UserId, session.Description,
-                    session.StartDateTime,
-                    session.EndDateTime,
-                    session.StartPoint.PointToString(),
-                    session.EndPoint.PointToString(),
-                    session.IntermediatePoints.PointCollectionToString(),
-                    session.Processed,
-                    ref idOut);
+                _tableAdapter.Delete(session.Id);
             });
         }
 
         //============================================================
-        public override async Task DeleteAsync(Session session)
+        public void Dispose()
         {
-            await Task.Run(() =>
-            {
-                using var tableAdapter = new Delete_SessionTableAdapter()
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Delete_Session, session.Id);
-            });
-        }
-
-        //============================================================
-        public override void Dispose()
-        {
+            _tableAdapter.Dispose();
             _dataset.Dispose();
         }
     }

@@ -65,7 +65,7 @@ namespace DrivingAssistant.WindowsApp.Forms
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 var filename = openFileDialog.FileName;
-                var bitmap = Image.FromFile(filename) as Bitmap;
+                using var bitmap = Image.FromFile(filename) as Bitmap;
                 var imageProcessor = new ImageProcessor();
                 var processed = imageProcessor.ProcessBitmap(bitmap);
                 pictureBox1.Image = processed;

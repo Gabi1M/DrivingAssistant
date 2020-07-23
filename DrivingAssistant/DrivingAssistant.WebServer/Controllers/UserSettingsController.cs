@@ -14,7 +14,7 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class UserSettingsController : ControllerBase
     {
-        private UserSettingsService _userSettingsService;
+        private IUserSettingsService _userSettingsService;
 
         //============================================================
         [HttpGet]
@@ -26,7 +26,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received GET user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                _userSettingsService = IUserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 var userSettings = await _userSettingsService.GetAsync();
                 return Ok(JsonConvert.SerializeObject(userSettings, Formatting.Indented));
             }
@@ -47,7 +47,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received POST user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                _userSettingsService = IUserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 using var streamReader = new StreamReader(Request.Body);
                 var userSettings = JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
                 return Ok(await _userSettingsService.SetAsync(userSettings));
@@ -69,10 +69,10 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received PUT user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                _userSettingsService = IUserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 using var streamReader = new StreamReader(Request.Body);
                 var userSettings = JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
-                await _userSettingsService.UpdateAsync(userSettings);
+                await _userSettingsService.SetAsync(userSettings);
                 return Ok();
             }
             catch (Exception ex)
@@ -92,9 +92,9 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received DELETE user_settings from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userSettingsService = UserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                _userSettingsService = IUserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var userSettings = await _userSettingsService.GetByIdAsync(id);
+                var userSettings = (await _userSettingsService.GetAsync()).First(x => x.Id == id);
                 await _userSettingsService.DeleteAsync(userSettings);
                 return Ok();
             }

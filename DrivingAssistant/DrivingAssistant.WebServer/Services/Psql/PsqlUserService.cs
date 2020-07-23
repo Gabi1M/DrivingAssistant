@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
@@ -8,7 +9,7 @@ using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class PsqlUserService : UserService
+    public class PsqlUserService : IUserService
     {
         private readonly NpgsqlConnection _connection;
 
@@ -19,7 +20,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task<ICollection<User>> GetAsync()
+        public async Task<ICollection<User>> GetAsync()
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetUsersCommand, _connection);
@@ -27,10 +28,17 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var users = new List<User>();
             while (await result.ReadAsync())
             {
-                users.Add(new User(result["username"].ToString(), result["password"].ToString(),
-                    result["firstname"].ToString(), result["lastname"].ToString(), result["email"].ToString(),
-                    result["role"].ToString(),
-                    Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"])));
+                users.Add(new User
+                {
+                    Id = Convert.ToInt64(result["id"]),
+                    Username = result["username"].ToString(),
+                    Password = result["password"].ToString(),
+                    FirstName = result["first_name"].ToString(),
+                    LastName = result["last_name"].ToString(),
+                    Email = result["email"].ToString(),
+                    Role = (UserRole) Enum.Parse(typeof(UserRole), result["role"].ToString()!),
+                    JoinDate = Convert.ToDateTime(result["join_date"])
+                });
             }
 
             await _connection.CloseAsync();
@@ -38,21 +46,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task<User> GetByIdAsync(long id)
-        {
-            await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetUserByIdCommand, _connection);
-            var result = await command.ExecuteReaderAsync();
-            await result.ReadAsync();
-            var user = new User(result["username"].ToString(), result["password"].ToString(),
-                result["firstname"].ToString(), result["lastname"].ToString(), result["email"].ToString(), result["role"].ToString(),
-                Convert.ToDateTime(result["joindate"].ToString()), Convert.ToInt64(result["id"]));
-            await _connection.CloseAsync();
-            return user;
-        }
-
-        //============================================================
-        public override async Task<long> SetAsync(User user)
+        public async Task<long> SetAsync(User user)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.AddUserCommand, _connection);
@@ -69,24 +63,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task UpdateAsync(User user)
-        {
-            await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.UpdateUserCommand, _connection);
-            command.Parameters.AddWithValue("id", user.Id);
-            command.Parameters.AddWithValue("username", user.Username);
-            command.Parameters.AddWithValue("password", user.Password);
-            command.Parameters.AddWithValue("firstname", user.FirstName);
-            command.Parameters.AddWithValue("lastname", user.LastName);
-            command.Parameters.AddWithValue("email", user.Email);
-            command.Parameters.AddWithValue("role", user.Role.ToString());
-            command.Parameters.AddWithValue("joindate", user.JoinDate);
-            await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-        }
-         
-        //============================================================
-        public override async Task DeleteAsync(User user)
+        public async Task DeleteAsync(User user)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.DeleteUserCommand, _connection);
@@ -96,7 +73,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async void Dispose()
+        public async void Dispose()
         {
             await _connection.DisposeAsync();
         }

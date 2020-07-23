@@ -498,12 +498,18 @@ namespace DrivingAssistant.AndroidApp.Activities
             }
             else
             {
-                _currentSession = new Session(_textDescription.Text.Trim(), 
-                    _selectedStartDateTime.Value,
-                    _selectedEndDateTime.Value,
-                    _selectedStartPoint,
-                    _selectedEndPoint,
-                    _selectedIntermediaries, false, default, _user.Id);
+                _currentSession = new Session
+                {
+                    Description = _textDescription.Text.Trim(),
+                    StartDateTime = _selectedStartDateTime.Value,
+                    EndDateTime = _selectedEndDateTime.Value,
+                    StartPoint = _selectedStartPoint,
+                    EndPoint = _selectedEndPoint,
+                    IntermediatePoints = _selectedIntermediaries,
+                    Id = -1,
+                    Processed = false,
+                    UserId = _user.Id
+                };
                 _currentSession.Id = await _sessionService.SetAsync(_currentSession);
                 foreach (var media in _mediaList)
                 {

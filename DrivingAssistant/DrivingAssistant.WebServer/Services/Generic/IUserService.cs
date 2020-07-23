@@ -6,18 +6,18 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public abstract class UserSettingsService : GenericService<UserSettings>
+    public interface IUserService : IGenericService<User>
     {
         //============================================================
-        public static UserSettingsService NewInstance(Type type)
+        public static IUserService NewInstance(Type type)
         {
-            if (type == typeof(PsqlUserSettingsService))
+            if (type == typeof(PsqlUserService))
             {
-                return new PsqlUserSettingsService(Constants.ServerConstants.GetPsqlConnectionString());
+                return new PsqlUserService(Constants.ServerConstants.GetPsqlConnectionString());
             }
-            else if (type == typeof(MssqlUserSettingsService))
+            else if (type == typeof(MssqlUserService))
             {
-                return new MssqlUserSettingsService(Constants.ServerConstants.GetMssqlConnectionString());
+                return new MssqlUserService(Constants.ServerConstants.GetMssqlConnectionString());
             }
             else
             {

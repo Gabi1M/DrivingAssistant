@@ -27,40 +27,10 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("JoinDate")]
         public DateTime JoinDate { get; set; }
 
-        //============================================================
-        [JsonConstructor]
-        public User(string username, string password, string firstName,
-            string lastName, string email,  UserRole role, DateTime joinDate, long id = -1)
+        //===========================================================//
+        public override string ToString()
         {
-            Username = username;
-            Password = password;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            Role = role;
-            JoinDate = joinDate;
-            Id = id;
-        }
-
-        //============================================================
-        public User(string username, string password, string firstName,
-            string lastName, string email,  string role, DateTime joinDate, long id = -1)
-        {
-            Username = username;
-            Password = password;
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
-            JoinDate = joinDate;
-            Id = id;
-            try
-            {
-                Role = (UserRole) Enum.Parse(typeof(UserRole), role, true);
-            }
-            catch (Exception)
-            {
-                throw new Exception("Role " + role + " not valid!");
-            }
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
     }
 }

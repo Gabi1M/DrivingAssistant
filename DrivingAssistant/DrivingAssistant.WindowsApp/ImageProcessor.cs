@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.ImageProcessing;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -13,12 +14,12 @@ namespace DrivingAssistant.WindowsApp
 {
     public class ImageProcessor
     {
-        private readonly ImageProcessorParameters _parameters;
+        private readonly Parameters _parameters;
 
         //======================================================//
         public ImageProcessor()
         {
-            _parameters = ImageProcessorParameters.Default();
+            _parameters = Parameters.Default();
         }
 
         //======================================================//
@@ -48,36 +49,36 @@ namespace DrivingAssistant.WindowsApp
             var processedImage = image.Clone();
             var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
             var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
-            var houghLines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+            var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
                 _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
                 _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 
-            houghLines = houghLines.Select(x => x.OrientLine());
-            var referenceLine = new LineSegment2D(new Point(image.Width / 2, 5), new Point(image.Width / 2, image.Height - 5));
-            processedImage.Draw(referenceLine, new Bgr(255, 0, 0), 2);
+            lines = lines.Select(x => x.OrientLine());
+            var middleVerticalLine = new LineSegment2D(new Point(image.Width / 2, 0), new Point(image.Width / 2, image.Height));
 
+            var leftSideLines = lines.Where(x =>
+                middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) > 10 &&
+                x.GetAngle(middleVerticalLine) < 55).OrderBy(x => x.P1.Y);
 
-            var leftLines = houghLines.Where(x => x.Side(x.GetCenterPoint()) == 1 && x.GetAngle(referenceLine) > 10 && x.GetAngle(referenceLine) < 55).OrderBy(x => x.P1.Y);
-            var rightLines = houghLines.Where(x => x.Side(x.GetCenterPoint()) == -1 && x.GetAngle(referenceLine) > 55 && x.GetAngle(referenceLine) < 90).OrderBy(x => x.P1.Y);
+            var rightSideLines = lines.Where(x =>
+                middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) > 55 &&
+                x.GetAngle(middleVerticalLine) < 90).OrderBy(x => x.P1.Y);
 
-            processedImage.Draw(leftLines.Last(), new Bgr(0, 255, 255), 2);
-            processedImage.Draw(rightLines.Last(), new Bgr(0, 0, 255), 2);
+            var connectingLine = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), rightSideLines.Last().GetCenterPoint());
+            var intersection = connectingLine.GetIntersection(middleVerticalLine);
 
-            var connectingLine = new LineSegment2D(leftLines.Last().GetCenterPoint(), rightLines.Last().GetCenterPoint());
-            processedImage.Draw(connectingLine, new Bgr(255,255,255), 2);
+            var intersectionLeft = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), intersection);
+            var intersectionRight = new LineSegment2D(rightSideLines.Last().GetCenterPoint(), intersection);
 
-            var intersection = connectingLine.GetIntersection(referenceLine);
-            Console.WriteLine(intersection);
+            var leftPercent = (100 * intersectionLeft.Length) / connectingLine.Length;
+            var rightPercent = (100 * intersectionRight.Length) / connectingLine.Length;
 
-            /*foreach (var line in leftLines)
-            {
-                processedImage.Draw(line, new Bgr(0, 255, 0) , 2);
-            }
+            Console.WriteLine(leftPercent + " " + rightPercent);
 
-            foreach (var line in rightLines)
-            {
-                processedImage.Draw(line, new Bgr(0, 0, 255), 2);
-            }*/
+            processedImage.Draw(intersectionLeft, new Bgr(255, 0, 0), 2);
+            processedImage.Draw(intersectionRight, new Bgr(0, 0, 255), 2);
+
+            lines.AsParallel().ForAll(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
 
             image.Dispose();
             return processedImage;
@@ -89,7 +90,6 @@ namespace DrivingAssistant.WindowsApp
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
             var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
             bitmap.UnlockBits(bitmapData);
-            //bitmap.Dispose();
             return ProcessCvImage(originalImage).ToBitmap();
         }
 
@@ -112,14 +112,12 @@ namespace DrivingAssistant.WindowsApp
                 processedImage.Save(processedFilename);
                 return processedFilename;
             }
-        }
+        }*/
 
-        //======================================================//
-        public string ProcessVideo(string filename, int framesToSkip = 0)
+        /*public string ProcessVideo(string filename, int framesToSkip = 0)
         {
-            var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
-            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
+            var videoWriter = new VideoWriter("‪C:\\Users\\ig_99\\Desktop\\Saved.mkv", VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var frameCount = 0;
             while (true)
             {
@@ -154,7 +152,7 @@ namespace DrivingAssistant.WindowsApp
             }
 
             videoWriter.Dispose();
-            return processedVideoFilename;
+            return "‪C:\\Users\\ig_99\\Desktop\\Saved.mkv";
         }*/
     }
 
@@ -198,21 +196,28 @@ namespace DrivingAssistant.WindowsApp
         }
 
         //======================================================//
-        public static PointF GetIntersection(this LineSegment2D line1, LineSegment2D line2)
+        public static Point GetIntersection(this LineSegment2D line1, LineSegment2D line2)
         {
+            var a1 = line1.P2.Y - line1.P1.Y;
+            var b1 = line1.P1.X - line1.P2.X;
+            var c1 = a1 * (line1.P1.X) + b1 * (line1.P1.Y);
 
-            var a1 = (line1.P1.Y - line1.P2.Y) / (double)(line1.P1.X - line1.P2.X);
-            var b1 = line1.P1.Y - a1 * line1.P1.X;
+            var a2 = line2.P2.Y - line2.P1.Y;
+            var b2 = line2.P1.X - line2.P2.X;
+            var c2 = a2 * (line2.P1.X) + b2 * (line2.P1.Y);
 
-            var a2 = (line2.P1.Y - line2.P2.Y) / (double)(line2.P1.X - line2.P2.X);
-            var b2 = line2.P1.Y - a2 * line2.P1.X;
+            var determinant = a1 * b2 - a2 * b1;
 
-            if (Math.Abs(a1 - a2) < double.Epsilon)
-                throw new InvalidOperationException();
-
-            var x = (b2 - b1) / (a1 - a2);
-            var y = a1 * x + b1;
-            return new PointF((float)x, (float)y);
+            if (determinant == 0)
+            {
+                return new Point(int.MaxValue, int.MaxValue);
+            }
+            else
+            {
+                var x = (b2 * c1 - b1 * c2) / determinant;
+                var y = (a1 * c2 - a2 * c1) / determinant;
+                return new Point(x, y);
+            }
         }
     }
 }

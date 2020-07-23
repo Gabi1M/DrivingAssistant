@@ -6,10 +6,10 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public abstract class SessionService : GenericService<Session>
+    public interface ISessionService : IGenericService<Session>
     {
         //============================================================
-        public static SessionService NewInstance(Type type)
+        public static ISessionService NewInstance(Type type)
         {
             if (type == typeof(PsqlSessionService))
             {

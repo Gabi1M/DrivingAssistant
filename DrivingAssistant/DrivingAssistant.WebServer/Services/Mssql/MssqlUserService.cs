@@ -4,110 +4,69 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
-    public class MssqlUserService : UserService
+    public class MssqlUserService : IUserService
     {
         private readonly Dataset.DrivingAssistant _dataset = new Dataset.DrivingAssistant();
-        private readonly string _connectionString;
+        private readonly UserTableAdapter _tableAdapter = new UserTableAdapter();
 
         //============================================================
         public MssqlUserService(string connectionString)
         {
-            _connectionString = connectionString;
+            _tableAdapter.Connection = new SqlConnection(connectionString);
         }
 
         //============================================================
-        public override async Task<ICollection<User>> GetAsync()
+        public async Task<ICollection<User>> GetAsync()
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_UsersTableAdapter
+                _tableAdapter.Fill(_dataset.User);
+                return _dataset.User.AsEnumerable().Select(row => new User
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_Users);
-                using DataTable dataTable = _dataset.Get_Users;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new User(row["Username"].ToString(), row["Password"].ToString(),
-                        row["FirstName"].ToString(),
-                        row["LastName"].ToString(), row["Email"].ToString(), row["Role"].ToString(),
-                        Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
-                return result.ToList();
+                    Id = row.Id,
+                    Username = row.Username,
+                    Password = row.Password,
+                    FirstName = row.FirstName,
+                    LastName = row.LastName,
+                    Email = row.Email,
+                    Role = (UserRole) Enum.Parse(typeof(UserRole), row.Role),
+                    JoinDate = row.JoinDate
+                }).ToList();
             });
         }
 
         //============================================================
-        public override async Task<User> GetByIdAsync(long id)
+        public async Task<long> SetAsync(User user)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_User_By_IdTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_User_By_Id, id);
-                using DataTable dataTable = _dataset.Get_User_By_Id;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new User(row["Username"].ToString(), row["Password"].ToString(),
-                        row["FirstName"].ToString(),
-                        row["LastName"].ToString(), row["Email"].ToString(), row["Role"].ToString(),
-                        Convert.ToDateTime(row["JoinDate"].ToString()), Convert.ToInt64(row["Id"]));
-                return result.First();
-            });
-        }
-
-        //============================================================
-        public override async Task<long> SetAsync(User user)
-        {
-            return await Task.Run(() =>
-            {
-                using var tableAdapter = new Set_UserTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
                 long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_User, null, user.Username, user.Password, 
-                    user.FirstName, user.LastName, user.Email, user.Role.ToString(), user.JoinDate, ref idOut);
-                return idOut.Value;
+                _tableAdapter.Insert(user.Id, user.Username, user.Password, user.FirstName, user.LastName, user.Email,
+                    user.Role.ToString(), user.JoinDate, ref idOut);
+                return idOut ?? -1;
             });
         }
 
         //============================================================
-        public override async Task UpdateAsync(User user)
+        public async Task DeleteAsync(User user)
         {
             await Task.Run(() =>
             {
-                using var tableAdapter = new Set_UserTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                long? idOut = 0;
-                tableAdapter.Fill(_dataset.Set_User, user.Id, user.Username, user.Password, 
-                    user.FirstName, user.LastName, user.Email, user.Role.ToString(), user.JoinDate, ref idOut);
+                _tableAdapter.Delete(user.Id);
             });
         }
 
         //============================================================
-        public override async Task DeleteAsync(User user)
+        public void Dispose()
         {
-            await Task.Run(() =>
-            {
-                using var tableAdapter = new Delete_UserTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Delete_User, user.Id);
-            });
-        }
-
-        //============================================================
-        public override void Dispose()
-        {
+            _tableAdapter.Dispose();
             _dataset.Dispose();
         }
     }

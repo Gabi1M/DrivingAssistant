@@ -31,49 +31,21 @@ namespace DrivingAssistant.Core.Models
         public DateTime DateAdded { get; set; }
 
         //===========================================================//
-        [JsonConstructor]
-        public Media(MediaType type, string filepath, string source, string description, DateTime dateAdded,
-            long id = default, long processedId = default, long sessionId = default, long userId = default)
-        {
-            Type = type;
-            Filepath = filepath;
-            Source = source;
-            Description = description;
-            DateAdded = dateAdded;
-            Id = id;
-            ProcessedId = processedId;
-            SessionId = sessionId;
-            UserId = userId;
-        }
-
-        //===========================================================//
-        public Media(string type, string filepath, string source, string description, DateTime dateAdded,
-            long id = default, long processedId = default, long sessionId = default, long userId = default)
-        {
-            Filepath = filepath;
-            Source = source;
-            Description = description;
-            DateAdded = dateAdded;
-            Id = id;
-            ProcessedId = processedId;
-            SessionId = sessionId;
-            UserId = userId;
-            if (Enum.TryParse(type, true, out MediaType _type))
-            {
-                Type = _type;
-            }
-        }
-
-        //===========================================================//
         public bool IsProcessed()
         {
-            return ProcessedId != default;
+            return ProcessedId != -1;
         }
 
         //===========================================================//
         public bool IsInSession()
         {
-            return SessionId != default;
+            return SessionId != -1;
+        }
+
+        //===========================================================//
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
     }
 }

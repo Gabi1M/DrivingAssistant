@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services.Psql
 {
-    public class PsqlSessionService : SessionService
+    public class PsqlSessionService : ISessionService
     {
         private readonly NpgsqlConnection _connection;
 
@@ -19,7 +19,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task<ICollection<Session>> GetAsync()
+        public async Task<ICollection<Session>> GetAsync()
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetSessionsCommand, _connection);
@@ -27,16 +27,17 @@ namespace DrivingAssistant.WebServer.Services.Psql
             var sessions = new List<Session>();
             while (await result.ReadAsync())
             {
-                var session = new Session(result["description"].ToString(),
-                    Convert.ToDateTime(result["start_date_time"]),
-                    Convert.ToDateTime(result["end_date_time"]),
-                    result["start_point"].ToString().StringToPoint(),
-                    result["end_point"].ToString().StringToPoint(),
-                    result["intermediate_points"].ToString().StringToPointCollection(),
-                    Convert.ToBoolean(result["processed"]),
-                    Convert.ToInt64(result["id"]),
-                    Convert.ToInt64(result["user_id"]));
-                sessions.Add(session);
+                sessions.Add(new Session
+                {
+                    Id = Convert.ToInt64(result["id"]),
+                    UserId = Convert.ToInt64(result["user_id"]),
+                    StartDateTime = Convert.ToDateTime(result["start_date_time"]),
+                    EndDateTime = Convert.ToDateTime(result["end_date_time"]),
+                    StartPoint = result["start_point"].ToString().StringToPoint(),
+                    EndPoint = result["end_point"].ToString().StringToPoint(),
+                    IntermediatePoints = result["intermediate_points"].ToString().StringToPointCollection(),
+                    Processed = Convert.ToBoolean(result["processed"])
+                });
             }
 
             await _connection.CloseAsync();
@@ -44,28 +45,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task<Session> GetByIdAsync(long id)
-        {
-            await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.GetSessionByIdCommand, _connection);
-            command.Parameters.AddWithValue("id", id);
-            var result = await command.ExecuteReaderAsync();
-            await result.ReadAsync();
-            var session = new Session(result["description"].ToString(),
-                Convert.ToDateTime(result["start_date_time"]),
-                Convert.ToDateTime(result["end_date_time"]),
-                result["start_point"].ToString().StringToPoint(),
-                result["end_point"].ToString().StringToPoint(),
-                result["intermediate_points"].ToString().StringToPointCollection(),
-                Convert.ToBoolean(result["processed"]),
-                Convert.ToInt64(result["id"]),
-                Convert.ToInt64(result["user_id"]));
-            await _connection.CloseAsync();
-            return session;
-        }
-
-        //============================================================
-        public override async Task<long> SetAsync(Session session)
+        public async Task<long> SetAsync(Session session)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.AddSessionCommand, _connection);
@@ -83,25 +63,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async Task UpdateAsync(Session session)
-        {
-            await _connection.OpenAsync();
-            await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.UpdateSessionCommand, _connection);
-            command.Parameters.AddWithValue("id", session.Id);
-            command.Parameters.AddWithValue("user_id", session.UserId);
-            command.Parameters.AddWithValue("description", session.Description);
-            command.Parameters.AddWithValue("start_date_time", session.StartDateTime);
-            command.Parameters.AddWithValue("end_date_time", session.EndDateTime);
-            command.Parameters.AddWithValue("start_point", session.StartPoint.PointToString());
-            command.Parameters.AddWithValue("end_point", session.EndPoint.PointToString());
-            command.Parameters.AddWithValue("intermediate_points", session.IntermediatePoints.PointCollectionToString());
-            command.Parameters.AddWithValue("processed", session.Processed);
-            await command.ExecuteNonQueryAsync();
-            await _connection.CloseAsync();
-        }
-
-        //============================================================
-        public override async Task DeleteAsync(Session session)
+        public async Task DeleteAsync(Session session)
         {
             await _connection.OpenAsync();
             await using var command = new NpgsqlCommand(Constants.PsqlDatabaseConstants.DeleteSessionCommand, _connection);
@@ -111,7 +73,7 @@ namespace DrivingAssistant.WebServer.Services.Psql
         }
 
         //============================================================
-        public override async void Dispose()
+        public async void Dispose()
         {
             await _connection.DisposeAsync();
         }

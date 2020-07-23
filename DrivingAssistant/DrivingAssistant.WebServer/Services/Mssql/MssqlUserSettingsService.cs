@@ -1,151 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
-    public class MssqlUserSettingsService : UserSettingsService
+    public class MssqlUserSettingsService : IUserSettingsService
     {
         private readonly Dataset.DrivingAssistant _dataset = new Dataset.DrivingAssistant();
-        private readonly string _connectionString;
+        private readonly UserSettingsTableAdapter _tableAdapter = new UserSettingsTableAdapter();
 
         //============================================================
         public MssqlUserSettingsService(string connectionString)
         {
-            _connectionString = connectionString;
+            _tableAdapter.Connection = new SqlConnection(connectionString);
         }
 
         //============================================================
-        public override async Task<ICollection<UserSettings>> GetAsync()
+        public async Task<ICollection<UserSettings>> GetAsync()
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_UserSettingsTableAdapter
+                _tableAdapter.Fill(_dataset.UserSettings);
+                return _dataset.UserSettings.AsEnumerable().Select(row => new UserSettings
                 {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_UserSettings);
-                using var dataTable = _dataset.Get_UserSettings as DataTable;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new UserSettings
+                    Id = row.Id,
+                    UserId = row.UserID,
+                    Parameters = new Parameters
                     {
-                        Id = Convert.ToInt64(row["Id"]),
-                        UserId = Convert.ToInt64(row["UserId"]),
-                        ImageProcessorParameters = new ImageProcessorParameters
-                        {
-                            CannyThreshold = Convert.ToDouble(row["CannyThreshold"]),
-                            CannyThresholdLinking = Convert.ToDouble(row["CannyThresholdLinking"]),
-                            HoughLinesRhoResolution = Convert.ToDouble(row["HoughLinesRhoResolution"]),
-                            HoughLinesThetaResolution = Convert.ToDouble(row["HoughLinesThetaResolution"]),
-                            HoughLinesMinimumLineWidth = Convert.ToDouble(row["HoughLinesMinimumLineWidth"]),
-                            HoughLinesGapBetweenLines = Convert.ToDouble(row["HoughLinesGapBetweenLines"]),
-                            HoughLinesThreshold = Convert.ToInt32(row["HoughLinesThreshold"]),
-                            DilateIterations = Convert.ToInt32(row["DilateIterations"])
-                        }
-                    };
-                return result.ToList();
+                        CannyThreshold = row.CannyThreshold,
+                        CannyThresholdLinking = row.CannyThresholdLinking,
+                        HoughLinesRhoResolution = row.HoughLinesRhoResolution,
+                        HoughLinesThetaResolution = row.HoughLinesThetaResolution,
+                        HoughLinesMinimumLineWidth = row.HoughLinesMinimumLineWidth,
+                        HoughLinesGapBetweenLines = row.HoughLinesGapBetweenLines,
+                        HoughLinesThreshold = row.HoughLinesThreshold,
+                        DilateIterations = row.DilateIterations
+                    }
+                }).ToList();
             });
         }
 
         //============================================================
-        public override async Task<UserSettings> GetByIdAsync(long id)
+        public async Task<long> SetAsync(UserSettings userSettings)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_UserSettings_By_IdTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Get_UserSettings_By_Id, id);
-                using var dataTable = _dataset.Get_UserSettings_By_Id as DataTable;
-                var result = from DataRow row in dataTable.AsEnumerable()
-                    select new UserSettings
-                    {
-                        Id = Convert.ToInt64(row["Id"]),
-                        UserId = Convert.ToInt64(row["UserId"]),
-                        ImageProcessorParameters = new ImageProcessorParameters
-                        {
-                            CannyThreshold = Convert.ToDouble(row["CannyThreshold"]),
-                            CannyThresholdLinking = Convert.ToDouble(row["CannyThresholdLinking"]),
-                            HoughLinesRhoResolution = Convert.ToDouble(row["HoughLinesRhoResolution"]),
-                            HoughLinesThetaResolution = Convert.ToDouble(row["HoughLinesThetaResolution"]),
-                            HoughLinesMinimumLineWidth = Convert.ToDouble(row["HoughLinesMinimumLineWidth"]),
-                            HoughLinesGapBetweenLines = Convert.ToDouble(row["HoughLinesGapBetweenLines"]),
-                            HoughLinesThreshold = Convert.ToInt32(row["HoughLinesThreshold"]),
-                            DilateIterations = Convert.ToInt32(row["DilateIterations"])
-                        }
-                    };
-                return result.First();
+                long? idOut = 0;
+                _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.Parameters.CannyThreshold,
+                    userSettings.Parameters.CannyThresholdLinking, userSettings.Parameters.HoughLinesRhoResolution,
+                    userSettings.Parameters.HoughLinesThetaResolution,
+                    userSettings.Parameters.HoughLinesMinimumLineWidth,
+                    userSettings.Parameters.HoughLinesGapBetweenLines, userSettings.Parameters.HoughLinesThreshold,
+                    userSettings.Parameters.DilateIterations, ref idOut);
+                return idOut ?? -1;
             });
         }
 
         //============================================================
-        public override async Task<long> SetAsync(UserSettings userSettings)
-        {
-            return await Task.Run(() =>
-            {
-                using var tableAdapter = new Set_UserSettingsTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                long? IdOut = 0;
-                tableAdapter.Fill(_dataset.Set_UserSettings, null, userSettings.UserId,
-                    userSettings.ImageProcessorParameters.CannyThreshold,
-                    userSettings.ImageProcessorParameters.CannyThresholdLinking,
-                    userSettings.ImageProcessorParameters.HoughLinesRhoResolution,
-                    userSettings.ImageProcessorParameters.HoughLinesThetaResolution,
-                    userSettings.ImageProcessorParameters.HoughLinesMinimumLineWidth,
-                    userSettings.ImageProcessorParameters.HoughLinesGapBetweenLines,
-                    userSettings.ImageProcessorParameters.HoughLinesThreshold,
-                    userSettings.ImageProcessorParameters.DilateIterations, ref IdOut);
-                return IdOut.Value;
-            });
-        }
-
-        //============================================================
-        public override async Task UpdateAsync(UserSettings userSettings)
+        public async Task DeleteAsync(UserSettings userSettings)
         {
             await Task.Run(() =>
             {
-                using var tableAdapter = new Set_UserSettingsTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                long? IdOut = 0;
-                tableAdapter.Fill(_dataset.Set_UserSettings, userSettings.Id, userSettings.UserId,
-                    userSettings.ImageProcessorParameters.CannyThreshold,
-                    userSettings.ImageProcessorParameters.CannyThresholdLinking,
-                    userSettings.ImageProcessorParameters.HoughLinesRhoResolution,
-                    userSettings.ImageProcessorParameters.HoughLinesThetaResolution,
-                    userSettings.ImageProcessorParameters.HoughLinesMinimumLineWidth,
-                    userSettings.ImageProcessorParameters.HoughLinesGapBetweenLines,
-                    userSettings.ImageProcessorParameters.HoughLinesThreshold,
-                    userSettings.ImageProcessorParameters.DilateIterations, ref IdOut);
+                _tableAdapter.Delete(userSettings.Id);
             });
         }
 
         //============================================================
-        public override async Task DeleteAsync(UserSettings userSettings)
+        public void Dispose()
         {
-            await Task.Run(() =>
-            {
-                using var tableAdapter = new Delete_UserSettingsTableAdapter
-                {
-                    Connection = new SqlConnection(_connectionString)
-                };
-                tableAdapter.Fill(_dataset.Delete_UserSettings, userSettings.Id);
-            });
-        }
-
-        //============================================================
-        public override void Dispose()
-        {
+            _tableAdapter.Dispose();
             _dataset.Dispose();
         }
     }

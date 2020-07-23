@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DrivingAssistant.Core.Models.ImageProcessing;
+using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
 {
@@ -7,7 +8,13 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("UserId")]
         public long UserId { get; set; }
 
-        [JsonProperty("ImageProcessorParameters")]
-        public ImageProcessorParameters ImageProcessorParameters { get; set; }
+        [JsonProperty("Parameters")]
+        public Parameters Parameters { get; set; }
+
+        //===========================================================//
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
     }
 }
