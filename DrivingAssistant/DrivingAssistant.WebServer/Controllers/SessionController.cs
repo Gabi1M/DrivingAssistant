@@ -29,7 +29,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _sessionService = ISessionService.NewInstance(typeof(MssqlSessionService));
+                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
                 var sessions = await _sessionService.GetAsync();
                 return Ok(JsonConvert.SerializeObject(sessions, Formatting.Indented));
             }
@@ -51,7 +51,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
-                _sessionService = ISessionService.NewInstance(typeof(MssqlSessionService));
+                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
                 return Ok(await _sessionService.SetAsync(session));
             }
@@ -73,7 +73,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
-                _sessionService = ISessionService.NewInstance(typeof(MssqlSessionService));
+                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
                 await _sessionService.SetAsync(session);
                 return Ok();
@@ -96,8 +96,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _sessionService = ISessionService.NewInstance(typeof(MssqlSessionService));
-                var mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
+                var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
                 foreach (var media in (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id))
                 {
@@ -125,9 +125,9 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST process_session from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _sessionService = ISessionService.NewInstance(typeof(MssqlSessionService));
-                using var mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
-                using var reportService = IReportService.NewInstance(typeof(MssqlReportService));
+                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
+                using var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
+                using var reportService = new MssqlReportService(Constants.ServerConstants.GetMssqlConnectionString());
                 var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
                 var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
                 var imageProcessor = new ImageProcessor(Parameters.Default());

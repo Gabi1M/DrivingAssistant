@@ -45,9 +45,9 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textViewUserEmail.Text = _user.Email;
             _textViewUserRole.Text = _user.Role.ToString();
 
-            var fragment = new SessionFragment(_user);
+            var fragment = new HomeFragment(_user);
             SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-            _toolbar.Title = "Driving Sessions";
+            _toolbar.Title = "Home";
         }
 
         //============================================================
@@ -111,6 +111,13 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             switch (id)
             {
+                case Resource.Id.nav_home:
+                {
+                    var fragment = new HomeFragment(_user);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    _toolbar.Title = "Home";
+                    break;
+                }
                 case Resource.Id.nav_sessions:
                 {
                     var fragment = new SessionFragment(_user);

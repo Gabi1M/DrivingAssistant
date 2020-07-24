@@ -7,6 +7,7 @@ using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Services.Mssql;
+using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -27,7 +28,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received GET users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _userService = IUserService.NewInstance(typeof(MssqlUserService));
+                _userService = new MssqlUserService(Constants.ServerConstants.GetMssqlConnectionString());
                 var users = await _userService.GetAsync();
                 return Ok(JsonConvert.SerializeObject(users, Formatting.Indented));
             }
@@ -49,8 +50,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
-                _userService = IUserService.NewInstance(typeof(MssqlUserService));
-                var userSettingsService = IUserSettingsService.NewInstance(typeof(MssqlUserSettingsService));
+                _userService = new MssqlUserService(Constants.ServerConstants.GetMssqlConnectionString());
+                var userSettingsService = new MssqlUserSettingsService(Constants.ServerConstants.GetMssqlConnectionString());
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
                 user.Id = await _userService.SetAsync(user);
                 var userSettings = new UserSettings
@@ -79,7 +80,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received PUT users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
-                _userService = IUserService.NewInstance(typeof(MssqlUserService));
+                _userService = new MssqlUserService(Constants.ServerConstants.GetMssqlConnectionString());
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
                 await _userService.SetAsync(user);
                 return Ok();
@@ -102,7 +103,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received DELETE users from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _userService = IUserService.NewInstance(typeof(MssqlUserService));
+                _userService = new MssqlUserService(Constants.ServerConstants.GetMssqlConnectionString());
                 var user = (await _userService.GetAsync()).First(x => x.Id == id);
                 await _userService.DeleteAsync(user);
                 return Ok();

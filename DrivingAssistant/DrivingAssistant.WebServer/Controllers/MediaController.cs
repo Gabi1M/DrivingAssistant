@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
@@ -30,7 +31,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received GET media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var medias = (await _mediaService.GetAsync()).Where(x => x.UserId == userId);
                 return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
             }
@@ -52,7 +53,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received GET media_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
                 return File(System.IO.File.Open(media.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
             }
@@ -75,7 +76,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST images_base64 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveImageBase64ToFile(Request.Body);
                 var media = new Media
                 {
@@ -111,7 +112,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
                 var description = Request.Query["Description"].First();
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
                 var media = new Media
                 {
@@ -147,7 +148,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
                 var description = Request.Query["Description"].First();
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
                 var media = new Media
                 {
@@ -180,7 +181,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Logger.Log(
                     "Received PUT media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 using var streamReader = new StreamReader(Request.Body);
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
                 await _mediaService.SetAsync(media);
@@ -204,7 +205,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received DELETE media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
                 await _mediaService.DeleteAsync(media);
                 if ((await _mediaService.GetAsync()).Any(x => x.ProcessedId == media.Id))
@@ -233,7 +234,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = IMediaService.NewInstance(typeof(MssqlMediaService));
+                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
                 var imageProcessor = new ImageProcessor(Parameters.Default());
                 Media processedMedia;

@@ -1,0 +1,193 @@
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainColor2">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:weightSum="4"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:id="@+id/linearLayout1">
+
+        <Space
+            android:layout_width="10.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout2">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/homeTextSessionNumber" />
+
+            <TextView
+                android:text="Total Sessions"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/textView2" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="10.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout4">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/homeTextProcessedSessionNumber" />
+
+            <TextView
+                android:text="Processed Sessions"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/textView6" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="10.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/homeTextMediaNumber" />
+
+            <TextView
+                android:text="Total Media"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/textView4" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="10.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_weight="1"
+            android:weightSum="5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout5">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/homeTextProcessedMediaNumber" />
+
+            <TextView
+                android:text="Processed Media"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:id="@+id/textView8" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30.0dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:weightSum="2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/linearLayout6">
+
+        <microcharts.droid.ChartView
+            android:id="@+id/chartViewSessions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/mainColor2"/>
+
+        <microcharts.droid.ChartView
+            android:id="@+id/chartViewMedia"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/mainColor2"/>
+
+    </LinearLayout>
+
+</LinearLayout>
