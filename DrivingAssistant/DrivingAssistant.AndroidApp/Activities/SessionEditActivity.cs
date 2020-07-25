@@ -80,7 +80,7 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
             _newSession = !Intent.HasExtra("session");
-            _currentLocation = await Geolocation.GetLocationAsync();
+            _currentLocation = await Geolocation.GetLastKnownLocationAsync();
 
             if (!_newSession)
             {

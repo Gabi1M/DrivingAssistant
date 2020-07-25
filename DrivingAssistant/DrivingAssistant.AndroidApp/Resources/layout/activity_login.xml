@@ -15,10 +15,11 @@
         android:background="@color/mainColor1">
         <ImageView
             android:contentDescription=""
-            android:src="@android:drawable/ic_menu_gallery"
+            android:src="@drawable/logo"
             android:layout_width="match_parent"
             android:layout_height="250.0dp"
-            android:id="@+id/loginImage" />
+            android:id="@+id/loginImage"
+            android:scaleType="fitCenter" />
     </LinearLayout>
 
     <Space

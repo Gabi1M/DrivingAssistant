@@ -7,88 +7,136 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10.0dp"/>
+            android:layout_height="30.0dp"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50.0dp"
-            android:text="Sessions"
-            android:gravity="center"
-            android:textColor="@color/mainColor1"
-            android:textSize="30.0dp"/>
-
-        <Microcharts.Droid.ChartView
-            android:layout_width="match_parent"
-            android:layout_height="400.0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginLeft="20.0dp"
             android:layout_marginRight="20.0dp"
-            android:id="@+id/homeChartSessions"
-            android:textColor="@color/mainColor1"/>
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Sessions"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="300.0dp"
+                android:id="@+id/homeChartSessions"
+                android:textColor="@color/mainColor1"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10.0dp"/>
+            android:layout_height="30.0dp"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50.0dp"
-            android:text="Media"
-            android:gravity="center"
-            android:textColor="@color/mainColor1"
-            android:textSize="30.0dp"/>
-
-        <Microcharts.Droid.ChartView
-            android:layout_width="match_parent"
-            android:layout_height="400.0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginLeft="20.0dp"
             android:layout_marginRight="20.0dp"
-            android:id="@+id/homeChartMedias"/>
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Media"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="300.0dp"
+                android:id="@+id/homeChartMedias"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10.0dp"/>
+            android:layout_height="30.0dp"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50.0dp"
-            android:text="Processed Frames"
-            android:gravity="center"
-            android:textColor="@color/mainColor1"
-            android:textSize="30.0dp"/>
-
-        <Microcharts.Droid.ChartView
-            android:layout_width="match_parent"
-            android:layout_height="400.0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginLeft="20.0dp"
             android:layout_marginRight="20.0dp"
-            android:id="@+id/homeChartFrames"/>
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Processed Frames"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="300.0dp"
+                android:id="@+id/homeChartFrames"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10.0dp"/>
+            android:layout_height="30.0dp"/>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50.0dp"
-            android:text="Average Lane Position"
-            android:gravity="center"
-            android:textColor="@color/mainColor1"
-            android:textSize="30.0dp"/>
-
-        <Microcharts.Droid.ChartView
-            android:layout_width="match_parent"
-            android:layout_height="400.0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginLeft="20.0dp"
             android:layout_marginRight="20.0dp"
-            android:id="@+id/homeChartLanePosition"/>
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Average Lane Position"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="300.0dp"
+                android:id="@+id/homeChartLanePosition"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10.0dp"/>
+            android:layout_height="30.0dp"/>
 
     </LinearLayout>
 

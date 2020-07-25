@@ -15,7 +15,7 @@ namespace DrivingAssistant.WebServer.Tools
             private const string WindowsImageStoragePath = @"C:\CloudStorage\Images";
             private const string WindowsVideoStoragePath = @"C:\CloudStorage\Videos";
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=cloud;Username=postgres;Password=1234";
-            private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-21H2OBB;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
+            private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
 
             //============================================================
             public static string GetImageStoragePath()
