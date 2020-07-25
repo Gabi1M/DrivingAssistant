@@ -8,9 +8,9 @@
   <Shapes>
     <Shape ID="DesignTable:UserSettings" ZOrder="5" X="2189" Y="287" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
     <Shape ID="DesignTable:Media" ZOrder="4" X="864" Y="359" Height="344" Width="285" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="277" />
-    <Shape ID="DesignTable:Report" ZOrder="3" X="2757" Y="313" Height="398" Width="299" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="331" />
-    <Shape ID="DesignTable:Session" ZOrder="2" X="1268" Y="349" Height="317" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="250" />
-    <Shape ID="DesignTable:User" ZOrder="1" X="1721" Y="348" Height="317" Width="278" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="250" />
+    <Shape ID="DesignTable:Session" ZOrder="3" X="1268" Y="349" Height="317" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="250" />
+    <Shape ID="DesignTable:User" ZOrder="2" X="1721" Y="348" Height="317" Width="278" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="250" />
+    <Shape ID="DesignTable:Report" ZOrder="1" X="2755" Y="346" Height="425" Width="299" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="358" />
   </Shapes>
   <Connectors />
 </DiagramLayout>

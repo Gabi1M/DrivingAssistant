@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models.ImageProcessing;
+using DrivingAssistant.Core.Tools;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -48,83 +49,84 @@ namespace DrivingAssistant.WebServer.Tools
         private Image<Bgr, byte> ProcessCvImage(Image<Bgr, byte> image, out ImageReport report)
         {
             var processedImage = image.Clone();
-            var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
-            var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
-            var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
-                _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
-                _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 
-            lines = lines.Select(x => x.OrientLine());
-            var middleVerticalLine = new LineSegment2D(new Point(image.Width / 2, 0), new Point(image.Width / 2, image.Height));
-
-            var leftSideLines = lines.Where(x =>
-                middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) > 10 &&
-                x.GetAngle(middleVerticalLine) < 55).OrderBy(x => x.P1.Y);
-
-            var rightSideLines = lines.Where(x =>
-                middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) > 55 &&
-                x.GetAngle(middleVerticalLine) < 90).OrderBy(x => x.P1.Y);
-
-            var connectingLine = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), rightSideLines.Last().GetCenterPoint());
-            var intersection = connectingLine.GetIntersection(middleVerticalLine);
-
-            var intersectionLeft = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), intersection);
-            var intersectionRight = new LineSegment2D(rightSideLines.Last().GetCenterPoint(), intersection);
-
-
-            var leftSidePercent = (100 * intersectionLeft.Length) / connectingLine.Length;
-            var rightSidePercent = (100 * intersectionRight.Length) / connectingLine.Length;
-
-            processedImage.Draw(intersectionLeft, new Bgr(255, 0, 0), 2);
-            processedImage.Draw(intersectionRight, new Bgr(0, 0, 255), 2);
-
-            lines.AsParallel().ForAll(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
-
-            report = new ImageReport
+            try
             {
-                LeftSidePercent = leftSidePercent,
-                LeftSideLineLength = intersectionLeft.Length,
-                RightSidePercent = rightSidePercent,
-                RightSideLineLength = intersectionRight.Length,
-                SpanLineAngle = connectingLine.GetAngle(middleVerticalLine),
-                SpanLineLength = connectingLine.Length,
-                LeftSideLineNumber = leftSideLines.Count(),
-                RightSideLineNumber = rightSideLines.Count()
-            };
+                var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
+                var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
+                var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+                    _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
+                    _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
+
+                lines = lines.Select(x => x.OrientLine());
+                var middleVerticalLine = new LineSegment2D(new Point(image.Width / 2, 0), new Point(image.Width / 2, image.Height));
+
+                var leftSideLines = lines.Where(x =>
+                    middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) > 10 &&
+                    x.GetAngle(middleVerticalLine) < 55).OrderBy(x => x.P1.Y);
+
+                var rightSideLines = lines.Where(x =>
+                    middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) > 55 &&
+                    x.GetAngle(middleVerticalLine) < 90).OrderBy(x => x.P1.Y);
+
+                var connectingLine = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), rightSideLines.Last().GetCenterPoint());
+                var intersection = connectingLine.GetIntersection(middleVerticalLine);
+
+                var intersectionLeft = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), intersection);
+                var intersectionRight = new LineSegment2D(rightSideLines.Last().GetCenterPoint(), intersection);
+
+
+                var rightSidePercent = (100 * intersectionLeft.Length) / connectingLine.Length;
+                var leftSidePercent = (100 * intersectionRight.Length) / connectingLine.Length;
+
+                processedImage.Draw(intersectionLeft, new Bgr(255, 0, 0), 2);
+                processedImage.Draw(intersectionRight, new Bgr(0, 0, 255), 2);
+
+                lines.AsParallel().ForAll(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
+
+                report = new ImageReport
+                {
+                    Success = true,
+                    LeftSidePercent = leftSidePercent,
+                    LeftSideLineLength = intersectionLeft.Length,
+                    RightSidePercent = rightSidePercent,
+                    RightSideLineLength = intersectionRight.Length,
+                    SpanLineAngle = connectingLine.GetAngle(middleVerticalLine),
+                    SpanLineLength = connectingLine.Length,
+                    LeftSideLineNumber = leftSideLines.Count(),
+                    RightSideLineNumber = rightSideLines.Count()
+                };
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Warning);
+                report = new ImageReport
+                {
+                    Success = false,
+                    LeftSidePercent = default,
+                    LeftSideLineLength = default,
+                    RightSidePercent = default,
+                    RightSideLineLength = default,
+                    SpanLineAngle = default,
+                    SpanLineLength = default,
+                    LeftSideLineNumber = default,
+                    RightSideLineNumber = default
+                };
+            }
 
             image.Dispose();
             return processedImage;
         }
 
         //======================================================//
-        private Bitmap ProcessBitmap(Bitmap bitmap, out ImageReport report)
+        public string ProcessImage(string filename, out ImageReport report)
         {
-            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-            var originalImage = new Image<Bgr, byte>(bitmapData.Width, bitmapData.Height, bitmapData.Stride, bitmapData.Scan0);
-            bitmap.UnlockBits(bitmapData);
-            bitmap.Dispose();
-            return ProcessCvImage(originalImage, out report).ToBitmap();
-        }
-
-        //======================================================//
-        public string ProcessImage(string filename, bool loadAsBitmap, out ImageReport report)
-        {
-            if (loadAsBitmap)
-            {
-                using var bitmap = Image.FromFile(filename) as Bitmap;
-                using var processedBitmap = ProcessBitmap(bitmap, out report);
-                var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
-                processedBitmap.Save(processedFilename);
-                return processedFilename;
-            }
-            else
-            {
-                using var image = new Image<Bgr, byte>(filename);
-                using var processedImage = ProcessCvImage(image, out report);
-                var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
-                processedImage.Save(processedFilename);
-                return processedFilename;
-            }
+            using var image = new Image<Bgr, byte>(filename);
+            using var processedImage = ProcessCvImage(image, out report);
+            var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
+            processedImage.Save(processedFilename);
+            return processedFilename;
         }
 
         //======================================================//
@@ -132,7 +134,7 @@ namespace DrivingAssistant.WebServer.Tools
         {
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
-            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width,video.Height), true);
+            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var imageResultList = new List<ImageReport>();
             var frameCount = 0;
             while (true)
@@ -153,7 +155,7 @@ namespace DrivingAssistant.WebServer.Tools
                         imageResultList.Add(imageResult);
                         videoWriter.Write(processedImage.Mat);
                     }
-                    else if(frameCount % framesToSkip == 0)
+                    else if (frameCount % framesToSkip == 0)
                     {
                         using var bgrImage = capturedImage.ToImage<Bgr, byte>();
                         using var processedImage = ProcessCvImage(bgrImage, out var imageResult);
@@ -161,8 +163,9 @@ namespace DrivingAssistant.WebServer.Tools
                         videoWriter.Write(processedImage.Mat);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Logger.LogException(ex, LogType.Warning);
                     break;
                 }
             }

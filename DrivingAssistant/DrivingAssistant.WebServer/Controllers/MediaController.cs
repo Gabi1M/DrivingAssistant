@@ -240,7 +240,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 Media processedMedia;
                 if (media.Type == MediaType.Image)
                 {
-                    var processedFilename = imageProcessor.ProcessImage(media.Filepath, false, out var result);
+                    var processedFilename = imageProcessor.ProcessImage(media.Filepath, out var result);
                     processedMedia = new Media
                     {
                         Type = MediaType.Image,

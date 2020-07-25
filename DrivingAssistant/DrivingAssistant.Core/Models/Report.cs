@@ -11,6 +11,18 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("SessionId")]
         public long SessionId { get; set; }
 
+        [JsonProperty("ProcessedFrames")]
+        public long ProcessedFrames { get; set; }
+
+        [JsonProperty("SuccessFrames")]
+        public long SuccessFrames { get; set; }
+
+        [JsonProperty("FailFrames")]
+        public long FailFrames { get; set; }
+
+        [JsonProperty("SuccessRate")]
+        public double SuccessRate { get; set; }
+
         [JsonProperty("LeftSidePercent")]
         public double LeftSidePercent { get; set; }
 
@@ -43,6 +55,10 @@ namespace DrivingAssistant.Core.Models
                 Id = -1,
                 MediaId = mediaId,
                 SessionId = sessionId,
+                ProcessedFrames = 1,
+                SuccessFrames = imageReport.Success ? 1 : 0,
+                FailFrames = imageReport.Success ? 0 : 1,
+                SuccessRate = imageReport.Success ? 100 : 0,
                 LeftSidePercent = imageReport.LeftSidePercent,
                 RightSidePercent = imageReport.RightSidePercent,
                 LeftSideLineLength = imageReport.LeftSideLineLength,
@@ -62,6 +78,10 @@ namespace DrivingAssistant.Core.Models
                 Id = -1,
                 MediaId = mediaId,
                 SessionId = sessionId,
+                ProcessedFrames = videoReport.NumberOfFrames,
+                SuccessFrames = videoReport.SuccessFrames,
+                FailFrames = videoReport.FailFrames,
+                SuccessRate = (float) videoReport.SuccessFrames * 100 / videoReport.NumberOfFrames,
                 LeftSidePercent = videoReport.AverageLeftSidePercent,
                 RightSidePercent = videoReport.AverageRightSidePercent,
                 LeftSideLineLength = videoReport.AverageLeftSideLineLength,

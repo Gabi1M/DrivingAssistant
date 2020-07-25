@@ -4,6 +4,9 @@ namespace DrivingAssistant.Core.Models.ImageProcessing
 {
     public class ImageReport
     {
+        [JsonProperty("Success")]
+        public bool Success { get; set; }
+
         [JsonProperty("LeftSidePercent")]
         public double LeftSidePercent { get; set; }
 

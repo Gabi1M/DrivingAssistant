@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
@@ -117,7 +118,7 @@ namespace DrivingAssistant.WebServer.Controllers
         //============================================================
         [HttpGet]
         [Route("process_session")]
-        public async Task<IActionResult> ProcessSession()
+        public IActionResult ProcessSession()
         {
             try
             {
@@ -125,59 +126,66 @@ namespace DrivingAssistant.WebServer.Controllers
                     "Received POST process_session from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
                     Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
-                using var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                using var reportService = new MssqlReportService(Constants.ServerConstants.GetMssqlConnectionString());
-                var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
-                var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
-                var imageProcessor = new ImageProcessor(Parameters.Default());
-                foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
+                new Thread(async () =>
                 {
-                    Media processedMedia;
-                    Report report;
-                    if (media.Type == MediaType.Image)
+                    _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
+                    using var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
+                    using var reportService = new MssqlReportService(Constants.ServerConstants.GetMssqlConnectionString());
+                    var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
+                    var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
+                    var imageProcessor = new ImageProcessor(Parameters.Default());
+                    foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
                     {
-                        var processedFilename = imageProcessor.ProcessImage(media.Filepath, false, out var result);
-                        processedMedia = new Media
+                        Media processedMedia;
+                        Report report;
+                        if (media.Type == MediaType.Image)
                         {
-                            Type = MediaType.Image,
-                            Filepath = processedFilename,
-                            Source = media.Source,
-                            Description = media.Description,
-                            DateAdded = DateTime.Now,
-                            Id = -1,
-                            ProcessedId = -1,
-                            SessionId = media.SessionId,
-                            UserId = media.UserId
-                        };
-                        report = Report.FromImageReport(result, media.Id, session.Id);
-                    }
-                    else
-                    {
-                        var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10, out var result);
-                        processedMedia = new Media
+                            var processedFilename = imageProcessor.ProcessImage(media.Filepath, out var result);
+                            if (processedFilename == null)
+                            {
+                                continue;
+                            }
+                            processedMedia = new Media
+                            {
+                                Type = MediaType.Image,
+                                Filepath = processedFilename,
+                                Source = media.Source,
+                                Description = media.Description,
+                                DateAdded = DateTime.Now,
+                                Id = -1,
+                                ProcessedId = -1,
+                                SessionId = media.SessionId,
+                                UserId = media.UserId
+                            };
+                            report = Report.FromImageReport(result, media.Id, session.Id);
+                        }
+                        else
                         {
-                            Type = MediaType.Video,
-                            Filepath = processedFilename,
-                            Source = media.Source,
-                            Description = media.Description,
-                            DateAdded = DateTime.Now,
-                            Id = -1,
-                            ProcessedId = -1,
-                            SessionId = media.SessionId,
-                            UserId = media.UserId
-                        };
-                        report = Report.FromVideoReport(result, media.Id, session.Id);
+                            var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10, out var result);
+                            processedMedia = new Media
+                            {
+                                Type = MediaType.Video,
+                                Filepath = processedFilename,
+                                Source = media.Source,
+                                Description = media.Description,
+                                DateAdded = DateTime.Now,
+                                Id = -1,
+                                ProcessedId = -1,
+                                SessionId = media.SessionId,
+                                UserId = media.UserId
+                            };
+                            report = Report.FromVideoReport(result, media.Id, session.Id);
+                        }
+
+                        processedMedia.Id = await mediaService.SetAsync(processedMedia);
+                        report.Id = await reportService.SetAsync(report);
+                        media.ProcessedId = processedMedia.Id;
+                        await mediaService.SetAsync(media);
                     }
 
-                    processedMedia.Id = await mediaService.SetAsync(processedMedia);
-                    report.Id = await reportService.SetAsync(report);
-                    media.ProcessedId = processedMedia.Id;
-                    await mediaService.SetAsync(media);
-                }
-
-                session.Processed = true;
-                await _sessionService.SetAsync(session);
+                    session.Processed = true;
+                    await _sessionService.SetAsync(session);
+                }).Start();
                 return Ok();
             }
             catch (Exception ex)
