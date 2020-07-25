@@ -1936,6 +1936,8 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             private global::System.Data.DataColumn columnSessionId;
             
+            private global::System.Data.DataColumn columnUserId;
+            
             private global::System.Data.DataColumn columnProcessedFrames;
             
             private global::System.Data.DataColumn columnSuccessFrames;
@@ -2014,6 +2016,14 @@ namespace DrivingAssistant.WebServer.Dataset {
             public global::System.Data.DataColumn SessionIdColumn {
                 get {
                     return this.columnSessionId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn UserIdColumn {
+                get {
+                    return this.columnUserId;
                 }
             }
             
@@ -2150,12 +2160,13 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public ReportRow AddReportRow(long MediaId, long SessionId, long ProcessedFrames, long SuccessFrames, long FailFrames, double SuccessRate, double LeftSidePercent, double RightSidePercent, double LeftSideLineLength, double RightSideLineLength, double SpanLineAngle, double SpanLineLength, int LeftSideLineNumber, int RightSideLineNumber) {
+            public ReportRow AddReportRow(long MediaId, long SessionId, long UserId, long ProcessedFrames, long SuccessFrames, long FailFrames, double SuccessRate, double LeftSidePercent, double RightSidePercent, double LeftSideLineLength, double RightSideLineLength, double SpanLineAngle, double SpanLineLength, int LeftSideLineNumber, int RightSideLineNumber) {
                 ReportRow rowReportRow = ((ReportRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         MediaId,
                         SessionId,
+                        UserId,
                         ProcessedFrames,
                         SuccessFrames,
                         FailFrames,
@@ -2200,6 +2211,7 @@ namespace DrivingAssistant.WebServer.Dataset {
                 this.columnId = base.Columns["Id"];
                 this.columnMediaId = base.Columns["MediaId"];
                 this.columnSessionId = base.Columns["SessionId"];
+                this.columnUserId = base.Columns["UserId"];
                 this.columnProcessedFrames = base.Columns["ProcessedFrames"];
                 this.columnSuccessFrames = base.Columns["SuccessFrames"];
                 this.columnFailFrames = base.Columns["FailFrames"];
@@ -2223,6 +2235,8 @@ namespace DrivingAssistant.WebServer.Dataset {
                 base.Columns.Add(this.columnMediaId);
                 this.columnSessionId = new global::System.Data.DataColumn("SessionId", typeof(long), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnSessionId);
+                this.columnUserId = new global::System.Data.DataColumn("UserId", typeof(long), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUserId);
                 this.columnProcessedFrames = new global::System.Data.DataColumn("ProcessedFrames", typeof(long), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnProcessedFrames);
                 this.columnSuccessFrames = new global::System.Data.DataColumn("SuccessFrames", typeof(long), null, global::System.Data.MappingType.Element);
@@ -3427,6 +3441,22 @@ namespace DrivingAssistant.WebServer.Dataset {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public long UserId {
+                get {
+                    try {
+                        return ((long)(this[this.tableReport.UserIdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'UserId\' in table \'Report\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableReport.UserIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public long ProcessedFrames {
                 get {
                     try {
@@ -3639,6 +3669,18 @@ namespace DrivingAssistant.WebServer.Dataset {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetSessionIdNull() {
                 this[this.tableReport.SessionIdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsUserIdNull() {
+                return this.IsNull(this.tableReport.UserIdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetUserIdNull() {
+                this[this.tableReport.UserIdColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -5724,6 +5766,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             tableMapping.ColumnMappings.Add("Id", "Id");
             tableMapping.ColumnMappings.Add("MediaId", "MediaId");
             tableMapping.ColumnMappings.Add("SessionId", "SessionId");
+            tableMapping.ColumnMappings.Add("UserId", "UserId");
             tableMapping.ColumnMappings.Add("ProcessedFrames", "ProcessedFrames");
             tableMapping.ColumnMappings.Add("SuccessFrames", "SuccessFrames");
             tableMapping.ColumnMappings.Add("FailFrames", "FailFrames");
@@ -5751,6 +5794,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Id", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "Id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@MediaId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "MediaId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@SessionId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "SessionId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@UserId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "UserId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ProcessedFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "ProcessedFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@SuccessFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "SuccessFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FailFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "FailFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -5772,6 +5816,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Id", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "Id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@MediaId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "MediaId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@SessionId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "SessionId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@UserId", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "UserId", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ProcessedFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "ProcessedFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@SuccessFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "SuccessFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FailFrames", global::System.Data.SqlDbType.BigInt, 8, global::System.Data.ParameterDirection.Input, 19, 0, "FailFrames", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -5894,6 +5939,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
                     global::System.Nullable<long> Id, 
                     global::System.Nullable<long> MediaId, 
                     global::System.Nullable<long> SessionId, 
+                    global::System.Nullable<long> UserId, 
                     global::System.Nullable<long> ProcessedFrames, 
                     global::System.Nullable<long> SuccessFrames, 
                     global::System.Nullable<long> FailFrames, 
@@ -5925,83 +5971,89 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             else {
                 this.Adapter.InsertCommand.Parameters[3].Value = global::System.DBNull.Value;
             }
-            if ((ProcessedFrames.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[4].Value = ((long)(ProcessedFrames.Value));
+            if ((UserId.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[4].Value = ((long)(UserId.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
-            if ((SuccessFrames.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[5].Value = ((long)(SuccessFrames.Value));
+            if ((ProcessedFrames.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[5].Value = ((long)(ProcessedFrames.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
-            if ((FailFrames.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[6].Value = ((long)(FailFrames.Value));
+            if ((SuccessFrames.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[6].Value = ((long)(SuccessFrames.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
-            if ((SuccessRate.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[7].Value = ((double)(SuccessRate.Value));
+            if ((FailFrames.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[7].Value = ((long)(FailFrames.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
-            if ((LeftSidePercent.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[8].Value = ((double)(LeftSidePercent.Value));
+            if ((SuccessRate.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[8].Value = ((double)(SuccessRate.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
-            if ((RightSidePercent.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[9].Value = ((double)(RightSidePercent.Value));
+            if ((LeftSidePercent.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[9].Value = ((double)(LeftSidePercent.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
-            if ((LeftSideLineLength.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[10].Value = ((double)(LeftSideLineLength.Value));
+            if ((RightSidePercent.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[10].Value = ((double)(RightSidePercent.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
-            if ((RightSideLineLength.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[11].Value = ((double)(RightSideLineLength.Value));
+            if ((LeftSideLineLength.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[11].Value = ((double)(LeftSideLineLength.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[11].Value = global::System.DBNull.Value;
             }
-            if ((SpanLineAngle.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[12].Value = ((double)(SpanLineAngle.Value));
+            if ((RightSideLineLength.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[12].Value = ((double)(RightSideLineLength.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[12].Value = global::System.DBNull.Value;
             }
-            if ((SpanLineLength.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[13].Value = ((double)(SpanLineLength.Value));
+            if ((SpanLineAngle.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[13].Value = ((double)(SpanLineAngle.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[13].Value = global::System.DBNull.Value;
             }
-            if ((LeftSideLineNumber.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[14].Value = ((int)(LeftSideLineNumber.Value));
+            if ((SpanLineLength.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[14].Value = ((double)(SpanLineLength.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[14].Value = global::System.DBNull.Value;
             }
-            if ((RightSideLineNumber.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[15].Value = ((int)(RightSideLineNumber.Value));
+            if ((LeftSideLineNumber.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[15].Value = ((int)(LeftSideLineNumber.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[15].Value = global::System.DBNull.Value;
             }
-            if ((IdOut.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[16].Value = ((long)(IdOut.Value));
+            if ((RightSideLineNumber.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[16].Value = ((int)(RightSideLineNumber.Value));
             }
             else {
                 this.Adapter.InsertCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            if ((IdOut.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[17].Value = ((long)(IdOut.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[17].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -6010,12 +6062,12 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             }
             try {
                 int returnValue = this.Adapter.InsertCommand.ExecuteNonQuery();
-                if (((this.Adapter.InsertCommand.Parameters[16].Value == null) 
-                            || (this.Adapter.InsertCommand.Parameters[16].Value.GetType() == typeof(global::System.DBNull)))) {
+                if (((this.Adapter.InsertCommand.Parameters[17].Value == null) 
+                            || (this.Adapter.InsertCommand.Parameters[17].Value.GetType() == typeof(global::System.DBNull)))) {
                     IdOut = new global::System.Nullable<long>();
                 }
                 else {
-                    IdOut = new global::System.Nullable<long>(((long)(this.Adapter.InsertCommand.Parameters[16].Value)));
+                    IdOut = new global::System.Nullable<long>(((long)(this.Adapter.InsertCommand.Parameters[17].Value)));
                 }
                 return returnValue;
             }
@@ -6034,6 +6086,7 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
                     global::System.Nullable<long> Id, 
                     global::System.Nullable<long> MediaId, 
                     global::System.Nullable<long> SessionId, 
+                    global::System.Nullable<long> UserId, 
                     global::System.Nullable<long> ProcessedFrames, 
                     global::System.Nullable<long> SuccessFrames, 
                     global::System.Nullable<long> FailFrames, 
@@ -6065,83 +6118,89 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             else {
                 this.Adapter.UpdateCommand.Parameters[3].Value = global::System.DBNull.Value;
             }
-            if ((ProcessedFrames.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[4].Value = ((long)(ProcessedFrames.Value));
+            if ((UserId.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[4].Value = ((long)(UserId.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[4].Value = global::System.DBNull.Value;
             }
-            if ((SuccessFrames.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[5].Value = ((long)(SuccessFrames.Value));
+            if ((ProcessedFrames.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((long)(ProcessedFrames.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
-            if ((FailFrames.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[6].Value = ((long)(FailFrames.Value));
+            if ((SuccessFrames.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((long)(SuccessFrames.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[6].Value = global::System.DBNull.Value;
             }
-            if ((SuccessRate.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[7].Value = ((double)(SuccessRate.Value));
+            if ((FailFrames.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[7].Value = ((long)(FailFrames.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
-            if ((LeftSidePercent.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[8].Value = ((double)(LeftSidePercent.Value));
+            if ((SuccessRate.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((double)(SuccessRate.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[8].Value = global::System.DBNull.Value;
             }
-            if ((RightSidePercent.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[9].Value = ((double)(RightSidePercent.Value));
+            if ((LeftSidePercent.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((double)(LeftSidePercent.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
             }
-            if ((LeftSideLineLength.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((double)(LeftSideLineLength.Value));
+            if ((RightSidePercent.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[10].Value = ((double)(RightSidePercent.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
             }
-            if ((RightSideLineLength.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[11].Value = ((double)(RightSideLineLength.Value));
+            if ((LeftSideLineLength.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[11].Value = ((double)(LeftSideLineLength.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[11].Value = global::System.DBNull.Value;
             }
-            if ((SpanLineAngle.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((double)(SpanLineAngle.Value));
+            if ((RightSideLineLength.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[12].Value = ((double)(RightSideLineLength.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[12].Value = global::System.DBNull.Value;
             }
-            if ((SpanLineLength.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((double)(SpanLineLength.Value));
+            if ((SpanLineAngle.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[13].Value = ((double)(SpanLineAngle.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
             }
-            if ((LeftSideLineNumber.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((int)(LeftSideLineNumber.Value));
+            if ((SpanLineLength.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[14].Value = ((double)(SpanLineLength.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
             }
-            if ((RightSideLineNumber.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(RightSideLineNumber.Value));
+            if ((LeftSideLineNumber.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(LeftSideLineNumber.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[15].Value = global::System.DBNull.Value;
             }
-            if ((IdOut.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((long)(IdOut.Value));
+            if ((RightSideLineNumber.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((int)(RightSideLineNumber.Value));
             }
             else {
                 this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
+            }
+            if ((IdOut.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((long)(IdOut.Value));
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -6150,12 +6209,12 @@ namespace DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters {
             }
             try {
                 int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
-                if (((this.Adapter.UpdateCommand.Parameters[16].Value == null) 
-                            || (this.Adapter.UpdateCommand.Parameters[16].Value.GetType() == typeof(global::System.DBNull)))) {
+                if (((this.Adapter.UpdateCommand.Parameters[17].Value == null) 
+                            || (this.Adapter.UpdateCommand.Parameters[17].Value.GetType() == typeof(global::System.DBNull)))) {
                     IdOut = new global::System.Nullable<long>();
                 }
                 else {
-                    IdOut = new global::System.Nullable<long>(((long)(this.Adapter.UpdateCommand.Parameters[16].Value)));
+                    IdOut = new global::System.Nullable<long>(((long)(this.Adapter.UpdateCommand.Parameters[17].Value)));
                 }
                 return returnValue;
             }

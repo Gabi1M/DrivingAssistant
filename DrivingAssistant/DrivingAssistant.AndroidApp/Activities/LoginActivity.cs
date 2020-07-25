@@ -14,7 +14,7 @@ using PerpetualEngine.Storage;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
-    [Activity(Label = "LoginActivity", MainLauncher = true)]
+    [Activity(Label = "Driving Assistant", MainLauncher = true)]
     public class LoginActivity : Activity
     {
         private TextInputEditText _textInputUsername;

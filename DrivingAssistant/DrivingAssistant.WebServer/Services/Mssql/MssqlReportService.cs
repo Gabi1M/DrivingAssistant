@@ -30,6 +30,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Id = row.Id,
                     MediaId = row.MediaId,
                     SessionId = row.SessionId,
+                    UserId = row.UserId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -52,7 +53,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(report.Id, report.MediaId, report.SessionId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
+                _tableAdapter.Insert(report.Id, report.MediaId, report.SessionId, report.UserId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
                     report.LeftSideLineLength, report.RightSideLineLength, report.SpanLineAngle, report.SpanLineLength,
                     report.LeftSideLineNumber, report.RightSideLineNumber, ref idOut);
                 return idOut ?? -1;

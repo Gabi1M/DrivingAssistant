@@ -157,7 +157,7 @@ namespace DrivingAssistant.WebServer.Controllers
                                 SessionId = media.SessionId,
                                 UserId = media.UserId
                             };
-                            report = Report.FromImageReport(result, media.Id, session.Id);
+                            report = Report.FromImageReport(result, media.Id, session.Id, session.UserId);
                         }
                         else
                         {
@@ -174,7 +174,7 @@ namespace DrivingAssistant.WebServer.Controllers
                                 SessionId = media.SessionId,
                                 UserId = media.UserId
                             };
-                            report = Report.FromVideoReport(result, media.Id, session.Id);
+                            report = Report.FromVideoReport(result, media.Id, session.Id, session.UserId);
                         }
 
                         processedMedia.Id = await mediaService.SetAsync(processedMedia);

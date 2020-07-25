@@ -1,7 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 using Android.OS;
 using Android.Views;
-using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
@@ -17,13 +18,12 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private readonly User _user;
         private readonly SessionService _sessionService = new SessionService(Constants.ServerUri);
         private readonly MediaService _mediaService = new MediaService(Constants.ServerUri);
+        private readonly ReportService _reportService = new ReportService(Constants.ServerUri);
 
-        private TextView _textTotalSessions;
-        private TextView _textProcessedSessions;
-        private TextView _textTotalMedia;
-        private TextView _textProcessedMedia;
         private ChartView _chartViewSessions;
         private ChartView _chartViewMedia;
+        private ChartView _chartViewReports;
+        private ChartView _chartViewLanePosition;
 
         //============================================================
         public HomeFragment(User user)
@@ -43,12 +43,10 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void SetupFragmentFields(View view)
         {
-            _textTotalSessions = view.FindViewById<TextView>(Resource.Id.homeTextSessionNumber);
-            _textProcessedSessions = view.FindViewById<TextView>(Resource.Id.homeTextProcessedSessionNumber);
-            _textTotalMedia = view.FindViewById<TextView>(Resource.Id.homeTextMediaNumber);
-            _textProcessedMedia = view.FindViewById<TextView>(Resource.Id.homeTextProcessedMediaNumber);
-            _chartViewSessions = view.FindViewById<ChartView>(Resource.Id.chartViewSessions);
-            _chartViewMedia = view.FindViewById<ChartView>(Resource.Id.chartViewMedia);
+            _chartViewSessions = view.FindViewById<ChartView>(Resource.Id.homeChartSessions);
+            _chartViewMedia = view.FindViewById<ChartView>(Resource.Id.homeChartMedias);
+            _chartViewReports = view.FindViewById<ChartView>(Resource.Id.homeChartFrames);
+            _chartViewLanePosition = view.FindViewById<ChartView>(Resource.Id.homeChartLanePosition);
         }
 
         //============================================================
@@ -56,38 +54,94 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             var sessions = (await _sessionService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
             var medias = (await _mediaService.GetMediaAsync(_user.Id));
-
-            _textTotalSessions.Text = sessions.Count.ToString();
-            _textProcessedSessions.Text = sessions.Count(x => x.Processed).ToString();
-            _textTotalMedia.Text = medias.Count(x => x.ProcessedId == -1).ToString();
-            _textProcessedMedia.Text = medias.Count(x => x.IsProcessed()).ToString();
+            var reports = (await _reportService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
 
             var sessionChartEntries = new[]
             {
-                new Entry(sessions.Count - sessions.Count(x => x.Processed))
+                new Entry(sessions.Count)
                 {
-                    Color = new SKColor(255, 0,0)
-                }, 
+                    Color = new SKColor(0, 255, 0),
+                    Label = "Total",
+                    ValueLabel = sessions.Count.ToString()
+                },
                 new Entry(sessions.Count(x => x.Processed))
                 {
-                    Color = new SKColor(0,0,255)
-                }, 
+                    Color = new SKColor(0,0,255),
+                    Label = "Processed",
+                    ValueLabel = sessions.Count(x => x.Processed).ToString()
+                },
+                new Entry(sessions.Count - sessions.Count(x => x.Processed))
+                {
+                    Color = new SKColor(255, 0,0),
+                    Label = "Unprocessed",
+                    ValueLabel = (sessions.Count - sessions.Count(x => x.Processed)).ToString()
+                }
             };
 
             var mediaChartEntries = new[]
             {
-                new Entry(medias.Count(x => x.ProcessedId == -1) - medias.Count(x => x.IsProcessed()))
+                new Entry(medias.Count)
                 {
-                    Color = new SKColor(255, 0,0)
-                }, 
+                    Color = new SKColor(0, 255, 0),
+                    Label = "Total",
+                    ValueLabel = medias.Count.ToString()
+                },
                 new Entry(medias.Count(x => x.IsProcessed()))
                 {
-                    Color = new SKColor(0,0,255)
+                    Color = new SKColor(0,0,255),
+                    Label = "Processed",
+                    ValueLabel = medias.Count(x => x.IsProcessed()).ToString()
+                },
+                new Entry(medias.Count - medias.Count(x => x.IsProcessed()))
+                {
+                    Color = new SKColor(255, 0,0),
+                    Label = "Unprocessed",
+                    ValueLabel = (medias.Count - medias.Count(x => x.IsProcessed())).ToString()
+                }
+            };
+
+            var reportChartEntries = new[]
+            {
+                new Entry(reports.Sum(x => x.ProcessedFrames))
+                {
+                    Color = new SKColor(0, 255, 0),
+                    Label = "Total",
+                    ValueLabel = reports.Sum(x => x.ProcessedFrames).ToString()
+                },
+                new Entry(reports.Sum(x => x.SuccessFrames))
+                {
+                    Color = new SKColor(0,0,255),
+                    Label = "Success",
+                    ValueLabel = reports.Sum(x => x.SuccessFrames).ToString()
+                },
+                new Entry(reports.Sum(x => x.FailFrames))
+                {
+                    Color = new SKColor(255, 0,0),
+                    Label = "Fail",
+                    ValueLabel = reports.Sum(x => x.FailFrames).ToString()
                 },
             };
 
-            _chartViewSessions.Chart = new DonutChart() {Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929") };
-            _chartViewMedia.Chart = new DonutChart() {Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929") };
+            var positionChartEntries = new[]
+            {
+                new Entry(Convert.ToSingle(reports.Average(x => x.LeftSidePercent)))
+                {
+                    Color = new SKColor(0, 255, 0),
+                    Label = "Left Side",
+                    ValueLabel = reports.Average(x => x.LeftSidePercent).ToString("##.##'%")
+                },
+                new Entry(Convert.ToSingle(reports.Average(x => x.RightSidePercent)))
+                {
+                    Color = new SKColor(255, 0,0),
+                    Label = "Right Side",
+                    ValueLabel = reports.Average(x => x.RightSidePercent).ToString("##.##'%")
+                },
+            };
+
+            _chartViewSessions.Chart = new BarChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 20 };
+            _chartViewMedia.Chart = new BarChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 20 };
+            _chartViewReports.Chart = new BarChart { Entries = reportChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 20 };
+            _chartViewLanePosition.Chart = new RadialGaugeChart { Entries = positionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 20, MaxValue = 100 };
         }
     }
 }
