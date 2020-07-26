@@ -4,8 +4,10 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Android.Graphics;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
 using Uri = System.Uri;
 
@@ -13,89 +15,77 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class MediaService
     {
-        private readonly string _serverUri;
+        private const string _serverUri = Constants.ServerUri;
 
         //============================================================
-        public MediaService(string serverUri)
+        public async Task<IEnumerable<Media>> GetAllMediaAsync()
         {
-            _serverUri = serverUri;
-        }
-
-        //============================================================
-        public async Task<ICollection<Media>> GetMediaAsync(long userId)
-        {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/media?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.GetAll))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response.GetResponseStream());
-            return JsonConvert.DeserializeObject<ICollection<Media>>(await streamReader.ReadToEndAsync());
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<IEnumerable<Media>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<long> SetImageBase64Async(byte[] base64Bytes, long userId)
+        public async Task<Media> GetMediaByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/images_base64?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.GetById + "?Id=" + id))
             {
-                Method = "POST"
+                Method = "GET"
             };
 
-            var base64String = Convert.ToBase64String(base64Bytes);
-            await using var requestStream = await request.GetRequestStreamAsync();
-            await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(base64String);
             var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response?.GetResponseStream());
-            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type, long userId, string description)
+        public async Task<Media> GetMediaByProcessedIdAsyn(long processedId)
         {
-            var request = type == MediaType.Image
-                ? new HttpWebRequest(new Uri(_serverUri + "/image_stream?UserId=" + userId + "&Description=" + description))
-                : new HttpWebRequest(new Uri(_serverUri + "/video_stream?UserId=" + userId + "&Description=" + description));
-            request.Method = "POST";
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.GetByProcessedId + "?ProcessedId=" + processedId))
+            {
+                Method = "GET"
+            };
 
-            await using var requestStream = await request.GetRequestStreamAsync();
-            await mediaStream.CopyToAsync(requestStream);
             var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response.GetResponseStream());
-            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task UpdateMediaAsync(Media media)
+        public async Task<IEnumerable<Media>> GetMediaBySessionAsync(long sessionId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/media"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.GetBySessionId + "?SessionId=" + sessionId))
             {
-                Method = "PUT"
+                Method = "GET"
             };
 
-            await using var requestStream = await request.GetRequestStreamAsync();
-            await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(media));
-            await streamWriter.FlushAsync();
-            await request.GetResponseAsync();
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<IEnumerable<Media>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task DeleteMediaAsync(long id)
+        public async Task<IEnumerable<Media>> GetMediaByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/media?Id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.GetByUserId + "?UserId=" + userId))
             {
-                Method = "DELETE"
+                Method = "GET"
             };
 
-            await request.GetResponseAsync();
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<IEnumerable<Media>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
         public async Task<Bitmap> DownloadImageAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/media_download?id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.Download + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -107,13 +97,73 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public Bitmap DownloadImage(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/media_download?id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.Download + "?Id=" + id))
             {
                 Method = "GET"
             };
 
             var response = request.GetResponse() as HttpWebResponse;
             return BitmapFactory.DecodeStream(response?.GetResponseStream());
+        }
+
+        //============================================================
+        public async Task<long> SetImageBase64Async(byte[] base64Bytes)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadImageBase64))
+            {
+                Method = "POST"
+            };
+
+            var base64String = Convert.ToBase64String(base64Bytes);
+            await using var requestStream = await request.GetRequestStreamAsync();
+            await using var streamWriter = new StreamWriter(requestStream);
+            await streamWriter.WriteAsync(base64String);
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type)
+        {
+            var request = type == MediaType.Image
+                ? new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadImageStream))
+                : new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadVideoStream));
+            request.Method = "POST";
+
+            await using var requestStream = await request.GetRequestStreamAsync();
+            await mediaStream.CopyToAsync(requestStream);
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task<long> UpdateMediaAsync(Media media)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.Update))
+            {
+                Method = "PUT"
+            };
+
+            await using var requestStream = await request.GetRequestStreamAsync();
+            await using var streamWriter = new StreamWriter(requestStream);
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(media));
+            await streamWriter.FlushAsync();
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return Convert.ToInt64(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task DeleteMediaAsync(long id)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.Delete + "?Id=" + id))
+            {
+                Method = "DELETE"
+            };
+
+            await request.GetResponseAsync();
         }
     }
 }

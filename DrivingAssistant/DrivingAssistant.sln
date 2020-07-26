@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrivingAssistant.WebServer"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrivingAssistant.AndroidApp", "DrivingAssistant.AndroidApp\DrivingAssistant.AndroidApp.csproj", "{BCF37B7E-B88E-446B-A879-2C893426B17A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrivingAssistant.WindowsApp", "DrivingAssistant.WindowsApp\DrivingAssistant.WindowsApp.csproj", "{18A8E033-E540-4761-AF77-1D1419DFF2B5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,14 +45,6 @@ Global
 		{BCF37B7E-B88E-446B-A879-2C893426B17A}.Release|x64.ActiveCfg = Release|x64
 		{BCF37B7E-B88E-446B-A879-2C893426B17A}.Release|x64.Build.0 = Release|x64
 		{BCF37B7E-B88E-446B-A879-2C893426B17A}.Release|x64.Deploy.0 = Release|x64
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Debug|x64.ActiveCfg = Debug|x64
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Debug|x64.Build.0 = Debug|x64
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Release|x64.ActiveCfg = Release|x64
-		{18A8E033-E540-4761-AF77-1D1419DFF2B5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

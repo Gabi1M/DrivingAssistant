@@ -127,9 +127,9 @@ namespace DrivingAssistant.AndroidApp.Activities
                 }
                 case Resource.Id.nav_settings:
                 {
-                    var fragment = new SettingsFragment(_user);
+                    /*var fragment = new SettingsFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-                    _toolbar.Title = "User Settings";
+                    _toolbar.Title = "User Settings";*/
                     break;
                 }
                 case Resource.Id.nav_logout:

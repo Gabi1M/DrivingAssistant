@@ -10,7 +10,6 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
-using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Fragment = Android.Support.V4.App.Fragment;
@@ -44,7 +43,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_sessions, container, false);
-            _sessionService = new SessionService(Constants.ServerUri);
+            _sessionService = new SessionService();
             SetupFragmentFields(view);
             SetupListAdapter();
             return view;
@@ -78,7 +77,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
-            _currentSessions = (await _sessionService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
+            _currentSessions = (await _sessionService.GetByUserAsync(_user.Id)).ToList();
             _listView.Adapter?.Dispose();
             _listView.Adapter = new SessionViewModelAdapter(Activity, _currentSessions);
         }
@@ -149,7 +148,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             var progressDialog = ProgressDialog.Show(Context, "Submit", "Submitting...");
-            await _sessionService.SubmitAsync(session);
+            await _sessionService.SubmitAsync(session.Id);
             await RefreshDataSource();
             progressDialog.Dismiss();
         }

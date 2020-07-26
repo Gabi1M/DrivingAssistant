@@ -8,12 +8,6 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("MediaId")]
         public long MediaId { get; set; }
 
-        [JsonProperty("SessionId")]
-        public long SessionId { get; set; }
-
-        [JsonProperty("UserId")]
-        public long UserId { get; set; }
-
         [JsonProperty("ProcessedFrames")]
         public long ProcessedFrames { get; set; }
 
@@ -51,14 +45,12 @@ namespace DrivingAssistant.Core.Models
         public int RightSideLineNumber { get; set; }
 
         //===========================================================//
-        public static Report FromImageReport(ImageReport imageReport, long mediaId, long sessionId, long userId)
+        public static Report FromImageReport(ImageReport imageReport, long mediaId)
         {
             return new Report
             {
                 Id = -1,
                 MediaId = mediaId,
-                SessionId = sessionId,
-                UserId = userId,
                 ProcessedFrames = 1,
                 SuccessFrames = imageReport.Success ? 1 : 0,
                 FailFrames = imageReport.Success ? 0 : 1,
@@ -75,14 +67,12 @@ namespace DrivingAssistant.Core.Models
         }
 
         //===========================================================//
-        public static Report FromVideoReport(VideoReport videoReport, long mediaId, long sessionId, long userId)
+        public static Report FromVideoReport(VideoReport videoReport, long mediaId)
         {
             return new Report
             {
                 Id = -1,
                 MediaId = mediaId,
-                SessionId = sessionId,
-                UserId = userId,
                 ProcessedFrames = videoReport.NumberOfFrames,
                 SuccessFrames = videoReport.SuccessFrames,
                 FailFrames = videoReport.FailFrames,

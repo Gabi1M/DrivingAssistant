@@ -7,7 +7,10 @@ namespace DrivingAssistant.WebServer.Services.Generic
     public interface IGenericService<T> : IDisposable
     {
         //============================================================
-        public Task<ICollection<T>> GetAsync();
+        public Task<IEnumerable<T>> GetAsync();
+
+        //============================================================
+        public Task<T> GetById(long id);
 
         //============================================================
         public Task<long> SetAsync(T data);

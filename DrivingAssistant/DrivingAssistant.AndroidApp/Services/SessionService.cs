@@ -3,38 +3,60 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Services
 {
     public class SessionService
     {
-        private readonly string _serverUri;
+        private const string _serverUri = Constants.ServerUri;
 
         //============================================================
-        public SessionService(string serverUri)
+        public async Task<IEnumerable<Session>> GetAllAsync()
         {
-            _serverUri = serverUri;
-        }
-
-        //============================================================
-        public async Task<ICollection<Session>> GetAsync()
-        {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.GetAll))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response.GetResponseStream());
-            return JsonConvert.DeserializeObject<ICollection<Session>>(await streamReader.ReadToEndAsync());
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<IEnumerable<Session>>(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task<Session> GetByIdAsync(long id)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.GetById + "?Id=" + id))
+            {
+                Method = "GET"
+            };
+
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Session>> GetByUserAsync(long userId)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.GetByUserId + "?UserId=" + userId))
+            {
+                Method = "GET"
+            };
+
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return JsonConvert.DeserializeObject<IEnumerable<Session>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
         public async Task<long> SetAsync(Session session)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -44,29 +66,14 @@ namespace DrivingAssistant.AndroidApp.Services
             await streamWriter.WriteAsync(JsonConvert.SerializeObject(session));
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response.GetResponseStream());
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
             return Convert.ToInt64(await streamReader.ReadToEndAsync());
-        }
-
-        //============================================================
-        public async Task UpdateAsync(Session session)
-        {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions"))
-            {
-                Method = "PUT"
-            };
-
-            await using var requestStream = await request.GetRequestStreamAsync();
-            await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(session));
-            await streamWriter.FlushAsync();
-            await request.GetResponseAsync();
         }
 
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/sessions?Id=" + id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };
@@ -75,9 +82,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task SubmitAsync(Session session)
+        public async Task SubmitAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/process_session?Id=" + session.Id))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.SessionEndpoints.Submit + "?Id=" + id))
             {
                 Method = "GET"
             };

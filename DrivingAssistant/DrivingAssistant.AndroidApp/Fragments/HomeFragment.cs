@@ -3,7 +3,6 @@ using System.Linq;
 using Android.OS;
 using Android.Views;
 using DrivingAssistant.AndroidApp.Services;
-using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Microcharts;
 using Microcharts.Droid;
@@ -15,9 +14,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
     public class HomeFragment : Fragment
     {
         private readonly User _user;
-        private readonly SessionService _sessionService = new SessionService(Constants.ServerUri);
-        private readonly MediaService _mediaService = new MediaService(Constants.ServerUri);
-        private readonly ReportService _reportService = new ReportService(Constants.ServerUri);
+        private readonly SessionService _sessionService = new SessionService();
+        private readonly MediaService _mediaService = new MediaService();
+        private readonly ReportService _reportService = new ReportService();
 
         private ChartView _chartViewSessions;
         private ChartView _chartViewMedia;
@@ -54,17 +53,17 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             try
             {
-                var sessions = (await _sessionService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
-                var medias = (await _mediaService.GetMediaAsync(_user.Id));
-                var reports = (await _reportService.GetAsync()).Where(x => x.UserId == _user.Id).ToList();
+                var sessions = await _sessionService.GetByUserAsync(_user.Id);
+                var medias = await _mediaService.GetMediaByUserAsync(_user.Id);
+                var reports = await _reportService.GetByUserAsync(_user.Id);
 
                 var sessionChartEntries = new[]
                 {
-                    new ChartEntry(sessions.Count)
+                    new ChartEntry(sessions.Count())
                     {
                         Color = new SKColor(0, 255, 0),
                         Label = "Total",
-                        ValueLabel = sessions.Count.ToString()
+                        ValueLabel = sessions.Count().ToString()
                     },
                     new ChartEntry(sessions.Count(x => x.Processed))
                     {
@@ -72,21 +71,21 @@ namespace DrivingAssistant.AndroidApp.Fragments
                         Label = "Processed",
                         ValueLabel = sessions.Count(x => x.Processed).ToString()
                     },
-                    new ChartEntry(sessions.Count - sessions.Count(x => x.Processed))
+                    new ChartEntry(sessions.Count() - sessions.Count(x => x.Processed))
                     {
                         Color = new SKColor(255, 0,0),
                         Label = "Unprocessed",
-                        ValueLabel = (sessions.Count - sessions.Count(x => x.Processed)).ToString()
+                        ValueLabel = (sessions.Count() - sessions.Count(x => x.Processed)).ToString()
                     }
                 };
 
                 var mediaChartEntries = new[]
                 {
-                    new ChartEntry(medias.Count)
+                    new ChartEntry(medias.Count())
                     {
                         Color = new SKColor(0, 255, 0),
                         Label = "Total",
-                        ValueLabel = medias.Count.ToString()
+                        ValueLabel = medias.Count().ToString()
                     },
                     new ChartEntry(medias.Count(x => x.IsProcessed()))
                     {
@@ -94,11 +93,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
                         Label = "Processed",
                         ValueLabel = medias.Count(x => x.IsProcessed()).ToString()
                     },
-                    new ChartEntry(medias.Count - medias.Count(x => x.IsProcessed()))
+                    new ChartEntry(medias.Count() - medias.Count(x => x.IsProcessed()))
                     {
                         Color = new SKColor(255, 0,0),
                         Label = "Unprocessed",
-                        ValueLabel = (medias.Count - medias.Count(x => x.IsProcessed())).ToString()
+                        ValueLabel = (medias.Count() - medias.Count(x => x.IsProcessed())).ToString()
                     }
                 };
 

@@ -87,8 +87,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var userService = new UserService(Constants.ServerUri);
-                var users = await userService.GetAsync();
+                var userService = new UserService();
+                var users = await userService.GetAllAsync();
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
                 {
                     Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();

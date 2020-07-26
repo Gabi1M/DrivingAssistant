@@ -51,7 +51,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var currentMedia = _medias.ElementAt(position);
             if (currentMedia.Type == MediaType.Image)
             {
-                var mediaService = new MediaService(Constants.ServerUri);
+                var mediaService = new MediaService();
                 var bitmap = mediaService.DownloadImage(currentMedia.Id);
                 bitmap = Bitmap.CreateScaledBitmap(bitmap, 128, 128, false);
                 imageView.SetImageBitmap(bitmap);

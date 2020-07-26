@@ -1,9 +1,12 @@
 ﻿using Android.App;
 using Android.Content.PM;
+using Android.Net;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Widget;
+using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Activities
@@ -36,7 +39,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var mediaController = new MediaController(this);
             mediaController.SetAnchorView(_videoView);
-            _videoView.SetVideoURI(Android.Net.Uri.Parse("http://192.168.100.234:3287/media_download?id=" + _video.Id));
+            _videoView.SetVideoURI(Uri.Parse(Constants.ServerUri + "/" + Endpoints.MediaEndpoints.Download + "?Id=" + _video.Id));
             _videoView.SetMediaController(mediaController);
             _videoView.RequestFocus();
             _videoView.Start();

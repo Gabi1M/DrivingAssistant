@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
@@ -15,13 +16,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         private readonly SessionTableAdapter _tableAdapter = new SessionTableAdapter();
 
         //============================================================
-        public MssqlSessionService(string connectionString)
+        public MssqlSessionService()
         {
-            _tableAdapter.Connection = new SqlConnection(connectionString);
+            _tableAdapter.Connection = new SqlConnection(Constants.ServerConstants.GetMssqlConnectionString());
         }
 
         //============================================================
-        public async Task<ICollection<Session>> GetAsync()
+        public async Task<IEnumerable<Session>> GetAsync()
         {
             return await Task.Run(() =>
             {
@@ -36,8 +37,55 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     StartPoint = row.StartPoint.StringToPoint(),
                     EndPoint = row.EndPoint.StringToPoint(),
                     IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
-                    Processed = row.Processed
-                }).ToList();
+                    Processed = row.Processed,
+                    DateAdded = row.DateAdded
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<Session> GetById(long id)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Sessions_By_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Sessions_By_Id, id);
+                return _dataset.Get_Sessions_By_Id.AsEnumerable().Select(row => new Session
+                {
+                    Id = row.Id,
+                    UserId = row.UserId,
+                    Description = row.Description,
+                    StartDateTime = row.StartDateTime,
+                    EndDateTime = row.EndDateTime,
+                    StartPoint = row.StartPoint.StringToPoint(),
+                    EndPoint = row.EndPoint.StringToPoint(),
+                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    Processed = row.Processed,
+                    DateAdded = row.DateAdded
+                }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Session>> GetByUser(long userId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Sessions_By_UserTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Sessions_By_User, userId);
+                return _dataset.Get_Sessions_By_User.AsEnumerable().Select(row => new Session
+                {
+                    Id = row.Id,
+                    UserId = row.UserId,
+                    Description = row.Description,
+                    StartDateTime = row.StartDateTime,
+                    EndDateTime = row.EndDateTime,
+                    StartPoint = row.StartPoint.StringToPoint(),
+                    EndPoint = row.EndPoint.StringToPoint(),
+                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    Processed = row.Processed,
+                    DateAdded = row.DateAdded
+                });
             });
         }
 
@@ -49,7 +97,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 long? idOut = 0;
                 _tableAdapter.Insert(session.Id, session.UserId, session.Description, session.StartDateTime,
                     session.EndDateTime, session.StartPoint.PointToString(), session.EndPoint.PointToString(),
-                    session.IntermediatePoints.PointCollectionToString(), session.Processed, ref idOut);
+                    session.IntermediatePoints.PointCollectionToString(), session.Processed, session.DateAdded, ref idOut);
                 return idOut ?? -1;
             });
         }

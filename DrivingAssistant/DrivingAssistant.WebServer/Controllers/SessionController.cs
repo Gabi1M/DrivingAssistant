@@ -18,19 +18,15 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class SessionController : ControllerBase
     {
-        private ISessionService _sessionService;
+        private static readonly ISessionService _sessionService = new MssqlSessionService();
 
         //============================================================
         [HttpGet]
-        [Route("sessions")]
-        public async Task<IActionResult> GetAsync()
+        [Route(Endpoints.SessionEndpoints.GetAll)]
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received GET sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
                 var sessions = await _sessionService.GetAsync();
                 return Ok(JsonConvert.SerializeObject(sessions, Formatting.Indented));
             }
@@ -42,17 +38,49 @@ namespace DrivingAssistant.WebServer.Controllers
         }
 
         //============================================================
+        [HttpGet]
+        [Route(Endpoints.SessionEndpoints.GetById)]
+        public async Task<IActionResult> GetByIdAsync()
+        {
+            try
+            {
+                var id = Convert.ToInt64(Request.Query["Id"].First());
+                var session = await _sessionService.GetById(id);
+                return Ok(JsonConvert.SerializeObject(session, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpGet]
+        [Route(Endpoints.SessionEndpoints.GetByUserId)]
+        public async Task<IActionResult> GetByUserAsync()
+        {
+            try
+            {
+                var userId = Convert.ToInt64(Request.Query["UserId"].First());
+                var sessions = await _sessionService.GetByUser(userId);
+                return Ok(JsonConvert.SerializeObject(sessions, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
         [HttpPost]
-        [Route("sessions")]
+        [Route(Endpoints.SessionEndpoints.AddOrUpdate)]
         public async Task<IActionResult> PostAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received POST sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 using var streamReader = new StreamReader(Request.Body);
-                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
                 var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
                 return Ok(await _sessionService.SetAsync(session));
             }
@@ -64,45 +92,18 @@ namespace DrivingAssistant.WebServer.Controllers
         }
 
         //============================================================
-        [HttpPut]
-        [Route("sessions")]
-        public async Task<IActionResult> PutAsync()
-        {
-            try
-            {
-                Logger.Log(
-                    "Received PUT sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                using var streamReader = new StreamReader(Request.Body);
-                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
-                var session = JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
-                await _sessionService.SetAsync(session);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex, LogType.Error, true);
-                return Problem(ex.Message);
-            }
-        }
-
-        //============================================================
         [HttpDelete]
-        [Route("sessions")]
+        [Route(Endpoints.SessionEndpoints.Delete)]
         public async Task<IActionResult> DeleteAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received DELETE sessions from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
-                var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
-                foreach (var media in (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id))
+                var mediaService = new MssqlMediaService();
+                var session = await _sessionService.GetById(id);
+                foreach (var media in await mediaService.GetBySession(session.Id))
                 {
-                    media.SessionId = default;
+                    media.SessionId = -1;
                     await mediaService.SetAsync(media);
                 }
                 await _sessionService.DeleteAsync(session);
@@ -117,22 +118,18 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route("process_session")]
+        [Route(Endpoints.SessionEndpoints.Submit)]
         public IActionResult ProcessSession()
         {
             try
             {
-                Logger.Log(
-                    "Received POST process_session from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 new Thread(async () =>
                 {
-                    _sessionService = new MssqlSessionService(Constants.ServerConstants.GetMssqlConnectionString());
-                    using var mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                    using var reportService = new MssqlReportService(Constants.ServerConstants.GetMssqlConnectionString());
-                    var session = (await _sessionService.GetAsync()).First(x => x.Id == id);
-                    var linkedMedia = (await mediaService.GetAsync()).Where(x => x.SessionId == session.Id);
+                    using var mediaService = new MssqlMediaService();
+                    using var reportService = new MssqlReportService();
+                    var session = await _sessionService.GetById(id);
+                    var linkedMedia = await mediaService.GetBySession(session.Id);
                     var imageProcessor = new ImageProcessor(Parameters.Default());
                     foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
                     {
@@ -155,9 +152,8 @@ namespace DrivingAssistant.WebServer.Controllers
                                 Id = -1,
                                 ProcessedId = -1,
                                 SessionId = media.SessionId,
-                                UserId = media.UserId
                             };
-                            report = Report.FromImageReport(result, media.Id, session.Id, session.UserId);
+                            report = Report.FromImageReport(result, media.Id);
                         }
                         else
                         {
@@ -172,9 +168,8 @@ namespace DrivingAssistant.WebServer.Controllers
                                 Id = -1,
                                 ProcessedId = -1,
                                 SessionId = media.SessionId,
-                                UserId = media.UserId
                             };
-                            report = Report.FromVideoReport(result, media.Id, session.Id, session.UserId);
+                            report = Report.FromVideoReport(result, media.Id);
                         }
 
                         processedMedia.Id = await mediaService.SetAsync(processedMedia);

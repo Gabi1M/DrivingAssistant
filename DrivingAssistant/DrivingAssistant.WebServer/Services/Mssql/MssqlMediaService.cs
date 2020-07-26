@@ -10,6 +10,7 @@ using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
@@ -19,13 +20,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         private readonly MediaTableAdapter _tableAdapter = new MediaTableAdapter();
 
         //============================================================
-        public MssqlMediaService(string connectionString)
+        public MssqlMediaService()
         {
-            _tableAdapter.Connection = new SqlConnection(connectionString);
+            _tableAdapter.Connection = new SqlConnection(Constants.ServerConstants.GetMssqlConnectionString());
         }
 
         //============================================================
-        public async Task<ICollection<Media>> GetAsync()
+        public async Task<IEnumerable<Media>> GetAsync()
         {
             return await Task.Run(() =>
             {
@@ -35,13 +36,96 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    UserId = row.UserId,
-                    Type = (MediaType) Enum.Parse(typeof(MediaType), row.Type),
+                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
                     DateAdded = row.DateAdded
-                }).ToList();
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<Media> GetById(long id)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Media_By_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Media_By_Id, id);
+                return _dataset.Get_Media_By_Id.AsEnumerable().Select(row => new Media
+                {
+                    Id = row.Id,
+                    ProcessedId = row.ProcessedId,
+                    SessionId = row.SessionId,
+                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
+                    Filepath = row.Filepath,
+                    Source = row.Source,
+                    Description = row.Description,
+                    DateAdded = row.DateAdded
+                }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<Media> GetByProcessedId(long processedId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Media_By_Processed_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Media_By_Processed_Id, processedId);
+                return _dataset.Get_Media_By_Processed_Id.AsEnumerable().Select(row => new Media
+                {
+                    Id = row.Id,
+                    ProcessedId = row.ProcessedId,
+                    SessionId = row.SessionId,
+                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
+                    Filepath = row.Filepath,
+                    Source = row.Source,
+                    Description = row.Description,
+                    DateAdded = row.DateAdded
+                }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Media>> GetBySession(long sessionId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Media_By_SessionTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Media_By_Session, sessionId);
+                return _dataset.Get_Media_By_Session.AsEnumerable().Select(row => new Media
+                {
+                    Id = row.Id,
+                    ProcessedId = row.ProcessedId,
+                    SessionId = row.SessionId,
+                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
+                    Filepath = row.Filepath,
+                    Source = row.Source,
+                    Description = row.Description,
+                    DateAdded = row.DateAdded
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Media>> GetByUser(long userId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Media_By_UserTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Media_By_User, userId);
+                return _dataset.Get_Media_By_User.AsEnumerable().Select(row => new Media
+                {
+                    Id = row.Id,
+                    ProcessedId = row.ProcessedId,
+                    SessionId = row.SessionId,
+                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
+                    Filepath = row.Filepath,
+                    Source = row.Source,
+                    Description = row.Description,
+                    DateAdded = row.DateAdded
+                });
             });
         }
 
@@ -51,7 +135,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(media.Id, media.ProcessedId, media.SessionId, media.UserId, media.Type.ToString(),
+                _tableAdapter.Insert(media.Id, media.ProcessedId, media.SessionId, media.Type.ToString(),
                     media.Filepath, media.Source, media.Description, media.DateAdded, ref idOut);
                 return idOut ?? -1;
             });

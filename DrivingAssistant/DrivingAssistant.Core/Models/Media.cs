@@ -12,9 +12,6 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("SessionId")]
         public long SessionId { get; set; }
 
-        [JsonProperty("UserId")]
-        public long UserId { get; set; }
-
         [JsonProperty("Type")]
         public MediaType Type { get; set; }
 

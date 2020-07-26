@@ -3,7 +3,6 @@ using Android.OS;
 using Android.Support.V7.App;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
-using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 
@@ -35,7 +34,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void LoadImage()
         {
-            var mediaService = new MediaService(Constants.ServerUri);
+            var mediaService = new MediaService();
             _imageView.SetImageBitmap(await mediaService.DownloadImageAsync(_image.Id));
         }
     }

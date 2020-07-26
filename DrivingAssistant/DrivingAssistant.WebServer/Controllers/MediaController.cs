@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
-using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Services.Mssql;
@@ -18,21 +16,16 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class MediaController : ControllerBase
     {
-        private IMediaService _mediaService;
+        private static readonly IMediaService _mediaService = new MssqlMediaService();
 
         //============================================================
         [HttpGet]
-        [Route("media")]
-        public async Task<IActionResult> GetAsync()
+        [Route(Endpoints.MediaEndpoints.GetAll)]
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received GET media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                var medias = (await _mediaService.GetAsync()).Where(x => x.UserId == userId);
+                var medias = (await _mediaService.GetAsync());
                 return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
             }
             catch (Exception ex)
@@ -44,17 +37,85 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route("media_download")]
+        [Route(Endpoints.MediaEndpoints.GetById)]
+        public async Task<IActionResult> GetByIdAsync()
+        {
+            try
+            {
+                var id = Convert.ToInt64(Request.Query["Id"].First());
+                var media = await _mediaService.GetById(id);
+                return Ok(JsonConvert.SerializeObject(media, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpGet]
+        [Route(Endpoints.MediaEndpoints.GetByProcessedId)]
+        public async Task<IActionResult> GetByProcessedIdAsync()
+        {
+            try
+            {
+                var processedId = Convert.ToInt64(Request.Query["ProcessedId"].First());
+                var media = await _mediaService.GetByProcessedId(processedId);
+                return Ok(JsonConvert.SerializeObject(media, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpGet]
+        [Route(Endpoints.MediaEndpoints.GetBySessionId)]
+        public async Task<IActionResult> GetBySessionAsync()
+        {
+            try
+            {
+                var sessionId = Convert.ToInt64(Request.Query["SessionId"].First());
+                var medias = await _mediaService.GetBySession(sessionId);
+                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpGet]
+        [Route(Endpoints.MediaEndpoints.GetByUserId)]
+        public async Task<IActionResult> GetByUserAsync()
+        {
+            try
+            {
+                var userId = Convert.ToInt64(Request.Query["UserId"].First());
+                var medias = await _mediaService.GetByUser(userId);
+                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
+        [HttpGet]
+        [Route(Endpoints.MediaEndpoints.Download)]
         public async Task<IActionResult> DownloadAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received GET media_download from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
+                var media = await _mediaService.GetById(id);
                 return File(System.IO.File.Open(media.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
             }
             catch (Exception ex)
@@ -66,17 +127,12 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route("images_base64")]
+        [Route(Endpoints.MediaEndpoints.UploadImageBase64)]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> PostImageBase64Async()
         {
             try
             {
-                Logger.Log(
-                    "Received POST images_base64 from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveImageBase64ToFile(Request.Body);
                 var media = new Media
                 {
@@ -88,7 +144,6 @@ namespace DrivingAssistant.WebServer.Controllers
                     Id = -1,
                     ProcessedId = -1,
                     SessionId = -1,
-                    UserId = userId
                 };
                 return Ok(await _mediaService.SetAsync(media));
             }
@@ -101,18 +156,12 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route("image_stream")]
+        [Route(Endpoints.MediaEndpoints.UploadImageStream)]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> PostImageStreamAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received POST images_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var description = Request.Query["Description"].First();
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
                 var media = new Media
                 {
@@ -124,7 +173,6 @@ namespace DrivingAssistant.WebServer.Controllers
                     Id = -1,
                     ProcessedId = -1,
                     SessionId = -1,
-                    UserId = userId
                 };
                 return Ok(await _mediaService.SetAsync(media));
             }
@@ -137,18 +185,12 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route("video_stream")]
+        [Route(Endpoints.MediaEndpoints.UploadVideoStream)]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> PostVideoStreamAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received POST videos_stream from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var description = Request.Query["Description"].First();
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
                 var media = new Media
                 {
@@ -160,7 +202,6 @@ namespace DrivingAssistant.WebServer.Controllers
                     Id = -1,
                     ProcessedId = -1,
                     SessionId = -1,
-                    UserId = userId
                 };
                 return Ok(await _mediaService.SetAsync(media));
             }
@@ -173,19 +214,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPut]
-        [Route("media")]
+        [Route(Endpoints.MediaEndpoints.Update)]
         public async Task<IActionResult> UpdateAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received PUT media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
                 using var streamReader = new StreamReader(Request.Body);
                 var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
-                await _mediaService.SetAsync(media);
-                return Ok();
+                return Ok(await _mediaService.SetAsync(media));
             }
             catch (Exception ex)
             {
@@ -196,86 +232,26 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpDelete]
-        [Route("media")]
+        [Route(Endpoints.MediaEndpoints.Delete)]
         public async Task<IActionResult> DeleteAsync()
         {
             try
             {
-                Logger.Log(
-                    "Received DELETE media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
+                var media = await _mediaService.GetById(id);
                 await _mediaService.DeleteAsync(media);
-                if ((await _mediaService.GetAsync()).Any(x => x.ProcessedId == media.Id))
+                try
                 {
-                    var originalMedia = (await _mediaService.GetAsync()).First(x => x.ProcessedId == media.Id);
-                    originalMedia.ProcessedId = default;
+                    var originalMedia = await _mediaService.GetByProcessedId(media.Id);
+                    originalMedia.ProcessedId = -1;
                     await _mediaService.SetAsync(originalMedia);
                 }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex, LogType.Error, true);
-                return Problem(ex.Message);
-            }
-        }
-
-        //============================================================
-        [HttpPost]
-        [Route("process_media")]
-        public async Task<IActionResult> ProcessMedia()
-        {
-            try
-            {
-                Logger.Log(
-                    "Received POST process_media from :" + Request.HttpContext.Connection.RemoteIpAddress + ":" +
-                    Request.HttpContext.Connection.RemotePort, LogType.Info, true);
-                var id = Convert.ToInt64(Request.Query["Id"].First());
-                _mediaService = new MssqlMediaService(Constants.ServerConstants.GetMssqlConnectionString());
-                var media = (await _mediaService.GetAsync()).First(x => x.Id == id);
-                var imageProcessor = new ImageProcessor(Parameters.Default());
-                Media processedMedia;
-                if (media.Type == MediaType.Image)
-                {
-                    var processedFilename = imageProcessor.ProcessImage(media.Filepath, out var result);
-                    processedMedia = new Media
-                    {
-                        Type = MediaType.Image,
-                        Filepath = processedFilename,
-                        Source = media.Source,
-                        Description = media.Description,
-                        DateAdded = DateTime.Now,
-                        Id = -1,
-                        ProcessedId = -1,
-                        SessionId = media.SessionId,
-                        UserId = media.UserId
-                    };
-                }
-                else
-                {
-                    var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10, out var result);
-                    processedMedia = new Media
-                    {
-                        Type = MediaType.Video,
-                        Filepath = processedFilename,
-                        Source = media.Source,
-                        Description = media.Description,
-                        DateAdded = DateTime.Now,
-                        Id = -1,
-                        ProcessedId = -1,
-                        SessionId = media.SessionId,
-                        UserId = media.UserId
-                    };
-                }
-
-                processedMedia.Id = await _mediaService.SetAsync(processedMedia);
-                media.ProcessedId = processedMedia.Id;
-                await _mediaService.SetAsync(media);
-
-                return Ok(processedMedia.Id);
             }
             catch (Exception ex)
             {

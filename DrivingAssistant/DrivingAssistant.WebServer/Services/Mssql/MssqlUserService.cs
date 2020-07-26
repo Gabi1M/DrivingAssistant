@@ -8,6 +8,7 @@ using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
@@ -17,13 +18,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         private readonly UserTableAdapter _tableAdapter = new UserTableAdapter();
 
         //============================================================
-        public MssqlUserService(string connectionString)
+        public MssqlUserService()
         {
-            _tableAdapter.Connection = new SqlConnection(connectionString);
+            _tableAdapter.Connection = new SqlConnection(Constants.ServerConstants.GetMssqlConnectionString());
         }
 
         //============================================================
-        public async Task<ICollection<User>> GetAsync()
+        public async Task<IEnumerable<User>> GetAsync()
         {
             return await Task.Run(() =>
             {
@@ -38,7 +39,28 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Email = row.Email,
                     Role = (UserRole) Enum.Parse(typeof(UserRole), row.Role),
                     JoinDate = row.JoinDate
-                }).ToList();
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<User> GetById(long id)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Users_By_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Users_By_Id, id);
+                return _dataset.Get_Users_By_Id.AsEnumerable().Select(row => new User
+                {
+                    Id = row.Id,
+                    Username = row.Username,
+                    Password = row.Password,
+                    FirstName = row.FirstName,
+                    LastName = row.LastName,
+                    Email = row.Email,
+                    Role = (UserRole)Enum.Parse(typeof(UserRole), row.Role),
+                    JoinDate = row.JoinDate
+                }).First();
             });
         }
 

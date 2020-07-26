@@ -30,6 +30,9 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("Processed")]
         public bool Processed { get; set; }
 
+        [JsonProperty("DateAdded")]
+        public DateTime DateAdded { get; set; }
+
         //===========================================================//
         public override string ToString()
         {

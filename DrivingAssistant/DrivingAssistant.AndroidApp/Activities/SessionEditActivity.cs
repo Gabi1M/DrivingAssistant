@@ -49,8 +49,8 @@ namespace DrivingAssistant.AndroidApp.Activities
 
         #region Service
 
-        private readonly SessionService _sessionService = new SessionService(Constants.ServerUri);
-        private readonly MediaService _mediaService = new MediaService(Constants.ServerUri);
+        private readonly SessionService _sessionService = new SessionService();
+        private readonly MediaService _mediaService = new MediaService();
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (!_newSession)
             {
                 _currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                _mediaList = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _currentSession.Id).ToList();
+                _mediaList = (await _mediaService.GetMediaBySessionAsync(_currentSession.Id)).ToList();
                 _textDescription.Text = _currentSession.Description;
                 _selectedStartDateTime = _currentSession.StartDateTime;
                 _selectedEndDateTime = _currentSession.EndDateTime;
@@ -169,7 +169,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             if (fetchRemote)
             {
-                _mediaList = (await _mediaService.GetMediaAsync(_user.Id)).Where(x => x.SessionId == _currentSession.Id).ToList();
+                _mediaList = (await _mediaService.GetMediaBySessionAsync(_currentSession.Id)).ToList();
             }
 
             _mediaListView.Adapter?.Dispose();
@@ -202,8 +202,8 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var mediaType = Path.GetExtension(filedata.FilePath) == ".jpg" ? MediaType.Image : MediaType.Video;
             var progressDialog = ProgressDialog.Show(this, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
-            var mediaId = await _mediaService.SetMediaStreamAsync(filedata.GetStream(), mediaType, _user.Id, string.Empty);
-            var media = (await _mediaService.GetMediaAsync(_user.Id)).First(x => x.Id == mediaId);
+            var mediaId = await _mediaService.SetMediaStreamAsync(filedata.GetStream(), mediaType);
+            var media = await _mediaService.GetMediaByIdAsync(mediaId);
             if (_newSession)
             {
                 _mediaList.Add(media);
@@ -489,7 +489,7 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             if (!_newSession)
             {
-                await _sessionService.UpdateAsync(_currentSession);
+                await _sessionService.SetAsync(_currentSession);
                 foreach (var media in _mediaList.Where(x => x.SessionId != _currentSession.Id))
                 {
                     media.SessionId = _currentSession.Id;

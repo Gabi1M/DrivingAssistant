@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
@@ -14,13 +15,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         private readonly ReportTableAdapter _tableAdapter = new ReportTableAdapter();
 
         //============================================================
-        public MssqlReportService(string connectionString)
+        public MssqlReportService()
         {
-            _tableAdapter.Connection = new SqlConnection(connectionString);
+            _tableAdapter.Connection = new SqlConnection(Constants.ServerConstants.GetMssqlConnectionString());
         }
 
         //============================================================
-        public async Task<ICollection<Report>> GetAsync()
+        public async Task<IEnumerable<Report>> GetAsync()
         {
             return await Task.Run(() =>
             {
@@ -29,8 +30,6 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     MediaId = row.MediaId,
-                    SessionId = row.SessionId,
-                    UserId = row.UserId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -43,7 +42,115 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
                     RightSideLineNumber = row.RightSideLineNumber
-                }).ToList();
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<Report> GetById(long id)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Reports_By_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Reports_By_Id, id);
+                return _dataset.Get_Reports_By_Id.AsEnumerable()!.Select(row => new Report
+                {
+                    Id = row.Id,
+                    MediaId = row.MediaId,
+                    ProcessedFrames = row.ProcessedFrames,
+                    SuccessFrames = row.SuccessFrames,
+                    FailFrames = row.FailFrames,
+                    SuccessRate = row.SuccessRate,
+                    LeftSidePercent = row.LeftSidePercent,
+                    RightSidePercent = row.RightSidePercent,
+                    LeftSideLineLength = row.LeftSideLineLength,
+                    RightSideLineLength = row.RightSideLineLength,
+                    SpanLineAngle = row.SpanLineAngle,
+                    SpanLineLength = row.SpanLineLength,
+                    LeftSideLineNumber = row.LeftSideLineNumber,
+                    RightSideLineNumber = row.RightSideLineNumber
+                }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<Report> GetByMedia(long mediaId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Reports_By_MediaTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Reports_By_Media, mediaId);
+                return _dataset.Get_Reports_By_Media.AsEnumerable()!.Select(row => new Report
+                {
+                    Id = row.Id,
+                    MediaId = row.MediaId,
+                    ProcessedFrames = row.ProcessedFrames,
+                    SuccessFrames = row.SuccessFrames,
+                    FailFrames = row.FailFrames,
+                    SuccessRate = row.SuccessRate,
+                    LeftSidePercent = row.LeftSidePercent,
+                    RightSidePercent = row.RightSidePercent,
+                    LeftSideLineLength = row.LeftSideLineLength,
+                    RightSideLineLength = row.RightSideLineLength,
+                    SpanLineAngle = row.SpanLineAngle,
+                    SpanLineLength = row.SpanLineLength,
+                    LeftSideLineNumber = row.LeftSideLineNumber,
+                    RightSideLineNumber = row.RightSideLineNumber
+                }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Report>> GetBySession(long sessionId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Reports_By_SessionTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Reports_By_Session, sessionId);
+                return _dataset.Get_Reports_By_Session.AsEnumerable()!.Select(row => new Report
+                {
+                    Id = row.Id,
+                    MediaId = row.MediaId,
+                    ProcessedFrames = row.ProcessedFrames,
+                    SuccessFrames = row.SuccessFrames,
+                    FailFrames = row.FailFrames,
+                    SuccessRate = row.SuccessRate,
+                    LeftSidePercent = row.LeftSidePercent,
+                    RightSidePercent = row.RightSidePercent,
+                    LeftSideLineLength = row.LeftSideLineLength,
+                    RightSideLineLength = row.RightSideLineLength,
+                    SpanLineAngle = row.SpanLineAngle,
+                    SpanLineLength = row.SpanLineLength,
+                    LeftSideLineNumber = row.LeftSideLineNumber,
+                    RightSideLineNumber = row.RightSideLineNumber
+                });
+            });
+        }
+
+        //============================================================
+        public async Task<IEnumerable<Report>> GetByUser(long userId)
+        {
+            return await Task.Run(() =>
+            {
+                using var tableAdapter = new Get_Reports_By_UserTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Reports_By_User, userId);
+                return _dataset.Get_Reports_By_User.AsEnumerable()!.Select(row => new Report
+                {
+                    Id = row.Id,
+                    MediaId = row.MediaId,
+                    ProcessedFrames = row.ProcessedFrames,
+                    SuccessFrames = row.SuccessFrames,
+                    FailFrames = row.FailFrames,
+                    SuccessRate = row.SuccessRate,
+                    LeftSidePercent = row.LeftSidePercent,
+                    RightSidePercent = row.RightSidePercent,
+                    LeftSideLineLength = row.LeftSideLineLength,
+                    RightSideLineLength = row.RightSideLineLength,
+                    SpanLineAngle = row.SpanLineAngle,
+                    SpanLineLength = row.SpanLineLength,
+                    LeftSideLineNumber = row.LeftSideLineNumber,
+                    RightSideLineNumber = row.RightSideLineNumber
+                });
             });
         }
 
@@ -53,7 +160,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(report.Id, report.MediaId, report.SessionId, report.UserId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
+                _tableAdapter.Insert(report.Id, report.MediaId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
                     report.LeftSideLineLength, report.RightSideLineLength, report.SpanLineAngle, report.SpanLineLength,
                     report.LeftSideLineNumber, report.RightSideLineNumber, ref idOut);
                 return idOut ?? -1;
