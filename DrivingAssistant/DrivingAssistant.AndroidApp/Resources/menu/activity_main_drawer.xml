@@ -13,9 +13,9 @@
         android:icon="@drawable/ic_menu_sessions"
         android:title="Sessions" />
     <item
-        android:id="@+id/nav_settings"
+        android:id="@+id/nav_servers"
         android:icon="@drawable/ic_menu_settings"
-        android:title="Settings" />
+        android:title="Servers" />
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_menu_logout"

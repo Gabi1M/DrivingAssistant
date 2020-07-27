@@ -12,7 +12,7 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class UserService
     {
-        private const string _serverUri = Constants.ServerUri;
+        private static readonly string _serverUri = Constants.ServerUri;
 
         //============================================================
         public async Task<IEnumerable<User>> GetAllAsync()

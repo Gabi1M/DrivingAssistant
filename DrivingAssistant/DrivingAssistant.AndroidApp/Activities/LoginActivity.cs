@@ -8,6 +8,7 @@ using Android.Views.InputMethods;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
 using PerpetualEngine.Storage;
@@ -19,8 +20,12 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
+        private TextView _textServer;
         private Button _loginButton;
         private Button _registerButton;
+
+        private readonly ServerService _serverService = new ServerService();
+        private HostServer _selectedServer;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,6 +35,10 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_login);
             SetupActivityFields();
+
+            _selectedServer = HostServer.Default;
+            _textServer.Text = "Server: " + _selectedServer.Name;
+            Constants.ServerUri = _selectedServer.Address;
         }
 
         //============================================================
@@ -48,11 +57,30 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.loginInputUsername);
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.loginInputPassword);
+            _textServer = FindViewById<TextView>(Resource.Id.loginServer);
             _loginButton = FindViewById<Button>(Resource.Id.loginButton);
             _registerButton = FindViewById<Button>(Resource.Id.loginRegisterButton);
 
+            _textServer.Click += OnTextServerClick;
             _loginButton.Click += OnLoginButtonClick;
             _registerButton.Click += OnRegisterButtonClick;
+        }
+
+        //============================================================
+        private void OnTextServerClick(object sender, EventArgs e)
+        {
+            var servers = _serverService.GetAll();
+            var alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Choose a server");
+            var serverStringList = servers.Select(x => x.Name).ToArray();
+            alert.SetItems(serverStringList, (o, args) =>
+            {
+                _selectedServer = servers.ElementAt(args.Which);
+                _textServer.Text = "Server: " + _selectedServer.Name;
+                Constants.ServerUri = _selectedServer.Address;
+            });
+
+            alert.Create().Show();
         }
 
         //============================================================

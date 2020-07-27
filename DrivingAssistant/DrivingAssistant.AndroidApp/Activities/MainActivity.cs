@@ -125,11 +125,11 @@ namespace DrivingAssistant.AndroidApp.Activities
                     _toolbar.Title = "Driving Sessions";
                     break;
                 }
-                case Resource.Id.nav_settings:
+                case Resource.Id.nav_servers:
                 {
-                    /*var fragment = new SettingsFragment(_user);
+                    var fragment = new ServerFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-                    _toolbar.Title = "User Settings";*/
+                    _toolbar.Title = "Servers";
                     break;
                 }
                 case Resource.Id.nav_logout:

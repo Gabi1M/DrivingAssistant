@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
-using Point = DrivingAssistant.Core.Models.Point;
 
 namespace DrivingAssistant.WebServer.Tools
 {
@@ -102,9 +99,9 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //============================================================
-        public static async Task<string> SaveVideoStreamToFileAsync(Stream videoStream)
+        public static async Task<string> SaveVideoStreamToFileAsync(Stream videoStream, string encoding)
         {
-            var filepath = GetRandomFilename(".mp4", MediaType.Video);
+            var filepath = GetRandomFilename("." + encoding, MediaType.Video);
             await SaveStreamToFileAsync(videoStream, filepath);
             return filepath;
         }

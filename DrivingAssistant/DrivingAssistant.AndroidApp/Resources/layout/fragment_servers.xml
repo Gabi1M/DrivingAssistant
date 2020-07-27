@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainColor2">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10.0dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:weightSum="3"
+        android:id="@+id/serversButtonsLayout">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Add"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/serversButtonAdd"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Modify"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/serversButtonModify"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/serversButtonDelete"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10.0dp"/>
+
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/serversListView"/>
+
+</LinearLayout>

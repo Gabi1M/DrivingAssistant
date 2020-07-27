@@ -191,7 +191,8 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body);
+                var encoding = Request.Query["Encoding"].First();
+                var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body, encoding);
                 var media = new Media
                 {
                     Type = MediaType.Video,

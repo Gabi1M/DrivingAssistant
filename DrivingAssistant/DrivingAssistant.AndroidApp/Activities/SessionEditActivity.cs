@@ -508,7 +508,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                     IntermediatePoints = _selectedIntermediaries,
                     Id = -1,
                     Processed = false,
-                    UserId = _user.Id
+                    UserId = _user.Id,
+                    DateAdded = DateTime.Now
                 };
                 _currentSession.Id = await _sessionService.SetAsync(_currentSession);
                 foreach (var media in _mediaList)

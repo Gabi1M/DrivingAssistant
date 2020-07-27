@@ -132,6 +132,7 @@ namespace DrivingAssistant.WebServer.Tools
         //======================================================//
         public string ProcessVideo(string filename, int framesToSkip, out VideoReport report)
         {
+            Console.WriteLine("Processing " + filename);
             var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
             using var video = new VideoCapture(filename);
             var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
@@ -172,6 +173,7 @@ namespace DrivingAssistant.WebServer.Tools
 
             report = VideoReport.FromImageResultList(imageResultList);
             videoWriter.Dispose();
+            Console.WriteLine("Done");
             return processedVideoFilename;
         }
     }

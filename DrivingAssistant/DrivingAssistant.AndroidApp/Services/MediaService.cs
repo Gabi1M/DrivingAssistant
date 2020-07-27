@@ -15,7 +15,7 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class MediaService
     {
-        private const string _serverUri = Constants.ServerUri;
+        private static readonly string _serverUri = Constants.ServerUri;
 
         //============================================================
         public async Task<IEnumerable<Media>> GetAllMediaAsync()
@@ -127,8 +127,8 @@ namespace DrivingAssistant.AndroidApp.Services
         public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type)
         {
             var request = type == MediaType.Image
-                ? new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadImageStream))
-                : new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadVideoStream));
+                ? new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadImageStream + "?Encoding=jpg"))
+                : new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadVideoStream + ">Encoding= mp4"));
             request.Method = "POST";
 
             await using var requestStream = await request.GetRequestStreamAsync();

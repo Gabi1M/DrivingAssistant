@@ -12,8 +12,8 @@ namespace DrivingAssistant.WebServer.Tools
             private const string LinuxPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=cloud;Username=pi;Password=1234";
             private const string LinuxMSSQLConnectionString = @"";
 
-            private const string WindowsImageStoragePath = @"C:\CloudStorage\Images";
-            private const string WindowsVideoStoragePath = @"C:\CloudStorage\Videos";
+            private const string WindowsImageStoragePath = @"E:\CloudStorage\Images";
+            private const string WindowsVideoStoragePath = @"E:\CloudStorage\Videos";
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=cloud;Username=postgres;Password=1234";
             private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
 
