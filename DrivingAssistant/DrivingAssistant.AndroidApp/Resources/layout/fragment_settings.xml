@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mainColor2"
-    android:minWidth="25px"
-    android:minHeight="25px">
+    android:minWidth="25.0px"
+    android:minHeight="25.0px">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                     android:layout_height="35.0dp"
                     android:layout_weight="2"
                     android:layout_gravity="center"
-                    android:gravity="center_vertical"
+                    android:gravity="center"
                     android:text="Camera Session"
                     android:textColor="@color/mainColor1"/>
 
@@ -54,6 +54,49 @@
                     android:textColorHint="@color/mainColor3"
                     android:background="@drawable/textbox_border"
                     android:id="@+id/settingsTextCameraSession"/>
+
+                <Space
+                    android:layout_width="5.0dp"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20.0dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45.0dp"
+                android:orientation="horizontal"
+                android:weightSum="5"
+                android:background="@drawable/textbox_border">
+
+                <Space
+                    android:layout_width="5.0dp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:layout_width="0.0dp"
+                    android:layout_height="35.0dp"
+                    android:layout_weight="2"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Camera IP"
+                    android:textColor="@color/mainColor1"/>
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="0.0dp"
+                    android:layout_height="35.0dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="3"
+                    android:hint="Camera IP"
+                    android:singleLine="true"
+                    android:textColor="@color/mainColor1"
+                    android:textColorHint="@color/mainColor3"
+                    android:background="@drawable/textbox_border"
+                    android:id="@+id/settingsTextCameraIp"/>
 
                 <Space
                     android:layout_width="5.0dp"

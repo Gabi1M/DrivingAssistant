@@ -10,6 +10,21 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("CameraSessionId")]
         public long CameraSessionId { get; set; }
 
+        [JsonProperty("CameraIp")]
+        public string CameraIp { get; set; }
+
+        //===========================================================//
+        public static UserSettings Default(long userId)
+        {
+            return new UserSettings
+            {
+                Id = -1,
+                UserId = userId,
+                CameraSessionId = -1,
+                CameraIp = string.Empty
+            };
+        }
+
         //===========================================================//
         public override string ToString()
         {

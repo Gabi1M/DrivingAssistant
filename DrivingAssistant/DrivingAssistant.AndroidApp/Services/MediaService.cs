@@ -107,23 +107,6 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> SetImageBase64Async(byte[] base64Bytes)
-        {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.MediaEndpoints.UploadImageBase64))
-            {
-                Method = "POST"
-            };
-
-            var base64String = Convert.ToBase64String(base64Bytes);
-            await using var requestStream = await request.GetRequestStreamAsync();
-            await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(base64String);
-            var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return Convert.ToInt64(await streamReader.ReadToEndAsync());
-        }
-
-        //============================================================
         public async Task<long> SetMediaStreamAsync(Stream mediaStream, MediaType type)
         {
             var request = type == MediaType.Image

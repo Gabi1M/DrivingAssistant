@@ -17,6 +17,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class MediaController : ControllerBase
     {
         private static readonly IMediaService _mediaService = new MssqlMediaService();
+        private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
 
         //============================================================
         [HttpGet]
@@ -127,35 +128,6 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route(Endpoints.MediaEndpoints.UploadImageBase64)]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> PostImageBase64Async()
-        {
-            try
-            {
-                var filepath = await Utils.SaveImageBase64ToFile(Request.Body);
-                var media = new Media
-                {
-                    Type = MediaType.Image,
-                    Filepath = filepath,
-                    Source = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    Description = string.Empty,
-                    DateAdded = DateTime.Now,
-                    Id = -1,
-                    ProcessedId = -1,
-                    SessionId = -1,
-                };
-                return Ok(await _mediaService.SetAsync(media));
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex, LogType.Error, true);
-                return Problem(ex.Message);
-            }
-        }
-
-        //============================================================
-        [HttpPost]
         [Route(Endpoints.MediaEndpoints.UploadImageStream)]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> PostImageStreamAsync()
@@ -191,6 +163,17 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
+                var sessionId = -1L;
+                if (Request.Query.ContainsKey("UserId"))
+                {
+                    var userSettings = await _userSettingsService.GetByUser(Convert.ToInt64(Request.Query["UserId"].First()));
+                    if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.CameraIp &&
+                        userSettings.CameraSessionId != -1)
+                    {
+                        sessionId = userSettings.CameraSessionId;
+                    }
+                }
+
                 var encoding = Request.Query["Encoding"].First();
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body, encoding);
                 var media = new Media
@@ -202,7 +185,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     DateAdded = DateTime.Now,
                     Id = -1,
                     ProcessedId = -1,
-                    SessionId = -1,
+                    SessionId = sessionId,
                 };
                 return Ok(await _mediaService.SetAsync(media));
             }

@@ -19,6 +19,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class SessionController : ControllerBase
     {
         private static readonly ISessionService _sessionService = new MssqlSessionService();
+        private static readonly IMediaService _mediaService = new MssqlMediaService();
 
         //============================================================
         [HttpGet]
@@ -99,12 +100,10 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var mediaService = new MssqlMediaService();
                 var session = await _sessionService.GetById(id);
-                foreach (var media in await mediaService.GetBySession(session.Id))
+                foreach (var media in await _mediaService.GetBySession(session.Id))
                 {
-                    media.SessionId = -1;
-                    await mediaService.SetAsync(media);
+                    await _mediaService.DeleteAsync(media);
                 }
                 await _sessionService.DeleteAsync(session);
                 return Ok();

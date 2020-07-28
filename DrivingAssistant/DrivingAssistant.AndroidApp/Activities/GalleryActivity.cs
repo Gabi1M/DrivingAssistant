@@ -12,6 +12,8 @@ namespace DrivingAssistant.AndroidApp.Activities
     public class GalleryActivity : AppCompatActivity
     {
         private ImageView _imageView;
+
+        private readonly MediaService _mediaService = new MediaService();
         private Media _image;
 
         //============================================================
@@ -34,8 +36,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void LoadImage()
         {
-            var mediaService = new MediaService();
-            _imageView.SetImageBitmap(await mediaService.DownloadImageAsync(_image.Id));
+            _imageView.SetImageBitmap(await _mediaService.DownloadImageAsync(_image.Id));
         }
     }
 }

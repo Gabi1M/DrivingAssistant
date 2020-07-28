@@ -15,6 +15,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class UserController : ControllerBase
     {
         private static readonly IUserService _userService = new MssqlUserService();
+        private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
 
         //============================================================
         [HttpGet]
@@ -60,7 +61,12 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 using var streamReader = new StreamReader(Request.Body);
                 var user = JsonConvert.DeserializeObject<User>(await streamReader.ReadToEndAsync());
-                return Ok(await _userService.SetAsync(user));
+                var userId = await _userService.SetAsync(user);
+                if (user.Id == -1)
+                {
+                    await _userSettingsService.SetAsync(UserSettings.Default(userId));
+                }
+                return Ok(userId);
             }
             catch (Exception ex)
             {
@@ -79,6 +85,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 var user = await _userService.GetById(id);
                 await _userService.DeleteAsync(user);
+                await _userSettingsService.DeleteAsync(await _userSettingsService.GetByUser(id));
                 return Ok();
             }
             catch (Exception ex)

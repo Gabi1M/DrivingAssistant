@@ -10,112 +10,287 @@
         android:layout_width="match_parent"
         android:layout_height="30.0dp"/>
 
-    <android.support.design.widget.TextInputEditText
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
-        android:id="@+id/sessionEditTextDescription"
-        android:singleLine="true"
-        android:gravity="center"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
-        android:hint="Description"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedStartDateTime"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select Start Date"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Name"
+            android:textColor="@color/mainColor1"/>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditTextDescription"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedEndDateTime"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select End Date"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedStartPosition"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select Start Location"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedEndPosition"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select End Location"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/sessionEditLabelSelectedIntermediaries"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to Select Intermediary Locations"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="20.0dp"/>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="40.0dp"
+        android:layout_marginRight="40.0dp"
         android:orientation="horizontal"
-        android:minWidth="25px"
-        android:minHeight="25px"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Start Date"
+            android:textColor="@color/mainColor1"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditLabelSelectedStartDateTime"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20.0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="40.0dp"
+        android:layout_marginRight="40.0dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="End Date"
+            android:textColor="@color/mainColor1"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditLabelSelectedEndDateTime"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20.0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="40.0dp"
+        android:layout_marginRight="40.0dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Start Location"
+            android:textColor="@color/mainColor1"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditLabelSelectedStartPosition"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20.0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="40.0dp"
+        android:layout_marginRight="40.0dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="End Location"
+            android:textColor="@color/mainColor1"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditLabelSelectedEndPosition"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20.0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="40.0dp"
+        android:layout_marginRight="40.0dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Waypoints"
+            android:textColor="@color/mainColor1"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:hint="Tap To Edit"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/sessionEditLabelSelectedIntermediaries"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10.0dp"/>
+
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Media List"
+        android:textColor="@color/mainColor1"
+        android:textColorHint="@color/mainColor3"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_marginLeft="35.0dp"
         android:layout_marginRight="35.0dp"
         android:layout_width="match_parent"
@@ -130,8 +305,9 @@
         <Button
             android:text="Add"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="25.0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:id="@+id/mediasButtonAdd"
             android:background="@drawable/button_border"/>
 
@@ -142,8 +318,9 @@
         <Button
             android:text="Modify"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="25.0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:id="@+id/mediasButtonModify"
             android:background="@drawable/button_border"/>
 
@@ -154,8 +331,9 @@
         <Button
             android:text="Delete"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="25.0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:id="@+id/mediasButtonDelete"
             android:background="@drawable/button_border"/>
 
@@ -166,8 +344,9 @@
         <Button
             android:text="View"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="25.0dp"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:id="@+id/mediasButtonView"
             android:background="@drawable/button_border"/>
 
@@ -179,14 +358,14 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
+        android:layout_height="5.0dp"/>
 
     <ListView
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="150.0dp"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
+        android:layout_marginLeft="35.0dp"
+        android:layout_marginRight="35.0dp"
         android:id="@+id/sessionEditMediaList"
         android:background="@drawable/textbox_border">
 
@@ -205,4 +384,5 @@
         android:id="@+id/sessionEditButtonSubmit"
         android:textColor="@color/mainColor2"
         android:background="@drawable/button_border"/>
+
 </LinearLayout>

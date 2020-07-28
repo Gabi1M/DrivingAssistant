@@ -5,7 +5,6 @@ using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
-using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Object = Java.Lang.Object;
@@ -16,6 +15,8 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
     {
         private readonly Activity _activity;
         private readonly ICollection<Media> _medias;
+
+        private readonly MediaService _mediaService = new MediaService();
 
         //============================================================
         public MediaThumbnailViewModelAdapter(Activity activity, ICollection<Media> medias)
@@ -51,8 +52,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var currentMedia = _medias.ElementAt(position);
             if (currentMedia.Type == MediaType.Image)
             {
-                var mediaService = new MediaService();
-                var bitmap = mediaService.DownloadImage(currentMedia.Id);
+                var bitmap = _mediaService.DownloadImage(currentMedia.Id);
                 bitmap = Bitmap.CreateScaledBitmap(bitmap, 128, 128, false);
                 imageView.SetImageBitmap(bitmap);
             }

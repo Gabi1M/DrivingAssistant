@@ -11,7 +11,6 @@
             public const string GetBySessionId = "media_session_id";
             public const string GetByUserId = "media_user_id";
             public const string Download = "media_download";
-            public const string UploadImageBase64 = "media_image_base64";
             public const string UploadImageStream = "media_image_stream";
             public const string UploadVideoStream = "media_video_stream";
             public const string Update = "media_update";

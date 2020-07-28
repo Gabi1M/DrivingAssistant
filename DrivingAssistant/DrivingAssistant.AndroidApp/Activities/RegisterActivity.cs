@@ -27,6 +27,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private Button _registerButton;
 
         private UserRole _selectedRole = UserRole.None;
+        private readonly UserService _userService = new UserService();
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -87,8 +88,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var userService = new UserService();
-                var users = await userService.GetAllAsync();
+                var users = await _userService.GetAllAsync();
                 if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
                 {
                     Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();
@@ -108,7 +108,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     JoinDate = DateTime.Now
                 };
 
-                await userService.SetAsync(user);
+                await _userService.SetAsync(user);
                 progressDialog.Dismiss();
                 Toast.MakeText(Application.Context, "Register successful!", ToastLength.Short).Show();
                 await Task.Delay(1000);

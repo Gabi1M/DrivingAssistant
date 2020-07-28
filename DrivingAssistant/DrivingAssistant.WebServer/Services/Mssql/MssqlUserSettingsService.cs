@@ -30,7 +30,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    CameraSessionId = row.CameraSessionId
+                    CameraSessionId = row.CameraSessionId,
+                    CameraIp = row.CameraIp
                 });
             });
         }
@@ -46,28 +47,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    CameraSessionId = row.CameraSessionId
+                    CameraSessionId = row.CameraSessionId,
+                    CameraIp = row.CameraIp
                 }).First();
-            });
-        }
-
-        //============================================================
-        public async Task<long> SetAsync(UserSettings userSettings)
-        {
-            return await Task.Run(() =>
-            {
-                long? idOut = 0;
-                _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.CameraSessionId, ref idOut);
-                return idOut ?? -1;
-            });
-        }
-
-        //============================================================
-        public async Task DeleteAsync(UserSettings userSettings)
-        {
-            await Task.Run(() =>
-            {
-                _tableAdapter.Delete(userSettings.Id);
             });
         }
 
@@ -82,8 +64,29 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    CameraSessionId = row.CameraSessionId
+                    CameraSessionId = row.CameraSessionId,
+                    CameraIp = row.CameraIp
                 }).First();
+            });
+        }
+
+        //============================================================
+        public async Task<long> SetAsync(UserSettings userSettings)
+        {
+            return await Task.Run(() =>
+            {
+                long? idOut = 0;
+                _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.CameraSessionId, userSettings.CameraIp, ref idOut);
+                return idOut ?? -1;
+            });
+        }
+
+        //============================================================
+        public async Task DeleteAsync(UserSettings userSettings)
+        {
+            await Task.Run(() =>
+            {
+                _tableAdapter.Delete(userSettings.Id);
             });
         }
 

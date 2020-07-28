@@ -24,6 +24,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private Button _loginButton;
         private Button _registerButton;
 
+        private readonly UserService _userService = new UserService();
         private readonly ServerService _serverService = new ServerService();
         private HostServer _selectedServer;
 
@@ -106,8 +107,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var userService = new UserService();
-                var users = await userService.GetAllAsync();
+                var users = await _userService.GetAllAsync();
                 if (users.Any(x =>
                     x.Username.Trim() == _textInputUsername.Text.Trim() &&
                     x.Password.Trim() == Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim())))

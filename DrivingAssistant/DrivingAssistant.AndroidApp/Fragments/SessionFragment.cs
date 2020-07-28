@@ -30,7 +30,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private int _selectedPosition = -1;
         private View _selectedView;
 
-        private SessionService _sessionService;
+        private readonly SessionService _sessionService = new SessionService();
         private ICollection<Session> _currentSessions;
 
         //============================================================
@@ -43,7 +43,6 @@ namespace DrivingAssistant.AndroidApp.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_sessions, container, false);
-            _sessionService = new SessionService();
             SetupFragmentFields(view);
             SetupListAdapter();
             return view;

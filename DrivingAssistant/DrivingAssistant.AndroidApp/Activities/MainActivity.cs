@@ -12,6 +12,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Fragments;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
+using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -130,6 +131,13 @@ namespace DrivingAssistant.AndroidApp.Activities
                     var fragment = new ServerFragment(_user);
                     SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
                     _toolbar.Title = "Servers";
+                    break;
+                }
+                case Resource.Id.nav_settings:
+                {
+                    var fragment = new SettingsFragment(_user);
+                    SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
+                    _toolbar.Title = "Settings";
                     break;
                 }
                 case Resource.Id.nav_logout:

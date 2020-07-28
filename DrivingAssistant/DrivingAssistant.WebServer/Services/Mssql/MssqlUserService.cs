@@ -72,6 +72,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 long? idOut = 0;
                 _tableAdapter.Insert(user.Id, user.Username, user.Password, user.FirstName, user.LastName, user.Email,
                     user.Role.ToString(), user.JoinDate, ref idOut);
+
                 return idOut ?? -1;
             });
         }

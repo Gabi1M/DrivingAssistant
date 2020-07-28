@@ -92,11 +92,11 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartPoint = _currentSession.StartPoint;
                 _selectedEndPoint = _currentSession.EndPoint;
                 _selectedIntermediaries = _currentSession.IntermediatePoints;
-                _labelStartDateTime.Text = "Start Date: " + _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
-                _labelEndDateTime.Text = "End Date: " + _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
-                _labelStartLocation.Text = "Start Location: " + _selectedStartPoint.X + " " + _selectedStartPoint.Y;
-                _labelEndLocation.Text = "End Location: " + _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-                _labelInterLocations.Text = "Selected " + _selectedIntermediaries.Count + " Intermediate Points";
+                _labelStartDateTime.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                _labelEndDateTime.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                _labelStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                _labelEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                _labelInterLocations.Text = _selectedIntermediaries.Count + " Selected";
                 _mediaListView.Adapter = new MediaThumbnailViewModelAdapter(this, _mediaList);
             }
         }
@@ -300,7 +300,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     _selectedEndDateTime = _selectedEndDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedEndDateTime = _selectedEndDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelEndDateTime.Text = "End Date: " + _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                    _labelEndDateTime.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
@@ -351,7 +351,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartPoint = selectedStartPoint;
                 if (_selectedStartPoint != null)
                 {
-                    _labelStartLocation.Text = "Start Location: " + _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                    _labelStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -402,7 +402,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedEndPoint = selectedEndPoint;
                 if (_selectedEndPoint != null)
                 {
-                    _labelEndLocation.Text = "End Location: " + _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                    _labelEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -464,7 +464,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
                 _selectedIntermediaries = new List<Point>(selectedIntermediaries);
-                _labelInterLocations.Text = "Selected " + _selectedIntermediaries.Count + " Intermediate Points";
+                _labelInterLocations.Text = _selectedIntermediaries.Count + " Selected";
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             alert.Create().Show();
@@ -473,22 +473,14 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            /*if (_mediaList.Count == 0)
-            {
-                Toast.MakeText(this, "There is no media selected!", ToastLength.Short).Show();
-                return;
-            }
-
-            if (_selectedStartDateTime == null || _selectedEndDateTime == null ||
-                string.IsNullOrEmpty(_textDescription.Text) || _selectedStartPoint == null ||
-                _selectedEndPoint == null || _selectedIntermediaries.Count == 0)
-            {
-                Toast.MakeText(this, "Some fields were left blank!", ToastLength.Short).Show();
-                return;
-            }*/
-
             if (!_newSession)
             {
+                _currentSession.Name = _textDescription.Text;
+                _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
+                _currentSession.EndDateTime = _selectedStartDateTime ?? DateTime.Now;
+                _currentSession.StartPoint = _selectedStartPoint;
+                _currentSession.EndPoint = _selectedEndPoint;
+                _currentSession.IntermediatePoints = _selectedIntermediaries;
                 await _sessionService.SetAsync(_currentSession);
                 foreach (var media in _mediaList.Where(x => x.SessionId != _currentSession.Id))
                 {
@@ -500,7 +492,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 _currentSession = new Session
                 {
-                    Name = string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
+                    Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
                     StartDateTime = _selectedStartDateTime ?? DateTime.Now,
                     EndDateTime = _selectedEndDateTime ?? DateTime.Now,
                     StartPoint = _selectedStartPoint ?? new Point(0,0),

@@ -12,14 +12,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="@color/mainColor1">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
         <ImageView
             android:contentDescription=""
-            android:src="@drawable/logo"
+            android:src="@drawable/logo_border_bg"
             android:layout_width="match_parent"
             android:layout_height="250.0dp"
             android:id="@+id/loginImage"
             android:scaleType="fitCenter" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
     </LinearLayout>
 
     <Space

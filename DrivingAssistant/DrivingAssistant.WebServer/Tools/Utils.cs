@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
@@ -49,45 +46,6 @@ namespace DrivingAssistant.WebServer.Tools
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Specified file type not supported!");
                 }
             }
-        }
-
-        //============================================================
-        public static async Task<string> SaveImageBase64ToFile(string base64String)
-        {
-            return await Task.Run(() =>
-            {
-                var filepath = GetRandomFilename(".jpeg", MediaType.Image);
-                var bytes = Convert.FromBase64String(base64String);
-                using var image = Image.FromStream(new MemoryStream(bytes));
-                image.Save(filepath, ImageFormat.Jpeg);
-                return filepath;
-            });
-        }
-
-        //============================================================
-        public static async Task<string> SaveImageBase64ToFile(Stream stream)
-        {
-            using var streamReader = new StreamReader(stream);
-            return await SaveImageBase64ToFile(await streamReader.ReadToEndAsync());
-        }
-
-        //============================================================
-        public static async Task<ICollection<string>> SaveImagesBase64ToFile(string spacedBase64String)
-        {
-            var filepaths = new List<string>();
-            foreach (var base64String in spacedBase64String.Split(' '))
-            {
-                filepaths.Add(await SaveImageBase64ToFile(base64String));
-            }
-
-            return filepaths;
-        }
-
-        //============================================================
-        public static async Task<ICollection<string>> SaveImagesBase64ToFile(Stream base64Stream)
-        {
-            using var streamReader = new StreamReader(base64Stream);
-            return await SaveImagesBase64ToFile(await streamReader.ReadToEndAsync());
         }
 
         //============================================================

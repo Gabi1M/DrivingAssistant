@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.OS;
 using Android.Views;
+using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.Core.Models;
 using Microcharts;
@@ -49,14 +53,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
         }
 
         //============================================================
-        private async void RefreshData()
+        private async Task CreateSessionChart()
         {
             try
             {
                 var sessions = await _sessionService.GetByUserAsync(_user.Id);
-                var medias = await _mediaService.GetMediaByUserAsync(_user.Id);
-                var reports = await _reportService.GetByUserAsync(_user.Id);
-
                 var sessionChartEntries = new[]
                 {
                     new ChartEntry(sessions.Count())
@@ -78,7 +79,20 @@ namespace DrivingAssistant.AndroidApp.Fragments
                         ValueLabel = (sessions.Count() - sessions.Count(x => x.Processed)).ToString()
                     }
                 };
+                _chartViewSessions.Chart = new BarChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+            }
+            catch (Exception)
+            {
+                Toast.MakeText(Context, "Failed to load data for session chart!", ToastLength.Short).Show();
+            }
+        }
 
+        //============================================================
+        private async Task CreateMediaChart()
+        {
+            try
+            {
+                var medias = await _mediaService.GetMediaByUserAsync(_user.Id);
                 var mediaChartEntries = new[]
                 {
                     new ChartEntry(medias.Count())
@@ -100,7 +114,20 @@ namespace DrivingAssistant.AndroidApp.Fragments
                         ValueLabel = (medias.Count() - medias.Count(x => x.IsProcessed())).ToString()
                     }
                 };
+                _chartViewMedia.Chart = new BarChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+            }
+            catch (Exception)
+            {
+                Toast.MakeText(Context, "Failed to load data for media chart!", ToastLength.Short).Show();
+            }
+        }
 
+        //============================================================
+        private async Task CreateReportChart()
+        {
+            try
+            {
+                var reports = await _reportService.GetByUserAsync(_user.Id);
                 var reportChartEntries = new[]
                 {
                     new ChartEntry(reports.Sum(x => x.ProcessedFrames))
@@ -139,15 +166,22 @@ namespace DrivingAssistant.AndroidApp.Fragments
                     },
                 };
 
-                _chartViewSessions.Chart = new BarChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50};
-                _chartViewMedia.Chart = new BarChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+
                 _chartViewReports.Chart = new BarChart { Entries = reportChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
                 _chartViewLanePosition.Chart = new PieChart { Entries = positionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, MaxValue = 100, LabelMode = LabelMode.RightOnly, Margin = 50 };
             }
             catch (Exception)
             {
-                // ignored
+                Toast.MakeText(Context, "Failed to load data for report charts!", ToastLength.Short).Show();
             }
+        }
+
+        //============================================================
+        private async void RefreshData()
+        {
+            await CreateSessionChart();
+            await CreateMediaChart();
+            await CreateReportChart();
         }
     }
 }
