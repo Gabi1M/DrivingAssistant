@@ -1,184 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainColor2">
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
-    <Button
-        android:text="Save"
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:layout_marginLeft="90.0dp"
-        android:layout_marginRight="90.0dp"
-        android:id="@+id/settingsButtonSave"
-        android:background="@drawable/button_border"/>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
-    <Button
-        android:text="Restore to defaults"
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:layout_marginLeft="90.0dp"
-        android:layout_marginRight="90.0dp"
-        android:id="@+id/settingsButtonDefault"
-        android:background="@drawable/button_border"/>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
+    android:background="@color/mainColor2"
+    android:minWidth="25px"
+    android:minHeight="25px">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:id="@+id/settingsScrollView">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:inputType="numberDecimal"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputCannyThreshold"
-                android:hint="Canny Threshold"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="40.0dp"
+            android:layout_marginRight="40.0dp">
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
+                android:layout_height="20.0dp"/>
 
-            <EditText
-                android:inputType="numberDecimal"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputCannyThresholdLinking"
-                android:hint="Canny Threshold Linking"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
+                android:layout_height="45.0dp"
+                android:orientation="horizontal"
+                android:weightSum="5"
+                android:background="@drawable/textbox_border">
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
+                <Space
+                    android:layout_width="5.0dp"
+                    android:layout_height="match_parent"/>
 
-            <EditText
-                android:inputType="numberDecimal"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputHoughLinesRhoResolution"
-                android:hint="Hough Lines Rho Resolution"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
+                <TextView
+                    android:layout_width="0.0dp"
+                    android:layout_height="35.0dp"
+                    android:layout_weight="2"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:text="Camera Session"
+                    android:textColor="@color/mainColor1"/>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
+                <TextView
+                    android:layout_width="0.0dp"
+                    android:layout_height="35.0dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="3"
+                    android:textColor="@color/mainColor1"
+                    android:textColorHint="@color/mainColor3"
+                    android:background="@drawable/textbox_border"
+                    android:id="@+id/settingsTextCameraSession"/>
 
-            <EditText
-                android:inputType="numberDecimal"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputHoughLinesThetaResolution"
-                android:hint="Hough Lines Theta Resolution"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
+                <Space
+                    android:layout_width="5.0dp"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
-
-            <EditText
-                android:inputType="numberDecimal"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputHoughLinesMinimumLineWidth"
-                android:hint="Hough Lines Minimum LineWidth"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
-
-            <EditText
-                android:inputType="numberDecimal"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputHoughLinesGapBetweenLines"
-                android:hint="Hough Lines Gap Between Lines"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
-
-            <EditText
-                android:inputType="number"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputHoughLinesThreshold"
-                android:hint="Hough Lines Threshold"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="10.0dp"/>
-
-            <EditText
-                android:inputType="number"
-                android:layout_width="match_parent"
-                android:layout_height="35.0dp"
-                android:layout_marginLeft="40.0dp"
-                android:layout_marginRight="40.0dp"
-                android:gravity="center"
-                android:id="@+id/settingsInputDilateIterations"
-                android:hint="Dilate Iterations"
-                android:textColor="@color/mainColor1"
-                android:textColorHint="@color/mainColor3"
-                android:background="@drawable/textbox_border"/>
+                android:layout_height="20.0dp"/>
 
         </LinearLayout>
 
     </ScrollView>
 
-</LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60.0dp"
+        android:layout_marginRight="60.0dp"
+        android:layout_marginBottom="20.0dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/settingsButtonSave"
+        android:text="Save"
+        android:background="@drawable/button_border"/>
+
+</RelativeLayout>

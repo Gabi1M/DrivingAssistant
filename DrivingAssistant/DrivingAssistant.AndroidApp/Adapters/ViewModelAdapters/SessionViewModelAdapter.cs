@@ -49,7 +49,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
 
             var currentSession = _sessions.ElementAt(position);
 
-            textDescription.Text = "Description: " + currentSession.Description;
+            textDescription.Text = "Name: " + currentSession.Name;
             textStartDateTime.Text = "Start: " + currentSession.StartDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textEndDateTime.Text = "End: " + currentSession.EndDateTime.ToString("dd.MM.yyyy HH:mm:ss");
             textStartCoordinates.Text = "Start position: " + currentSession.StartPoint.X + ", " + currentSession.StartPoint.Y;

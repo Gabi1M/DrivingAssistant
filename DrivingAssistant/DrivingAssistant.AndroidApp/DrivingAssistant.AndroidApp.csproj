@@ -110,6 +110,7 @@
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Services\SessionService.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UserSettingsService.cs" />
     <Compile Include="Tools\CacheManager.cs" />
     <Compile Include="Tools\Constants.cs" />
     <Compile Include="Tools\MapTools.cs" />

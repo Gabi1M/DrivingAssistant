@@ -139,10 +139,10 @@ namespace DrivingAssistant.AndroidApp.Fragments
                     },
                 };
 
-                _chartViewSessions.Chart = new PieChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 15, LabelMode = LabelMode.RightOnly, Margin = 50};
-                _chartViewMedia.Chart = new PieChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 15, LabelMode = LabelMode.RightOnly, Margin = 50 };
-                _chartViewReports.Chart = new PieChart { Entries = reportChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 15, LabelMode = LabelMode.RightOnly, Margin = 50 };
-                _chartViewLanePosition.Chart = new PieChart { Entries = positionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 15, MaxValue = 100, LabelMode = LabelMode.RightOnly, Margin = 50 };
+                _chartViewSessions.Chart = new BarChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50};
+                _chartViewMedia.Chart = new BarChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+                _chartViewReports.Chart = new BarChart { Entries = reportChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+                _chartViewLanePosition.Chart = new PieChart { Entries = positionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, MaxValue = 100, LabelMode = LabelMode.RightOnly, Margin = 50 };
             }
             catch (Exception)
             {

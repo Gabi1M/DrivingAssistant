@@ -31,7 +31,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    Description = row.Description,
+                    Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
                     StartPoint = row.StartPoint.StringToPoint(),
@@ -54,7 +54,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    Description = row.Description,
+                    Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
                     StartPoint = row.StartPoint.StringToPoint(),
@@ -77,7 +77,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 {
                     Id = row.Id,
                     UserId = row.UserId,
-                    Description = row.Description,
+                    Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
                     StartPoint = row.StartPoint.StringToPoint(),
@@ -95,7 +95,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(session.Id, session.UserId, session.Description, session.StartDateTime,
+                _tableAdapter.Insert(session.Id, session.UserId, session.Name, session.StartDateTime,
                     session.EndDateTime, session.StartPoint.PointToString(), session.EndPoint.PointToString(),
                     session.IntermediatePoints.PointCollectionToString(), session.Processed, session.DateAdded, ref idOut);
                 return idOut ?? -1;

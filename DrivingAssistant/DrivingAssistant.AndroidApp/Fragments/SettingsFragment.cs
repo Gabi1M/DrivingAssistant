@@ -11,16 +11,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
     {
         private readonly User _user;
 
-        /*private EditText _textCannyThreshold;
-        private EditText _textCannyThresholdLinking;
-        private EditText _textHoughLinesRhoResolution;
-        private EditText _textHoughLinesThetaResolution;
-        private EditText _textHoughLinesMinimumLineWidth;
-        private EditText _textHoughLinesGapBetweenLines;
-        private EditText _textHoughLinesThreshold;
-        private EditText _textDilateIterations;
-        private Button _buttonSave;
-        private Button _buttonDefault;*/
+        private TextView _textCameraSession;
 
         //============================================================
         public SettingsFragment(User user)

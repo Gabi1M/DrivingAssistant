@@ -58,7 +58,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             }
 
             textType.Text = currentMedia.Type.ToString();
-            textDescription.Text = "Description: " + currentMedia.Description;
+            textDescription.Text = "Name: " + currentMedia.Description;
 
             return view;
         }

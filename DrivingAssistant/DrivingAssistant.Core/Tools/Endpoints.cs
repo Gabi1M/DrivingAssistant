@@ -50,5 +50,15 @@
             public const string AddOrUpdate = "users_set";
             public const string Delete = "users_delete";
         }
+
+        //============================================================
+        public static class UserSettingsEndpoints
+        {
+            public const string GetAll = "user_settings_all";
+            public const string GetById = "user_settings_id";
+            public const string GetByUserId = "user_settings_user_id";
+            public const string AddOrUpdate = "user_settings_set";
+            public const string Delete = "user_settings_delete";
+        }
     }
 }

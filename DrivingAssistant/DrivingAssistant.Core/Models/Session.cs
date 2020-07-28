@@ -9,8 +9,8 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("UserId")]
         public long UserId { get; set; }
 
-        [JsonProperty("Description")]
-        public string Description { get; set; }
+        [JsonProperty("Name")]
+        public string Name { get; set; }
 
         [JsonProperty("StartDateTime")]
         public DateTime StartDateTime { get; set; }

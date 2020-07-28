@@ -86,7 +86,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 _currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
                 _mediaList = (await _mediaService.GetMediaBySessionAsync(_currentSession.Id)).ToList();
-                _textDescription.Text = _currentSession.Description;
+                _textDescription.Text = _currentSession.Name;
                 _selectedStartDateTime = _currentSession.StartDateTime;
                 _selectedEndDateTime = _currentSession.EndDateTime;
                 _selectedStartPoint = _currentSession.StartPoint;
@@ -473,7 +473,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            if (_mediaList.Count == 0)
+            /*if (_mediaList.Count == 0)
             {
                 Toast.MakeText(this, "There is no media selected!", ToastLength.Short).Show();
                 return;
@@ -485,7 +485,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 Toast.MakeText(this, "Some fields were left blank!", ToastLength.Short).Show();
                 return;
-            }
+            }*/
 
             if (!_newSession)
             {
@@ -500,11 +500,11 @@ namespace DrivingAssistant.AndroidApp.Activities
             {
                 _currentSession = new Session
                 {
-                    Description = _textDescription.Text.Trim(),
-                    StartDateTime = _selectedStartDateTime.Value,
-                    EndDateTime = _selectedEndDateTime.Value,
-                    StartPoint = _selectedStartPoint,
-                    EndPoint = _selectedEndPoint,
+                    Name = string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
+                    StartDateTime = _selectedStartDateTime ?? DateTime.Now,
+                    EndDateTime = _selectedEndDateTime ?? DateTime.Now,
+                    StartPoint = _selectedStartPoint ?? new Point(0,0),
+                    EndPoint = _selectedEndPoint ?? new Point(0,0),
                     IntermediatePoints = _selectedIntermediaries,
                     Id = -1,
                     Processed = false,
