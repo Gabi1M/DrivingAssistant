@@ -12,7 +12,6 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Mapsui;
 using Mapsui.Projection;
@@ -37,12 +36,12 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextView _labelEndDateTime;
         private TextView _labelStartLocation;
         private TextView _labelEndLocation;
-        private TextView _labelInterLocations;
-        private ListView _mediaListView;
-        private Button _mediaButtonAdd;
-        private Button _mediaButtonModify;
-        private Button _mediaButtonDelete;
-        private Button _mediaButtonView;
+        private TextView _labelWaypoints;
+        private ListView _videoListView;
+        private Button _videoButtonAdd;
+        private Button _videoButtonModify;
+        private Button _videoButtonDelete;
+        private Button _videoButtonView;
         private Button _buttonSubmit;
 
         #endregion
@@ -50,7 +49,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         #region Service
 
         private readonly SessionService _sessionService = new SessionService();
-        private readonly MediaService _mediaService = new MediaService();
+        private readonly VideoService _videoService = new VideoService();
 
         #endregion
 
@@ -58,17 +57,17 @@ namespace DrivingAssistant.AndroidApp.Activities
         private Session _currentSession;
         private bool _newSession;
 
-        private ICollection<Media> _mediaList = new List<Media>();
+        private ICollection<Video> _videoList = new List<Video>();
 
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
         private Point _selectedStartPoint;
         private Point _selectedEndPoint;
         private Location _currentLocation;
-        private ICollection<Point> _selectedIntermediaries = new List<Point>();
+        private ICollection<Point> _selectedWaypoints = new List<Point>();
 
-        private int _selectedMediaPosition = -1;
-        private View _selectedMediaView;
+        private int _selectedVideoPosition = -1;
+        private View _selectedVideoView;
 
         //============================================================
         protected override async void OnCreate(Bundle savedInstanceState)
@@ -85,19 +84,19 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (!_newSession)
             {
                 _currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                _mediaList = (await _mediaService.GetMediaBySessionAsync(_currentSession.Id)).ToList();
+                _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
                 _textDescription.Text = _currentSession.Name;
                 _selectedStartDateTime = _currentSession.StartDateTime;
                 _selectedEndDateTime = _currentSession.EndDateTime;
-                _selectedStartPoint = _currentSession.StartPoint;
-                _selectedEndPoint = _currentSession.EndPoint;
-                _selectedIntermediaries = _currentSession.IntermediatePoints;
+                _selectedStartPoint = _currentSession.StartLocation;
+                _selectedEndPoint = _currentSession.EndLocation;
+                _selectedWaypoints = _currentSession.Waypoints;
                 _labelStartDateTime.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
                 _labelEndDateTime.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
                 _labelStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
                 _labelEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-                _labelInterLocations.Text = _selectedIntermediaries.Count + " Selected";
-                _mediaListView.Adapter = new MediaThumbnailViewModelAdapter(this, _mediaList);
+                _labelWaypoints.Text = _selectedWaypoints.Count + " Selected";
+                _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _videoList);
             }
         }
 
@@ -116,22 +115,22 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelEndDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
             _labelStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
             _labelEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
-            _labelInterLocations = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedIntermediaries);
+            _labelWaypoints = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedWaypoints);
 
             #endregion
 
             #region ListView
 
-            _mediaListView = FindViewById<ListView>(Resource.Id.sessionEditMediaList);
+            _videoListView = FindViewById<ListView>(Resource.Id.sessionEditVideoList);
 
             #endregion
 
             #region Button
 
-            _mediaButtonAdd = FindViewById<Button>(Resource.Id.mediasButtonAdd);
-            _mediaButtonModify = FindViewById<Button>(Resource.Id.mediasButtonModify);
-            _mediaButtonDelete = FindViewById<Button>(Resource.Id.mediasButtonDelete);
-            _mediaButtonView = FindViewById<Button>(Resource.Id.mediasButtonView);
+            _videoButtonAdd = FindViewById<Button>(Resource.Id.videosButtonAdd);
+            _videoButtonModify = FindViewById<Button>(Resource.Id.videosButtonModify);
+            _videoButtonDelete = FindViewById<Button>(Resource.Id.videosButtonDelete);
+            _videoButtonView = FindViewById<Button>(Resource.Id.videosButtonView);
             _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
 
             #endregion
@@ -142,11 +141,11 @@ namespace DrivingAssistant.AndroidApp.Activities
             _labelEndDateTime.Click += OnEndDateClick;
             _labelStartLocation.Click += OnStartLocationClick;
             _labelEndLocation.Click += OnEndLocationClick;
-            _labelInterLocations.Click += OnInterLocationsClick;
-            _mediaListView.ItemClick += OnMediaListItemClick;
-            _mediaButtonAdd.Click += OnMediaButtonAddClick;
-            _mediaButtonDelete.Click += OnMediaButtonDeleteClick;
-            _mediaButtonView.Click += OnMediaButtonViewClick;
+            _labelWaypoints.Click += OnWaypointsClick;
+            _videoListView.ItemClick += OnVideoListItemClick;
+            _videoButtonAdd.Click += OnVideoButtonAddClick;
+            _videoButtonDelete.Click += OnVideoButtonDeleteClick;
+            _videoButtonView.Click += OnVideoButtonViewClick;
             _buttonSubmit.Click += OnSubmitButtonClick;
 
             #endregion
@@ -155,38 +154,38 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         public override async void OnBackPressed()
         {
-            var progressDialog = ProgressDialog.Show(this, "Deleting temporary media", "Please wait...");
-            foreach (var media in _mediaList.Where(x => !x.IsInSession()))
+            var progressDialog = ProgressDialog.Show(this, "Deleting temporary videos", "Please wait...");
+            foreach (var video in _videoList.Where(x => !x.IsInSession()))
             {
-                await _mediaService.DeleteMediaAsync(media.Id);
+                await _videoService.DeleteVideoAsync(video.Id);
             }
             progressDialog.Dismiss();
             base.OnBackPressed();
         }
 
         //============================================================
-        private async Task RefreshMediaSource(bool fetchRemote = false)
+        private async Task RefreshVideoSource(bool fetchRemote = false)
         {
             if (fetchRemote)
             {
-                _mediaList = (await _mediaService.GetMediaBySessionAsync(_currentSession.Id)).ToList();
+                _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
             }
 
-            _mediaListView.Adapter?.Dispose();
-            _mediaListView.Adapter = new MediaThumbnailViewModelAdapter(this, _mediaList);
+            _videoListView.Adapter?.Dispose();
+            _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _videoList);
         }
 
         //============================================================
-        private void OnMediaListItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void OnVideoListItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            _selectedMediaView?.SetBackgroundResource(0);
+            _selectedVideoView?.SetBackgroundResource(0);
             e.View.SetBackgroundResource(Resource.Drawable.list_element_border);
-            _selectedMediaPosition = e.Position;
-            _selectedMediaView = e.View;
+            _selectedVideoPosition = e.Position;
+            _selectedVideoView = e.View;
         }
 
         //============================================================
-        private async void OnMediaButtonAddClick(object sender, EventArgs e)
+        private async void OnVideoButtonAddClick(object sender, EventArgs e)
         {
             var filedata = await CrossFilePicker.Current.PickFile();
             if (filedata == null)
@@ -196,34 +195,33 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             if (Path.GetExtension(filedata.FilePath) != ".jpg" && Path.GetExtension(filedata.FilePath) != ".mp4")
             {
-                Toast.MakeText(this, "Selected file is not a Jpeg image file or MP4 video file!", ToastLength.Short).Show();
+                Toast.MakeText(this, "Selected file is not a MP4 video file!", ToastLength.Short).Show();
                 return;
             }
 
-            var mediaType = Path.GetExtension(filedata.FilePath) == ".jpg" ? MediaType.Image : MediaType.Video;
-            var progressDialog = ProgressDialog.Show(this, mediaType == MediaType.Image ? "Image Upload" : "Video Upload", "Uploading...");
-            var mediaId = await _mediaService.SetMediaStreamAsync(filedata.GetStream(), mediaType);
-            var media = await _mediaService.GetMediaByIdAsync(mediaId);
+            var progressDialog = ProgressDialog.Show(this, "Video Upload", "Uploading...");
+            var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream());
+            var video = await _videoService.GetVideoByIdAsync(videoId);
             if (_newSession)
             {
-                _mediaList.Add(media);
-                await RefreshMediaSource();
+                _videoList.Add(video);
+                await RefreshVideoSource();
             }
             else
             {
-                media.SessionId = _currentSession.Id;
-                await _mediaService.UpdateMediaAsync(media);
-                await RefreshMediaSource(true);
+                video.SessionId = _currentSession.Id;
+                await _videoService.UpdateVideoAsync(video);
+                await RefreshVideoSource(true);
             }
             progressDialog.Dismiss();
         }
 
         //============================================================
-        private void OnMediaButtonDeleteClick(object sender, EventArgs e)
+        private void OnVideoButtonDeleteClick(object sender, EventArgs e)
         {
-            if (_selectedMediaPosition == -1)
+            if (_selectedVideoPosition == -1)
             {
-                Toast.MakeText(this, "No media selected!", ToastLength.Short).Show();
+                Toast.MakeText(this, "No video selected!", ToastLength.Short).Show();
                 return;
             }
 
@@ -232,17 +230,17 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetMessage("Action cannot be undone");
             alert.SetPositiveButton("Delete", async (o, args) =>
             {
-                var media = _mediaList.ElementAt(_selectedMediaPosition);
-                await _mediaService.DeleteMediaAsync(media.Id);
+                var video = _videoList.ElementAt(_selectedVideoPosition);
+                await _videoService.DeleteVideoAsync(video.Id);
 
                 if (_newSession)
                 {
-                    _mediaList.Remove(media);
-                    await RefreshMediaSource();
+                    _videoList.Remove(video);
+                    await RefreshVideoSource();
                 }
                 else
                 {
-                    await RefreshMediaSource(true);
+                    await RefreshVideoSource(true);
                 }
             });
 
@@ -252,27 +250,18 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private void OnMediaButtonViewClick(object sender, EventArgs e)
+        private void OnVideoButtonViewClick(object sender, EventArgs e)
         {
-            if (_selectedMediaPosition == -1)
+            if (_selectedVideoPosition == -1)
             {
-                Toast.MakeText(this, "No media selected!", ToastLength.Short).Show();
+                Toast.MakeText(this, "No video selected!", ToastLength.Short).Show();
                 return;
             }
 
-            var media = _mediaList.ElementAt(_selectedMediaPosition);
-            if (media.Type == MediaType.Image)
-            {
-                var intent = new Intent(this, typeof(GalleryActivity));
-                intent.PutExtra("image", JsonConvert.SerializeObject(media));
-                StartActivity(intent);
-            }
-            else if (media.Type == MediaType.Video)
-            {
-                var intent = new Intent(this, typeof(VideoActivity));
-                intent.PutExtra("video", JsonConvert.SerializeObject(media));
-                StartActivity(intent);
-            }
+            var video = _videoList.ElementAt(_selectedVideoPosition);
+            var intent = new Intent(this, typeof(VideoActivity));
+            intent.PutExtra("video", JsonConvert.SerializeObject(video));
+            StartActivity(intent);
         }
 
         //============================================================
@@ -337,7 +326,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     {
                         new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)
                     };
-                    points.AddRange(_selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
+                    points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
                     if (_selectedEndPoint != null)
                     {
                         points.Add(SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y));
@@ -391,7 +380,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     {
                         points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
                     }
-                    points.AddRange(_selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
+                    points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
                     points.Add(new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y));
                     mapControl.Map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
                     mapControl.Map.Layers.Add(MapTools.CreatePointLayer("EndPoint", Color.Red, 0.5, new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
@@ -410,7 +399,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        private void OnInterLocationsClick(object sender, EventArgs e)
+        private void OnWaypointsClick(object sender, EventArgs e)
         {
             var alert = new AlertDialog.Builder(this);
             var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
@@ -418,15 +407,15 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetView(view);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
-            var selectedIntermediaries = new List<Point>(_selectedIntermediaries!);
+            var selectedWaypoints = new List<Point>(_selectedWaypoints!);
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
                 if (!zoomWidgetEnvelope.Contains(args.MapInfo.ScreenPosition))
                 {
-                    if (mapControl.Map.Layers.Any(x => x.Name == "Intermediaries"))
+                    if (mapControl.Map.Layers.Any(x => x.Name == "Waypoints"))
                     {
-                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Intermediaries").First());
+                        mapControl.Map.Layers.Remove(mapControl.Map.Layers.FindLayer("Waypoints").First());
                     }
 
                     if (mapControl.Map.Layers.Any(x => x.Name == "Line"))
@@ -436,15 +425,15 @@ namespace DrivingAssistant.AndroidApp.Activities
 
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
 
-                    if (args.MapInfo.Feature != null && args.MapInfo.Layer.Name == "Intermediaries")
+                    if (args.MapInfo.Feature != null && args.MapInfo.Layer.Name == "Waypoints")
                     {
                         var featurePoint = args.MapInfo.Feature.Geometry.AllVertices().First();
-                        var point = selectedIntermediaries.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y)));
-                        selectedIntermediaries.Remove(point);
+                        var point = selectedWaypoints.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y)));
+                        selectedWaypoints.Remove(point);
                     }
                     else
                     {
-                        selectedIntermediaries.Add(new Point(tempPoint.X, tempPoint.Y));
+                        selectedWaypoints.Add(new Point(tempPoint.X, tempPoint.Y));
                     }
 
                     var points = new List<Mapsui.Geometries.Point>();
@@ -452,19 +441,19 @@ namespace DrivingAssistant.AndroidApp.Activities
                     {
                         points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
                     }
-                    points.AddRange(selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
+                    points.AddRange(selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
                     if (_selectedEndPoint != null)
                     {
                         points.Add(SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y));
                     }
                     mapControl.Map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
-                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("Intermediaries", Color.Yellow, 0.5, selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
+                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("Waypoints", Color.Yellow, 0.5, selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
                 }
             };
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
-                _selectedIntermediaries = new List<Point>(selectedIntermediaries);
-                _labelInterLocations.Text = _selectedIntermediaries.Count + " Selected";
+                _selectedWaypoints = new List<Point>(selectedWaypoints);
+                _labelWaypoints.Text = _selectedWaypoints.Count + " Selected";
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             alert.Create().Show();
@@ -478,14 +467,14 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _currentSession.Name = _textDescription.Text;
                 _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
                 _currentSession.EndDateTime = _selectedStartDateTime ?? DateTime.Now;
-                _currentSession.StartPoint = _selectedStartPoint;
-                _currentSession.EndPoint = _selectedEndPoint;
-                _currentSession.IntermediatePoints = _selectedIntermediaries;
+                _currentSession.StartLocation = _selectedStartPoint;
+                _currentSession.EndLocation = _selectedEndPoint;
+                _currentSession.Waypoints = _selectedWaypoints;
                 await _sessionService.SetAsync(_currentSession);
-                foreach (var media in _mediaList.Where(x => x.SessionId != _currentSession.Id))
+                foreach (var video in _videoList.Where(x => x.SessionId != _currentSession.Id))
                 {
-                    media.SessionId = _currentSession.Id;
-                    await _mediaService.UpdateMediaAsync(media);
+                    video.SessionId = _currentSession.Id;
+                    await _videoService.UpdateVideoAsync(video);
                 }
             }
             else
@@ -495,19 +484,19 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
                     StartDateTime = _selectedStartDateTime ?? DateTime.Now,
                     EndDateTime = _selectedEndDateTime ?? DateTime.Now,
-                    StartPoint = _selectedStartPoint ?? new Point(0,0),
-                    EndPoint = _selectedEndPoint ?? new Point(0,0),
-                    IntermediatePoints = _selectedIntermediaries,
+                    StartLocation = _selectedStartPoint ?? new Point(0,0),
+                    EndLocation = _selectedEndPoint ?? new Point(0,0),
+                    Waypoints = _selectedWaypoints,
                     Id = -1,
                     Processed = false,
                     UserId = _user.Id,
                     DateAdded = DateTime.Now
                 };
                 _currentSession.Id = await _sessionService.SetAsync(_currentSession);
-                foreach (var media in _mediaList)
+                foreach (var video in _videoList)
                 {
-                    media.SessionId = _currentSession.Id;
-                    await _mediaService.UpdateMediaAsync(media);
+                    video.SessionId = _currentSession.Id;
+                    await _videoService.UpdateVideoAsync(video);
                 }
             }
 
@@ -536,7 +525,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 }
             };
 
-            if (_selectedStartPoint != null || _selectedEndPoint != null || (_selectedIntermediaries != null && _selectedIntermediaries.Count != 0))
+            if (_selectedStartPoint != null || _selectedEndPoint != null || (_selectedWaypoints != null && _selectedWaypoints.Count != 0))
             {
                 var points = new List<Mapsui.Geometries.Point>();
                 if (_selectedStartPoint != null)
@@ -544,9 +533,9 @@ namespace DrivingAssistant.AndroidApp.Activities
                     points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
                 }
 
-                if (_selectedIntermediaries != null && _selectedIntermediaries.Count != 0)
+                if (_selectedWaypoints != null && _selectedWaypoints.Count != 0)
                 {
-                    points.AddRange(_selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
+                    points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
                 }
 
                 if (_selectedEndPoint != null)
@@ -566,9 +555,9 @@ namespace DrivingAssistant.AndroidApp.Activities
                 map.Layers.Add(MapTools.CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
             }
 
-            if (_selectedIntermediaries != null && _selectedIntermediaries.Count != 0)
+            if (_selectedWaypoints != null && _selectedWaypoints.Count != 0)
             {
-                map.Layers.Add(MapTools.CreatePointLayer("Intermediaries", Color.Yellow, 0.5, _selectedIntermediaries.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
+                map.Layers.Add(MapTools.CreatePointLayer("Waypoints", Color.Yellow, 0.5, _selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
             }
 
             return map;

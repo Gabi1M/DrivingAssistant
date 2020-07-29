@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
@@ -19,7 +18,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class SessionController : ControllerBase
     {
         private static readonly ISessionService _sessionService = new MssqlSessionService();
-        private static readonly IMediaService _mediaService = new MssqlMediaService();
+        private static readonly IVideoService VideoService = new MssqlVideoService();
 
         //============================================================
         [HttpGet]
@@ -101,9 +100,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 var session = await _sessionService.GetById(id);
-                foreach (var media in await _mediaService.GetBySession(session.Id))
+                foreach (var video in await VideoService.GetBySession(session.Id))
                 {
-                    await _mediaService.DeleteAsync(media);
+                    await VideoService.DeleteAsync(video);
                 }
                 await _sessionService.DeleteAsync(session);
                 return Ok();
@@ -125,56 +124,30 @@ namespace DrivingAssistant.WebServer.Controllers
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 new Thread(async () =>
                 {
-                    using var mediaService = new MssqlMediaService();
+                    using var videoService = new MssqlVideoService();
                     using var reportService = new MssqlReportService();
                     var session = await _sessionService.GetById(id);
-                    var linkedMedia = await mediaService.GetBySession(session.Id);
+                    var linkedVideos = await videoService.GetBySession(session.Id);
                     var imageProcessor = new ImageProcessor(Parameters.Default());
-                    foreach (var media in linkedMedia.Where(x => !x.IsProcessed()))
+                    foreach (var video in linkedVideos.Where(x => !x.IsProcessed()))
                     {
-                        Media processedMedia;
-                        Report report;
-                        if (media.Type == MediaType.Image)
+                        var processedFilename = imageProcessor.ProcessVideo(video.Filepath, 10, out var result);
+                        var processedVideo = new Video
                         {
-                            var processedFilename = imageProcessor.ProcessImage(media.Filepath, out var result);
-                            if (processedFilename == null)
-                            {
-                                continue;
-                            }
-                            processedMedia = new Media
-                            {
-                                Type = MediaType.Image,
-                                Filepath = processedFilename,
-                                Source = media.Source,
-                                Description = media.Description,
-                                DateAdded = DateTime.Now,
-                                Id = -1,
-                                ProcessedId = -1,
-                                SessionId = media.SessionId,
-                            };
-                            report = Report.FromImageReport(result, media.Id);
-                        }
-                        else
-                        {
-                            var processedFilename = imageProcessor.ProcessVideo(media.Filepath, 10, out var result);
-                            processedMedia = new Media
-                            {
-                                Type = MediaType.Video,
-                                Filepath = processedFilename,
-                                Source = media.Source,
-                                Description = media.Description,
-                                DateAdded = DateTime.Now,
-                                Id = -1,
-                                ProcessedId = -1,
-                                SessionId = media.SessionId,
-                            };
-                            report = Report.FromVideoReport(result, media.Id);
-                        }
+                            Filepath = processedFilename,
+                            Source = video.Source,
+                            Description = video.Description,
+                            DateAdded = DateTime.Now,
+                            Id = -1,
+                            ProcessedId = -1,
+                            SessionId = video.SessionId,
+                        };
 
-                        processedMedia.Id = await mediaService.SetAsync(processedMedia);
+                        var report = Report.FromVideoReport(result, video.Id);
+                        processedVideo.Id = await videoService.SetAsync(processedVideo);
                         report.Id = await reportService.SetAsync(report);
-                        media.ProcessedId = processedMedia.Id;
-                        await mediaService.SetAsync(media);
+                        video.ProcessedId = processedVideo.Id;
+                        await videoService.SetAsync(video);
                     }
 
                     session.Processed = true;

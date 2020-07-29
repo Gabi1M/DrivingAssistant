@@ -33,13 +33,13 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mediaThumbnailTextType"
+                android:id="@+id/videoThumbnailTextType"
                 android:textColor="@color/mainColor1"/>
             <TextView
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mediaThumbnailTextDescription"
+                android:id="@+id/videoThumbnailTextDescription"
                 android:textColor="@color/mainColor1"/>
 
         </LinearLayout>
@@ -63,7 +63,7 @@
                 android:contentDescription=""
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/mediaThumbnailImage" />
+                android:id="@+id/videoThumbnailImage" />
 
         </LinearLayout>
 

@@ -146,10 +146,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 return;
             }
 
-            var progressDialog = ProgressDialog.Show(Context, "Submit", "Submitting...");
+            Toast.MakeText(Context, "Session submitted! It will be available shortly!", ToastLength.Long).Show();
+            //var progressDialog = ProgressDialog.Show(Context, "Submit", "Submitting...");
             await _sessionService.SubmitAsync(session.Id);
             await RefreshDataSource();
-            progressDialog.Dismiss();
+            //progressDialog.Dismiss();
         }
 
         //============================================================
@@ -164,9 +165,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
             var session = _currentSessions.ElementAt(_selectedPosition);
             var intent = new Intent(Context, typeof(MapActivity));
 
-            intent.PutExtra("startPoint", JsonConvert.SerializeObject(session.StartPoint));
-            intent.PutExtra("endPoint", JsonConvert.SerializeObject(session.EndPoint));
-            intent.PutExtra("intermediatePoints", JsonConvert.SerializeObject(session.IntermediatePoints));
+            intent.PutExtra("startPoint", JsonConvert.SerializeObject(session.StartLocation));
+            intent.PutExtra("endPoint", JsonConvert.SerializeObject(session.EndLocation));
+            intent.PutExtra("waypoints", JsonConvert.SerializeObject(session.Waypoints));
             StartActivity(intent);
         }
 

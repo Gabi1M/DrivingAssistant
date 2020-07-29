@@ -16,7 +16,7 @@ namespace DrivingAssistant.AndroidApp.Tools
                 var request = new HttpWebRequest(new Uri(serverUri + "/check_connection"))
                 {
                     Method = "GET",
-                    Timeout = 5000
+                    Timeout = 10000
                 };
 
                 var response = await request.GetResponseAsync() as HttpWebResponse;

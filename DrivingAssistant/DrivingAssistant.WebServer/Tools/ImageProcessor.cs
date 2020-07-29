@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
 using Emgu.CV;
@@ -120,20 +119,10 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public string ProcessImage(string filename, out ImageReport report)
-        {
-            using var image = new Image<Bgr, byte>(filename);
-            using var processedImage = ProcessCvImage(image, out report);
-            var processedFilename = Utils.GetRandomFilename(".jpg", MediaType.Image);
-            processedImage.Save(processedFilename);
-            return processedFilename;
-        }
-
-        //======================================================//
         public string ProcessVideo(string filename, int framesToSkip, out VideoReport report)
         {
             Console.WriteLine("Processing " + filename);
-            var processedVideoFilename = Utils.GetRandomFilename(".mkv", MediaType.Video);
+            var processedVideoFilename = Utils.GetRandomFilename(".mkv");
             using var video = new VideoCapture(filename);
             var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var imageResultList = new List<ImageReport>();

@@ -268,7 +268,7 @@
             android:textColor="@color/mainColor1"
             android:textColorHint="@color/mainColor3"
             android:background="@drawable/textbox_border"
-            android:id="@+id/sessionEditLabelSelectedIntermediaries"/>
+            android:id="@+id/sessionEditLabelSelectedWaypoints"/>
 
         <Space
             android:layout_width="5.0dp"
@@ -285,7 +285,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Media List"
+        android:text="Video List"
         android:textColor="@color/mainColor1"
         android:textColorHint="@color/mainColor3"/>
 
@@ -296,7 +296,7 @@
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
         android:weightSum="4"
-        android:id="@+id/mediasButtonsLayout">
+        android:id="@+id/videosButtonsLayout">
 
         <Space
             android:layout_width="5.0dp"
@@ -308,7 +308,7 @@
             android:layout_height="25.0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:id="@+id/mediasButtonAdd"
+            android:id="@+id/videosButtonAdd"
             android:background="@drawable/button_border"/>
 
         <Space
@@ -321,7 +321,7 @@
             android:layout_height="25.0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:id="@+id/mediasButtonModify"
+            android:id="@+id/videosButtonModify"
             android:background="@drawable/button_border"/>
 
         <Space
@@ -334,7 +334,7 @@
             android:layout_height="25.0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:id="@+id/mediasButtonDelete"
+            android:id="@+id/videosButtonDelete"
             android:background="@drawable/button_border"/>
 
         <Space
@@ -347,7 +347,7 @@
             android:layout_height="25.0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:id="@+id/mediasButtonView"
+            android:id="@+id/videosButtonView"
             android:background="@drawable/button_border"/>
 
         <Space
@@ -366,7 +366,7 @@
         android:layout_height="150.0dp"
         android:layout_marginLeft="35.0dp"
         android:layout_marginRight="35.0dp"
-        android:id="@+id/sessionEditMediaList"
+        android:id="@+id/sessionEditVideoList"
         android:background="@drawable/textbox_border">
 
     </ListView>

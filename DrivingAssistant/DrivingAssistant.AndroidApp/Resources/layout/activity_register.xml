@@ -113,24 +113,6 @@
         android:layout_width="match_parent"
         android:layout_height="20.0dp"/>
 
-    <android.support.design.widget.TextInputEditText
-        android:layout_width="match_parent"
-        android:layout_height="35.0dp"
-        android:id="@+id/registerSelectRole"
-        android:editable="false"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginLeft="40.0dp"
-        android:layout_marginRight="40.0dp"
-        android:hint="Tap to select role"
-        android:textColor="@color/mainColor1"
-        android:textColorHint="@color/mainColor3"
-        android:background="@drawable/textbox_border"/>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <Button
         android:text="Register"
         android:layout_marginLeft="100.0dp"

@@ -11,33 +11,27 @@
     android:id="@+id/linearLayout1"
     android:background="@color/mainColor2">
     <TextView
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextType"
+        android:id="@+id/videoTextDescription"
         android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextDescription"
+        android:id="@+id/videoTextSource"
         android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextSource"
+        android:id="@+id/videoTextDateTime"
         android:textColor="@color/mainColor1"/>
     <TextView
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaTextDateTime"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/mediaTextStatus"
+        android:id="@+id/videoTextStatus"
         android:textColor="@color/mainColor1"/>
 </LinearLayout>

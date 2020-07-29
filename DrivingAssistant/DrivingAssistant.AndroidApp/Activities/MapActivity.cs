@@ -78,15 +78,15 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var pointList = new List<Point>();
 
-            var startPointLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("startPoint"));
-            var endPointLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("endPoint"));
-            var intermediatePointsLonLat = JsonConvert.DeserializeObject<ICollection<Core.Models.Point>>(Intent.GetStringExtra("intermediatePoints"));
+            var startLocationLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("startPoint"));
+            var endLocationLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent.GetStringExtra("endPoint"));
+            var waypoints = JsonConvert.DeserializeObject<ICollection<Core.Models.Point>>(Intent.GetStringExtra("waypoints"));
 
-            var startPoint = new Point(startPointLonLat.X, startPointLonLat.Y);
-            var endPoint = new Point(endPointLonLat.X, endPointLonLat.Y);
+            var startPoint = new Point(startLocationLonLat.X, startLocationLonLat.Y);
+            var endPoint = new Point(endLocationLonLat.X, endLocationLonLat.Y);
 
             pointList.Add(startPoint);
-            pointList.AddRange(intermediatePointsLonLat.Select(intermediatePoint => new Point(intermediatePoint.X, intermediatePoint.Y)));
+            pointList.AddRange(waypoints.Select(waypoint => new Point(waypoint.X, waypoint.Y)));
             pointList.Add(endPoint);
 
             return pointList.ToArray();

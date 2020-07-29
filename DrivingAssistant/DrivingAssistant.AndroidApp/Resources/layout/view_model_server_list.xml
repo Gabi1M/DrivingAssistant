@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
@@ -8,18 +8,62 @@
     android:paddingRight="10.0dp"
     android:background="@color/mainColor2">
 
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/serverTextName"
-        android:textColor="@color/mainColor1"/>
+        android:orientation="horizontal"
+        android:layout_marginLeft="5.0dp"
+        android:layout_marginRight="5.0dp"
+        android:layout_marginTop="5.0dp"
+        android:layout_marginBottom="5.0dp"
+        android:weightSum="5">
 
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/serverTextAddress"
-        android:textColor="@color/mainColor1"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3">
+
+            <ImageView
+                android:src="@drawable/ic_menu_servers"
+                android:contentDescription=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/serverTextName"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/serverTextAddress"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

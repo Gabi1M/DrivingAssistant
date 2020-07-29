@@ -18,14 +18,14 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("EndDateTime")]
         public DateTime EndDateTime { get; set; }
 
-        [JsonProperty("StartPoint")]
-        public Point StartPoint { get; set; }
+        [JsonProperty("StartLocation")]
+        public Point StartLocation { get; set; }
 
-        [JsonProperty("EndPoint")]
-        public Point EndPoint { get; set; }
+        [JsonProperty("EndLocation")]
+        public Point EndLocation { get; set; }
 
-        [JsonProperty("IntermediatePoints")]
-        public ICollection<Point> IntermediatePoints { get; set; }
+        [JsonProperty("Waypoints")]
+        public ICollection<Point> Waypoints { get; set; }
 
         [JsonProperty("Processed")]
         public bool Processed { get; set; }

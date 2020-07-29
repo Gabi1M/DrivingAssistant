@@ -4,15 +4,15 @@ using DrivingAssistant.Core.Models;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public interface IMediaService : IGenericService<Media>
+    public interface IVideoService : IGenericService<Video>
     {
         //============================================================
-        public Task<Media> GetByProcessedId(long processedId);
+        public Task<Video> GetByProcessedId(long processedId);
 
         //============================================================
-        public Task<IEnumerable<Media>> GetBySession(long sessionId);
+        public Task<IEnumerable<Video>> GetBySession(long sessionId);
 
         //============================================================
-        public Task<IEnumerable<Media>> GetByUser(long userId);
+        public Task<IEnumerable<Video>> GetByUser(long userId);
     }
 }

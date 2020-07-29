@@ -1,19 +1,15 @@
 ﻿using System;
-using DrivingAssistant.Core.Enums;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
 {
-    public class Media : BaseEntity
+    public class Video : BaseEntity
     {
         [JsonProperty("ProcessedId")]
         public long ProcessedId { get; set; }
 
         [JsonProperty("SessionId")]
         public long SessionId { get; set; }
-
-        [JsonProperty("Type")]
-        public MediaType Type { get; set; }
 
         [JsonProperty("Filepath")]
         public string Filepath { get; set; }

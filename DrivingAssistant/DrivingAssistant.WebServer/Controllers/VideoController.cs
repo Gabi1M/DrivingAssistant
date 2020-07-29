@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
@@ -14,20 +13,20 @@ using Newtonsoft.Json;
 namespace DrivingAssistant.WebServer.Controllers
 {
     [ApiController]
-    public class MediaController : ControllerBase
+    public class VideoController : ControllerBase
     {
-        private static readonly IMediaService _mediaService = new MssqlMediaService();
+        private static readonly IVideoService VideoService = new MssqlVideoService();
         private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.GetAll)]
+        [Route(Endpoints.VideoEndpoints.GetAll)]
         public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                var medias = (await _mediaService.GetAsync());
-                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
+                var videos = (await VideoService.GetAsync());
+                return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -38,14 +37,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.GetById)]
+        [Route(Endpoints.VideoEndpoints.GetById)]
         public async Task<IActionResult> GetByIdAsync()
         {
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var media = await _mediaService.GetById(id);
-                return Ok(JsonConvert.SerializeObject(media, Formatting.Indented));
+                var video = await VideoService.GetById(id);
+                return Ok(JsonConvert.SerializeObject(video, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -56,14 +55,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.GetByProcessedId)]
+        [Route(Endpoints.VideoEndpoints.GetByProcessedId)]
         public async Task<IActionResult> GetByProcessedIdAsync()
         {
             try
             {
                 var processedId = Convert.ToInt64(Request.Query["ProcessedId"].First());
-                var media = await _mediaService.GetByProcessedId(processedId);
-                return Ok(JsonConvert.SerializeObject(media, Formatting.Indented));
+                var video = await VideoService.GetByProcessedId(processedId);
+                return Ok(JsonConvert.SerializeObject(video, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -74,14 +73,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.GetBySessionId)]
+        [Route(Endpoints.VideoEndpoints.GetBySessionId)]
         public async Task<IActionResult> GetBySessionAsync()
         {
             try
             {
                 var sessionId = Convert.ToInt64(Request.Query["SessionId"].First());
-                var medias = await _mediaService.GetBySession(sessionId);
-                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
+                var videos = await VideoService.GetBySession(sessionId);
+                return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -92,14 +91,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.GetByUserId)]
+        [Route(Endpoints.VideoEndpoints.GetByUserId)]
         public async Task<IActionResult> GetByUserAsync()
         {
             try
             {
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var medias = await _mediaService.GetByUser(userId);
-                return Ok(JsonConvert.SerializeObject(medias, Formatting.Indented));
+                var videos = await VideoService.GetByUser(userId);
+                return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -110,14 +109,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.MediaEndpoints.Download)]
+        [Route(Endpoints.VideoEndpoints.Download)]
         public async Task<IActionResult> DownloadAsync()
         {
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var media = await _mediaService.GetById(id);
-                return File(System.IO.File.Open(media.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
+                var video = await VideoService.GetById(id);
+                return File(System.IO.File.Open(video.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
             }
             catch (Exception ex)
             {
@@ -128,36 +127,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route(Endpoints.MediaEndpoints.UploadImageStream)]
-        [DisableRequestSizeLimit]
-        public async Task<IActionResult> PostImageStreamAsync()
-        {
-            try
-            {
-                var filepath = await Utils.SaveImageStreamToFileAsync(Request.Body);
-                var media = new Media
-                {
-                    Type = MediaType.Image,
-                    Filepath = filepath,
-                    Source = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    Description = string.Empty,
-                    DateAdded = DateTime.Now,
-                    Id = -1,
-                    ProcessedId = -1,
-                    SessionId = -1,
-                };
-                return Ok(await _mediaService.SetAsync(media));
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex, LogType.Error, true);
-                return Problem(ex.Message);
-            }
-        }
-
-        //============================================================
-        [HttpPost]
-        [Route(Endpoints.MediaEndpoints.UploadVideoStream)]
+        [Route(Endpoints.VideoEndpoints.UploadVideoStream)]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> PostVideoStreamAsync()
         {
@@ -176,9 +146,8 @@ namespace DrivingAssistant.WebServer.Controllers
 
                 var encoding = Request.Query["Encoding"].First();
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body, encoding);
-                var media = new Media
+                var video = new Video
                 {
-                    Type = MediaType.Video,
                     Filepath = filepath,
                     Source = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
                     Description = string.Empty,
@@ -187,7 +156,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     ProcessedId = -1,
                     SessionId = sessionId,
                 };
-                return Ok(await _mediaService.SetAsync(media));
+                return Ok(await VideoService.SetAsync(video));
             }
             catch (Exception ex)
             {
@@ -198,14 +167,14 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPut]
-        [Route(Endpoints.MediaEndpoints.Update)]
+        [Route(Endpoints.VideoEndpoints.Update)]
         public async Task<IActionResult> UpdateAsync()
         {
             try
             {
                 using var streamReader = new StreamReader(Request.Body);
-                var media = JsonConvert.DeserializeObject<Media>(await streamReader.ReadToEndAsync());
-                return Ok(await _mediaService.SetAsync(media));
+                var video = JsonConvert.DeserializeObject<Video>(await streamReader.ReadToEndAsync());
+                return Ok(await VideoService.SetAsync(video));
             }
             catch (Exception ex)
             {
@@ -216,19 +185,19 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpDelete]
-        [Route(Endpoints.MediaEndpoints.Delete)]
+        [Route(Endpoints.VideoEndpoints.Delete)]
         public async Task<IActionResult> DeleteAsync()
         {
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var media = await _mediaService.GetById(id);
-                await _mediaService.DeleteAsync(media);
+                var video = await VideoService.GetById(id);
+                await VideoService.DeleteAsync(video);
                 try
                 {
-                    var originalMedia = await _mediaService.GetByProcessedId(media.Id);
-                    originalMedia.ProcessedId = -1;
-                    await _mediaService.SetAsync(originalMedia);
+                    var originalVideo = await VideoService.GetByProcessedId(video.Id);
+                    originalVideo.ProcessedId = -1;
+                    await VideoService.SetAsync(originalVideo);
                 }
                 catch (Exception)
                 {

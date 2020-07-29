@@ -23,10 +23,8 @@ namespace DrivingAssistant.AndroidApp.Activities
         private TextInputEditText _textInputEmail;
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
-        private TextView _labelSelectedRole;
         private Button _registerButton;
 
-        private UserRole _selectedRole = UserRole.None;
         private readonly UserService _userService = new UserService();
 
         //============================================================
@@ -46,30 +44,9 @@ namespace DrivingAssistant.AndroidApp.Activities
             _textInputUsername = FindViewById<TextInputEditText>(Resource.Id.registerInputUsername);
             _textInputPassword = FindViewById<TextInputEditText>(Resource.Id.registerInputPassword);
             _textInputEmail = FindViewById<TextInputEditText>(Resource.Id.registerInputEmail);
-            _labelSelectedRole = FindViewById<TextView>(Resource.Id.registerSelectRole);
             _registerButton = FindViewById<Button>(Resource.Id.registerButton);
 
-            _labelSelectedRole.Click += LabelSelectedRoleOnClick;
             _registerButton.Click += OnRegisterButtonClick;
-        }
-
-        //============================================================
-        private void LabelSelectedRoleOnClick(object sender, EventArgs e)
-        {
-            var enumItems = Enum.GetNames(typeof(UserRole)).ToList();
-            enumItems.Remove(UserRole.Administrator.ToString());
-            enumItems.Remove(UserRole.None.ToString());
-
-            var alert = new AlertDialog.Builder(this);
-            alert.SetTitle("Choose user role");
-            alert.SetItems(enumItems.ToArray(), (o, args) =>
-            {
-                _selectedRole = (UserRole) Enum.Parse(typeof(UserRole), enumItems[args.Which]);
-                _labelSelectedRole.Text = "Role: " + _selectedRole;
-            });
-
-            var dialog = alert.Create();
-            dialog.Show();
         }
 
         //============================================================
@@ -104,7 +81,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Email = _textInputEmail.Text.Trim(),
                     FirstName = _textInputFirstName.Text.Trim(),
                     LastName = _textInputLastName.Text.Trim(),
-                    Role = _selectedRole,
+                    Role = UserRole.Standard,
                     JoinDate = DateTime.Now
                 };
 
@@ -146,12 +123,6 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (string.IsNullOrEmpty(_textInputPassword.Text))
             {
                 Toast.MakeText(Application.Context, "Please enter your password!", ToastLength.Short).Show();
-                return false;
-            }
-
-            if (_selectedRole == UserRole.None)
-            {
-                Toast.MakeText(Application.Context, "Please select your role!", ToastLength.Short).Show();
                 return false;
             }
 

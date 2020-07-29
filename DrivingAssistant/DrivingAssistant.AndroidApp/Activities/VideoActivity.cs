@@ -15,7 +15,7 @@ namespace DrivingAssistant.AndroidApp.Activities
     public class VideoActivity : AppCompatActivity
     {
         private VideoView _videoView;
-        private Media _video;
+        private Video _video;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -31,7 +31,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         private void SetupActivityFields()
         {
             _videoView = FindViewById<VideoView>(Resource.Id.videoView);
-            _video = JsonConvert.DeserializeObject<Media>(Intent.GetStringExtra("video"));
+            _video = JsonConvert.DeserializeObject<Video>(Intent.GetStringExtra("video"));
         }
 
         //============================================================
@@ -39,7 +39,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             var mediaController = new MediaController(this);
             mediaController.SetAnchorView(_videoView);
-            _videoView.SetVideoURI(Uri.Parse(Constants.ServerUri + "/" + Endpoints.MediaEndpoints.Download + "?Id=" + _video.Id));
+            _videoView.SetVideoURI(Uri.Parse(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.Download + "?Id=" + _video.Id));
             _videoView.SetMediaController(mediaController);
             _videoView.RequestFocus();
             _videoView.Start();

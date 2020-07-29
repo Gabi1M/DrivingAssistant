@@ -3,18 +3,17 @@
     public static class Endpoints
     {
         //============================================================
-        public static class MediaEndpoints
+        public static class VideoEndpoints
         {
-            public const string GetAll = "media_all";
-            public const string GetById = "media_id";
-            public const string GetByProcessedId = "media_processed_id";
-            public const string GetBySessionId = "media_session_id";
-            public const string GetByUserId = "media_user_id";
-            public const string Download = "media_download";
-            public const string UploadImageStream = "media_image_stream";
-            public const string UploadVideoStream = "media_video_stream";
-            public const string Update = "media_update";
-            public const string Delete = "media_delete";
+            public const string GetAll = "video_all";
+            public const string GetById = "video_id";
+            public const string GetByProcessedId = "video_processed_id";
+            public const string GetBySessionId = "video_session_id";
+            public const string GetByUserId = "video_user_id";
+            public const string Download = "video_download";
+            public const string UploadVideoStream = "upload_video_stream";
+            public const string Update = "video_update";
+            public const string Delete = "video_delete";
 
         }
 
@@ -23,7 +22,7 @@
         {
             public const string GetAll = "reports_all";
             public const string GetById = "reports_id";
-            public const string GetByMediaId = "reports_media_id";
+            public const string GetByVideoId = "reports_video_id";
             public const string GetBySessionId = "reports_session_id";
             public const string GetByUserId = "reports_user_id";
             public const string AddOrUpdate = "reports_set";

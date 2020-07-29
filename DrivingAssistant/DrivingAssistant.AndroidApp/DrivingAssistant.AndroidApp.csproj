@@ -43,6 +43,7 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <MandroidI18n />
+    <NoWarn>618</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -89,13 +90,12 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\GalleryActivity.cs" />
     <Compile Include="Activities\LoginActivity.cs" />
     <Compile Include="Activities\MapActivity.cs" />
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\SessionEditActivity.cs" />
     <Compile Include="Activities\VideoActivity.cs" />
-    <Compile Include="Adapters\ViewModelAdapters\MediaThumbnailViewModelAdapter.cs" />
+    <Compile Include="Adapters\ViewModelAdapters\VideoThumbnailViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\ServerViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
     <Compile Include="Activities\MainActivity.cs" />
@@ -105,7 +105,7 @@
     <Compile Include="Fragments\SettingsFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\MediaService.cs" />
+    <Compile Include="Services\VideoService.cs" />
     <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Services\SessionService.cs" />
@@ -279,7 +279,7 @@
     <AndroidResource Include="Resources\drawable-v21\ic_menu_logout.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\view_model_mediaThumbnail_list.xml">
+    <AndroidResource Include="Resources\layout\view_model_videoThumbnail_list.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

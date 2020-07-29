@@ -4,7 +4,6 @@
     {
         Administrator,
         Standard,
-        Reviewer,
         None
     }
 }

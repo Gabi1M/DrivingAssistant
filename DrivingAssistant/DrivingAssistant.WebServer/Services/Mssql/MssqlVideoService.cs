@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
@@ -14,29 +13,28 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Mssql
 {
-    public class MssqlMediaService : IMediaService
+    public class MssqlVideoService : IVideoService
     {
         private readonly Dataset.DrivingAssistant _dataset = new Dataset.DrivingAssistant();
-        private readonly MediaTableAdapter _tableAdapter = new MediaTableAdapter();
+        private readonly VideoTableAdapter _tableAdapter = new VideoTableAdapter();
 
         //============================================================
-        public MssqlMediaService()
+        public MssqlVideoService()
         {
             _tableAdapter.Connection = new SqlConnection(Constants.ServerConstants.GetMssqlConnectionString());
         }
 
         //============================================================
-        public async Task<IEnumerable<Media>> GetAsync()
+        public async Task<IEnumerable<Video>> GetAsync()
         {
             return await Task.Run(() =>
             {
-                _tableAdapter.Fill(_dataset.Media);
-                return _dataset.Media.AsEnumerable().Select(row => new Media
+                _tableAdapter.Fill(_dataset.Video);
+                return _dataset.Video.AsEnumerable().Select(row => new Video
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
@@ -46,18 +44,17 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<Media> GetById(long id)
+        public async Task<Video> GetById(long id)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Media_By_IdTableAdapter();
-                tableAdapter.Fill(_dataset.Get_Media_By_Id, id);
-                return _dataset.Get_Media_By_Id.AsEnumerable().Select(row => new Media
+                using var tableAdapter = new Get_Video_By_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Video_By_Id, id);
+                return _dataset.Get_Video_By_Id.AsEnumerable().Select(row => new Video
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
@@ -67,18 +64,17 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<Media> GetByProcessedId(long processedId)
+        public async Task<Video> GetByProcessedId(long processedId)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Media_By_Processed_IdTableAdapter();
-                tableAdapter.Fill(_dataset.Get_Media_By_Processed_Id, processedId);
-                return _dataset.Get_Media_By_Processed_Id.AsEnumerable().Select(row => new Media
+                using var tableAdapter = new Get_Video_By_Processed_IdTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Video_By_Processed_Id, processedId);
+                return _dataset.Get_Video_By_Processed_Id.AsEnumerable().Select(row => new Video
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
@@ -88,18 +84,17 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<IEnumerable<Media>> GetBySession(long sessionId)
+        public async Task<IEnumerable<Video>> GetBySession(long sessionId)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Media_By_SessionTableAdapter();
-                tableAdapter.Fill(_dataset.Get_Media_By_Session, sessionId);
-                return _dataset.Get_Media_By_Session.AsEnumerable().Select(row => new Media
+                using var tableAdapter = new Get_Videos_By_SessionTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Videos_By_Session, sessionId);
+                return _dataset.Get_Videos_By_Session.AsEnumerable().Select(row => new Video
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
@@ -109,18 +104,17 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<IEnumerable<Media>> GetByUser(long userId)
+        public async Task<IEnumerable<Video>> GetByUser(long userId)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Media_By_UserTableAdapter();
-                tableAdapter.Fill(_dataset.Get_Media_By_User, userId);
-                return _dataset.Get_Media_By_User.AsEnumerable().Select(row => new Media
+                using var tableAdapter = new Get_Videos_By_UserTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Videos_By_User, userId);
+                return _dataset.Get_Videos_By_User.AsEnumerable().Select(row => new Video
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
                     SessionId = row.SessionId,
-                    Type = (MediaType)Enum.Parse(typeof(MediaType), row.Type),
                     Filepath = row.Filepath,
                     Source = row.Source,
                     Description = row.Description,
@@ -130,27 +124,27 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<long> SetAsync(Media media)
+        public async Task<long> SetAsync(Video video)
         {
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(media.Id, media.ProcessedId, media.SessionId, media.Type.ToString(),
-                    media.Filepath, media.Source, media.Description, media.DateAdded, ref idOut);
+                _tableAdapter.Insert(video.Id, video.ProcessedId, video.SessionId,
+                    video.Filepath, video.Source, video.Description, video.DateAdded, ref idOut);
                 return idOut ?? -1;
             });
         }
 
         //============================================================
-        public async Task DeleteAsync(Media media)
+        public async Task DeleteAsync(Video video)
         {
             await Task.Run(async () =>
             {
-                _tableAdapter.Delete(media.Id);
+                _tableAdapter.Delete(video.Id);
                 await Task.Delay(1000);
                 try
                 {
-                    File.Delete(media.Filepath);
+                    File.Delete(video.Filepath);
                 }
                 catch (Exception ex)
                 {

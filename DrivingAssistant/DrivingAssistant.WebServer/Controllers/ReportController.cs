@@ -53,13 +53,13 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.ReportEndpoints.GetByMediaId)]
-        public async Task<IActionResult> GetByMediaAsync()
+        [Route(Endpoints.ReportEndpoints.GetByVideoId)]
+        public async Task<IActionResult> GetByVideoAsync()
         {
             try
             {
-                var mediaId = Convert.ToInt64(Request.Query["MediaId"].First());
-                var report = await _reportService.GetByMedia(mediaId);
+                var videoId = Convert.ToInt64(Request.Query["VideoId"].First());
+                var report = await _reportService.GetByVideo(videoId);
                 return Ok(JsonConvert.SerializeObject(report, Formatting.Indented));
             }
             catch (Exception ex)

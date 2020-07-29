@@ -34,9 +34,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
-                    StartPoint = row.StartPoint.StringToPoint(),
-                    EndPoint = row.EndPoint.StringToPoint(),
-                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    StartLocation = row.StartLocation.StringToPoint(),
+                    EndLocation = row.EndLocation.StringToPoint(),
+                    Waypoints = row.Waypoints.StringToPointCollection(),
                     Processed = row.Processed,
                     DateAdded = row.DateAdded
                 });
@@ -57,9 +57,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
-                    StartPoint = row.StartPoint.StringToPoint(),
-                    EndPoint = row.EndPoint.StringToPoint(),
-                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    StartLocation = row.StartLocation.StringToPoint(),
+                    EndLocation = row.EndLocation.StringToPoint(),
+                    Waypoints = row.Waypoints.StringToPointCollection(),
                     Processed = row.Processed,
                     DateAdded = row.DateAdded
                 }).First();
@@ -80,9 +80,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Name = row.Name,
                     StartDateTime = row.StartDateTime,
                     EndDateTime = row.EndDateTime,
-                    StartPoint = row.StartPoint.StringToPoint(),
-                    EndPoint = row.EndPoint.StringToPoint(),
-                    IntermediatePoints = row.IntermediatePoints.StringToPointCollection(),
+                    StartLocation = row.StartLocation.StringToPoint(),
+                    EndLocation = row.EndLocation.StringToPoint(),
+                    Waypoints = row.Waypoints.StringToPointCollection(),
                     Processed = row.Processed,
                     DateAdded = row.DateAdded
                 });
@@ -96,8 +96,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             {
                 long? idOut = 0;
                 _tableAdapter.Insert(session.Id, session.UserId, session.Name, session.StartDateTime,
-                    session.EndDateTime, session.StartPoint.PointToString(), session.EndPoint.PointToString(),
-                    session.IntermediatePoints.PointCollectionToString(), session.Processed, session.DateAdded, ref idOut);
+                    session.EndDateTime, session.StartLocation.PointToString(), session.EndLocation.PointToString(),
+                    session.Waypoints.PointCollectionToString(), session.Processed, session.DateAdded, ref idOut);
                 return idOut ?? -1;
             });
         }

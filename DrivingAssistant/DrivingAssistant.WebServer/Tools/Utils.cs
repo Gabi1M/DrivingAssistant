@@ -1,65 +1,32 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Enums;
 
 namespace DrivingAssistant.WebServer.Tools
 {
     public static class Utils
     {
         //============================================================
-        public static string GetRandomFilename(string format, MediaType type)
+        public static string GetRandomFilename(string format)
         {
             var directory = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString();
-            switch (type)
+            if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory)))
             {
-                case MediaType.Image:
-                {
-                    if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory)))
-                    {
-                        Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory));
-                    }
-                    var path = Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory, Path.GetRandomFileName()) + format;
-                    while (File.Exists(path))
-                    {
-                        path = Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory, Path.GetRandomFileName()) + format;
-                    }
-
-                    return path;
-                }
-                case MediaType.Video:
-                {
-                    if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory)))
-                    {
-                        Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory));
-                    }
-                    var path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
-                    while (File.Exists(path))
-                    {
-                        path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
-                    }
-
-                    return path;
-                }
-                default:
-                {
-                    throw new ArgumentOutOfRangeException(nameof(type), type, "Specified file type not supported!");
-                }
+                Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory));
             }
-        }
+            var path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
+            while (File.Exists(path))
+            {
+                path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
+            }
 
-        //============================================================
-        public static async Task<string> SaveImageStreamToFileAsync(Stream imageStream)
-        {
-            var filepath = GetRandomFilename(".jpeg", MediaType.Image);
-            await SaveStreamToFileAsync(imageStream, filepath);
-            return filepath;
+            return path;
         }
 
         //============================================================
         public static async Task<string> SaveVideoStreamToFileAsync(Stream videoStream, string encoding)
         {
-            var filepath = GetRandomFilename("." + encoding, MediaType.Video);
+            var filepath = GetRandomFilename("." + encoding);
             await SaveStreamToFileAsync(videoStream, filepath);
             return filepath;
         }

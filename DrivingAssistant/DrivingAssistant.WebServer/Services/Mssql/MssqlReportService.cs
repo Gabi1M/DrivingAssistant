@@ -29,7 +29,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 return _dataset.Report.AsEnumerable()!.Select(row => new Report
                 {
                     Id = row.Id,
-                    MediaId = row.MediaId,
+                    VideoId = row.VideoId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -56,7 +56,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 return _dataset.Get_Reports_By_Id.AsEnumerable()!.Select(row => new Report
                 {
                     Id = row.Id,
-                    MediaId = row.MediaId,
+                    VideoId = row.VideoId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -74,16 +74,16 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<Report> GetByMedia(long mediaId)
+        public async Task<Report> GetByVideo(long videoId)
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Reports_By_MediaTableAdapter();
-                tableAdapter.Fill(_dataset.Get_Reports_By_Media, mediaId);
-                return _dataset.Get_Reports_By_Media.AsEnumerable()!.Select(row => new Report
+                using var tableAdapter = new Get_Reports_By_VideoTableAdapter();
+                tableAdapter.Fill(_dataset.Get_Reports_By_Video, videoId);
+                return _dataset.Get_Reports_By_Video.AsEnumerable()!.Select(row => new Report
                 {
                     Id = row.Id,
-                    MediaId = row.MediaId,
+                    VideoId = row.VideoId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -110,7 +110,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 return _dataset.Get_Reports_By_Session.AsEnumerable()!.Select(row => new Report
                 {
                     Id = row.Id,
-                    MediaId = row.MediaId,
+                    VideoId = row.VideoId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -137,7 +137,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 return _dataset.Get_Reports_By_User.AsEnumerable()!.Select(row => new Report
                 {
                     Id = row.Id,
-                    MediaId = row.MediaId,
+                    VideoId = row.VideoId,
                     ProcessedFrames = row.ProcessedFrames,
                     SuccessFrames = row.SuccessFrames,
                     FailFrames = row.FailFrames,
@@ -160,7 +160,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(report.Id, report.MediaId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
+                _tableAdapter.Insert(report.Id, report.VideoId, report.ProcessedFrames, report.SuccessFrames, report.FailFrames, report.SuccessRate, report.LeftSidePercent, report.RightSidePercent,
                     report.LeftSideLineLength, report.RightSideLineLength, report.SpanLineAngle, report.SpanLineLength,
                     report.LeftSideLineNumber, report.RightSideLineNumber, ref idOut);
                 return idOut ?? -1;

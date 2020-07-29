@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.OS;
@@ -19,11 +17,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
     {
         private readonly User _user;
         private readonly SessionService _sessionService = new SessionService();
-        private readonly MediaService _mediaService = new MediaService();
+        private readonly VideoService _videoService = new VideoService();
         private readonly ReportService _reportService = new ReportService();
 
         private ChartView _chartViewSessions;
-        private ChartView _chartViewMedia;
+        private ChartView _chartViewVideos;
         private ChartView _chartViewReports;
         private ChartView _chartViewLanePosition;
 
@@ -47,7 +45,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private void SetupFragmentFields(View view)
         {
             _chartViewSessions = view.FindViewById<ChartView>(Resource.Id.homeChartSessions);
-            _chartViewMedia = view.FindViewById<ChartView>(Resource.Id.homeChartMedias);
+            _chartViewVideos = view.FindViewById<ChartView>(Resource.Id.homeChartVideos);
             _chartViewReports = view.FindViewById<ChartView>(Resource.Id.homeChartFrames);
             _chartViewLanePosition = view.FindViewById<ChartView>(Resource.Id.homeChartLanePosition);
         }
@@ -88,37 +86,37 @@ namespace DrivingAssistant.AndroidApp.Fragments
         }
 
         //============================================================
-        private async Task CreateMediaChart()
+        private async Task CreateVideoChart()
         {
             try
             {
-                var medias = await _mediaService.GetMediaByUserAsync(_user.Id);
-                var mediaChartEntries = new[]
+                var videos = await _videoService.GetVideoByUserAsync(_user.Id);
+                var videoChartEntries = new[]
                 {
-                    new ChartEntry(medias.Count())
+                    new ChartEntry(videos.Count())
                     {
                         Color = new SKColor(0, 255, 0),
                         Label = "Total",
-                        ValueLabel = medias.Count().ToString()
+                        ValueLabel = videos.Count().ToString()
                     },
-                    new ChartEntry(medias.Count(x => x.IsProcessed()))
+                    new ChartEntry(videos.Count(x => x.IsProcessed()))
                     {
                         Color = new SKColor(0,0,255),
                         Label = "Processed",
-                        ValueLabel = medias.Count(x => x.IsProcessed()).ToString()
+                        ValueLabel = videos.Count(x => x.IsProcessed()).ToString()
                     },
-                    new ChartEntry(medias.Count() - medias.Count(x => x.IsProcessed()))
+                    new ChartEntry(videos.Count() - videos.Count(x => x.IsProcessed()))
                     {
                         Color = new SKColor(255, 0,0),
                         Label = "Unprocessed",
-                        ValueLabel = (medias.Count() - medias.Count(x => x.IsProcessed())).ToString()
+                        ValueLabel = (videos.Count() - videos.Count(x => x.IsProcessed())).ToString()
                     }
                 };
-                _chartViewMedia.Chart = new BarChart { Entries = mediaChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
+                _chartViewVideos.Chart = new BarChart { Entries = videoChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };
             }
             catch (Exception)
             {
-                Toast.MakeText(Context, "Failed to load data for media chart!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "Failed to load data for video chart!", ToastLength.Short).Show();
             }
         }
 
@@ -180,7 +178,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         private async void RefreshData()
         {
             await CreateSessionChart();
-            await CreateMediaChart();
+            await CreateVideoChart();
             await CreateReportChart();
         }
     }
