@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Microcharts;
 using Microcharts.Droid;
@@ -64,17 +65,17 @@ namespace DrivingAssistant.AndroidApp.Fragments
                         Label = "Total",
                         ValueLabel = sessions.Count().ToString()
                     },
-                    new ChartEntry(sessions.Count(x => x.Processed))
+                    new ChartEntry(sessions.Count(x => x.Status == SessionStatus.Processed))
                     {
                         Color = new SKColor(0,0,255),
                         Label = "Processed",
-                        ValueLabel = sessions.Count(x => x.Processed).ToString()
+                        ValueLabel = sessions.Count(x => x.Status == SessionStatus.Processed).ToString()
                     },
-                    new ChartEntry(sessions.Count() - sessions.Count(x => x.Processed))
+                    new ChartEntry(sessions.Count() - sessions.Count(x => x.Status == SessionStatus.Processed))
                     {
                         Color = new SKColor(255, 0,0),
                         Label = "Unprocessed",
-                        ValueLabel = (sessions.Count() - sessions.Count(x => x.Processed)).ToString()
+                        ValueLabel = (sessions.Count() - sessions.Count(x => x.Status == SessionStatus.Processed)).ToString()
                     }
                 };
                 _chartViewSessions.Chart = new BarChart { Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, Margin = 50 };

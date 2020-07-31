@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
@@ -127,6 +128,8 @@ namespace DrivingAssistant.WebServer.Controllers
                     using var videoService = new MssqlVideoService();
                     using var reportService = new MssqlReportService();
                     var session = await _sessionService.GetById(id);
+                    session.Status = SessionStatus.Processing;
+                    await _sessionService.SetAsync(session);
                     var linkedVideos = await videoService.GetBySession(session.Id);
                     var imageProcessor = new ImageProcessor(Parameters.Default());
                     foreach (var video in linkedVideos.Where(x => !x.IsProcessed()))
@@ -150,7 +153,7 @@ namespace DrivingAssistant.WebServer.Controllers
                         await videoService.SetAsync(video);
                     }
 
-                    session.Processed = true;
+                    session.Status = SessionStatus.Processed;
                     await _sessionService.SetAsync(session);
                 }).Start();
                 return Ok();

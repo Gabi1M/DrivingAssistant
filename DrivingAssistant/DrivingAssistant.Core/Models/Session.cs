@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DrivingAssistant.Core.Enums;
 using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
@@ -27,8 +28,8 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("Waypoints")]
         public ICollection<Point> Waypoints { get; set; }
 
-        [JsonProperty("Processed")]
-        public bool Processed { get; set; }
+        [JsonProperty("Status")]
+        public SessionStatus Status { get; set; }
 
         [JsonProperty("DateAdded")]
         public DateTime DateAdded { get; set; }

@@ -12,6 +12,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Mapsui;
 using Mapsui.Projection;
@@ -274,7 +275,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     _selectedStartDateTime = _selectedStartDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedStartDateTime = _selectedStartDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelStartDateTime.Text = "Start Date: " + _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                    _labelStartDateTime.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
@@ -488,7 +489,7 @@ namespace DrivingAssistant.AndroidApp.Activities
                     EndLocation = _selectedEndPoint ?? new Point(0,0),
                     Waypoints = _selectedWaypoints,
                     Id = -1,
-                    Processed = false,
+                    Status = SessionStatus.Unprocessed,
                     UserId = _user.Id,
                     DateAdded = DateTime.Now
                 };

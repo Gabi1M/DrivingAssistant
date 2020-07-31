@@ -4,6 +4,7 @@ using Android.App;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Java.Lang;
 
@@ -46,6 +47,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var textStartCoordinates = view.FindViewById<TextView>(Resource.Id.sessionTextStartCoordinates);
             var textEndCoordinates = view.FindViewById<TextView>(Resource.Id.sessionTextEndCoordinates);
             var textProcessed = view.FindViewById<TextView>(Resource.Id.sessionTextProcessed);
+            var progressBar = view.FindViewById<ProgressBar>(Resource.Id.sessionProgressBar);
 
             var currentSession = _sessions.ElementAt(position);
 
@@ -55,15 +57,36 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             textStartCoordinates.Text = "Start position: " + currentSession.StartLocation.X + ", " + currentSession.StartLocation.Y;
             textEndCoordinates.Text = "End position: " + currentSession.EndLocation.X + ", " + currentSession.EndLocation.Y;
 
-            if (currentSession.Processed)
+            switch (currentSession.Status)
             {
-                textProcessed.Text = "PROCESSED";
-                textProcessed.SetTextColor(Color.Green);
-            }
-            else
-            {
-                textProcessed.Text = "NOT PROCESSED";
-                textProcessed.SetTextColor(Color.Red);
+                case SessionStatus.Processed:
+                {
+                    textProcessed.Text = "PROCESSED";
+                    textProcessed.SetTextColor(Color.Green);
+                    progressBar.Visibility = ViewStates.Gone;
+                    break;
+                }
+                case SessionStatus.Unprocessed:
+                {
+                    textProcessed.Text = "NOT PROCESSED";
+                    textProcessed.SetTextColor(Color.Yellow);
+                    progressBar.Visibility = ViewStates.Gone;
+                    break;
+                }
+                case SessionStatus.Failed:
+                {
+                    textProcessed.Text = "FAILED";
+                    textProcessed.SetTextColor(Color.Red);
+                    progressBar.Visibility = ViewStates.Gone;
+                    break;
+                }
+                case SessionStatus.Processing:
+                {
+                    textProcessed.Text = "PROCESSING";
+                    textProcessed.SetTextColor(Color.Blue);
+                    progressBar.Visibility = ViewStates.Visible;
+                    break;
+                }
             }
 
             return view;

@@ -8,41 +8,75 @@
     android:paddingRight="10.0dp"
     android:background="@color/mainColor2">
 
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sessionTextDescription"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionTextStartDateTime"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionTextEndDateTime"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionTextStartCoordinates"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionTextEndCoordinates"
-        android:textColor="@color/mainColor1"/>
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sessionTextProcessed"
-        android:textColor="@color/mainColor1"/>
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextDescription"
+                android:textColor="@color/mainColor1"/>
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextStartDateTime"
+                android:textColor="@color/mainColor1"/>
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextEndDateTime"
+                android:textColor="@color/mainColor1"/>
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextStartCoordinates"
+                android:textColor="@color/mainColor1"/>
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextEndCoordinates"
+                android:textColor="@color/mainColor1"/>
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sessionTextProcessed"
+                android:textColor="@color/mainColor1"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0.0dp"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minWidth="25px"
+                android:minHeight="25px"
+                android:id="@+id/sessionProgressBar" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

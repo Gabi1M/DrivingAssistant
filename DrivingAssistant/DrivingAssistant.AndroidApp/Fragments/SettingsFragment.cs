@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.AppCompat.App;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Fragment = Android.Support.V4.App.Fragment;
 
@@ -67,7 +68,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async void OnTextCameraSessionClick(object sender, EventArgs e)
         {
-            var availableSessions = (await _sessionService.GetByUserAsync(_user.Id)).Where(x => x.Processed == false);
+            var availableSessions = (await _sessionService.GetByUserAsync(_user.Id)).Where(x => x.Status == SessionStatus.Unprocessed);
             var sessionStringList = availableSessions.Select(x => x.Name).ToList();
             sessionStringList.Add("None");
             var alert = new AlertDialog.Builder(Context);

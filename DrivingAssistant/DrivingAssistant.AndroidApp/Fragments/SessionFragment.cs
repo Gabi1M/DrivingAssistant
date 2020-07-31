@@ -10,6 +10,7 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Fragment = Android.Support.V4.App.Fragment;
@@ -118,7 +119,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
             var session = _currentSessions.ElementAt(_selectedPosition);
 
-            if (session.Processed)
+            if (session.Status != SessionStatus.Unprocessed)
             {
                 Toast.MakeText(Context, "Session already submited!", ToastLength.Short).Show();
                 return;
@@ -140,7 +141,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             var session = _currentSessions.ElementAt(_selectedPosition);
-            if (session.Processed)
+            if (session.Status != SessionStatus.Unprocessed)
             {
                 Toast.MakeText(Context, "Session already submited!", ToastLength.Short).Show();
                 return;
