@@ -124,7 +124,7 @@ namespace DrivingAssistant.WebServer.Tools
             Console.WriteLine("Processing " + filename);
             var processedVideoFilename = Utils.GetRandomFilename(".mkv");
             using var video = new VideoCapture(filename);
-            var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
+            using var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var imageResultList = new List<ImageReport>();
             var frameCount = 0;
             while (true)
@@ -161,9 +161,18 @@ namespace DrivingAssistant.WebServer.Tools
             }
 
             report = VideoReport.FromImageResultList(imageResultList);
-            videoWriter.Dispose();
             Console.WriteLine("Done");
             return processedVideoFilename;
+        }
+
+        //======================================================//
+        public static string ExtractThumbnail(string filename)
+        {
+            using var video = new VideoCapture(filename);
+            using var capturedImage = video.QueryFrame();
+            var savedFilename = Utils.GetRandomFilename(".jpg");
+            capturedImage.Save(savedFilename);
+            return savedFilename;
         }
     }
 

@@ -58,5 +58,16 @@
             public const string AddOrUpdate = "user_settings_set";
             public const string Delete = "user_settings_delete";
         }
+
+        //============================================================
+        public static class ThumbnailEndpoints
+        {
+            public const string GetAll = "thumbnails_all";
+            public const string GetById = "thumbnails_id";
+            public const string GetByVideoId = "thumbnails_video_id";
+            public const string Download = "thumbnails_download";
+            public const string AddOrUpdate = "thumbnails_set";
+            public const string Delete = "thumbnaiils_delete";
+        }
     }
 }

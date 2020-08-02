@@ -92,8 +92,29 @@ namespace DrivingAssistant.AndroidApp.Fragments
         }
 
         //============================================================
+        private bool Validate()
+        {
+            var cameraIp = _textCameraIp.Text;
+            if (!cameraIp.Contains('.'))
+            {
+                return false;
+            }
+
+            if (cameraIp.Split('.').Length != 5)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        //============================================================
         private async void OnButtonSaveClick(object sender, EventArgs e)
         {
+            if (!Validate())
+            {
+                Toast.MakeText(Context, "The data is not valid!!", ToastLength.Short).Show();
+            }
             _userSettings.CameraIp = _textCameraIp.Text;
             await _userSettingsService.SetAsync(_userSettings);
             Toast.MakeText(Context, "Settings successfully saved!", ToastLength.Short).Show();

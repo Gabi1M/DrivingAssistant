@@ -1,20 +1,17 @@
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mainColor2">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="30.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutDescription"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -25,7 +22,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -34,8 +31,10 @@
 
         <android.support.design.widget.TextInputEditText
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -51,15 +50,14 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutStartDate"
+        android:layout_below="@+id/sessionLayoutDescription"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -70,7 +68,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -79,8 +77,10 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -96,15 +96,14 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutEndDate"
+        android:layout_below="@+id/sessionLayoutStartDate"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -115,7 +114,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -124,8 +123,10 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -141,15 +142,14 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutStartLocation"
+        android:layout_below="@+id/sessionLayoutEndDate"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -160,7 +160,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -169,8 +169,10 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -186,15 +188,14 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutEndLocation"
+        android:layout_below="@+id/sessionLayoutStartLocation"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -205,7 +206,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -214,8 +215,10 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -231,15 +234,14 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <LinearLayout
+        android:id="@+id/sessionLayoutWaypoints"
+        android:layout_below="@+id/sessionLayoutEndLocation"
         android:layout_width="match_parent"
-        android:layout_height="35.0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
+        android:layout_marginTop="20.0dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@drawable/textbox_border">
@@ -250,7 +252,7 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:layout_gravity="center"
             android:gravity="center"
@@ -259,8 +261,10 @@
 
         <TextView
             android:layout_width="0.0dp"
-            android:layout_height="25.0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
             android:gravity="center"
             android:layout_weight="3"
             android:hint="Tap To Edit"
@@ -276,27 +280,28 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10.0dp"/>
-
     <TextView
+        android:id="@+id/sessionTextVideo"
+        android:layout_below="@+id/sessionLayoutWaypoints"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20.0dp"
         android:gravity="center"
         android:text="Video List"
         android:textColor="@color/mainColor1"
         android:textColorHint="@color/mainColor3"/>
 
     <LinearLayout
+        android:id="@+id/sessionButtonsLayout"
+        android:layout_below="@+id/sessionTextVideo"
         android:orientation="horizontal"
         android:layout_marginLeft="35.0dp"
         android:layout_marginRight="35.0dp"
+        android:layout_marginTop="20.0dp"
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
-        android:weightSum="4"
-        android:id="@+id/videosButtonsLayout">
+        android:weightSum="4">
 
         <Space
             android:layout_width="5.0dp"
@@ -356,33 +361,31 @@
 
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5.0dp"/>
-
     <ListView
+        android:layout_below="@+id/sessionButtonsLayout"
+        android:layout_above="@+id/sessionEditButtonSubmit"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="150.0dp"
+        android:layout_height="match_parent"
         android:layout_marginLeft="35.0dp"
         android:layout_marginRight="35.0dp"
+        android:layout_marginTop="10.0dp"
         android:id="@+id/sessionEditVideoList"
         android:background="@drawable/textbox_border">
 
     </ListView>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20.0dp"/>
-
     <Button
         android:text="Submit"
         android:layout_marginLeft="50.0dp"
         android:layout_marginRight="50.0dp"
+        android:layout_marginBottom="10.0dp"
+        android:layout_marginTop="10.0dp"
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
         android:id="@+id/sessionEditButtonSubmit"
         android:textColor="@color/mainColor2"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/button_border"/>
 
-</LinearLayout>
+</RelativeLayout>

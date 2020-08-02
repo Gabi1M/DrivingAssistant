@@ -95,6 +95,7 @@
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\SessionEditActivity.cs" />
     <Compile Include="Activities\VideoActivity.cs" />
+    <Compile Include="Activities\VideoListActivity.cs" />
     <Compile Include="Adapters\ViewModelAdapters\VideoThumbnailViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\ServerViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Fragments\SettingsFragment.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ThumbnailService.cs" />
     <Compile Include="Services\VideoService.cs" />
     <Compile Include="Services\ReportService.cs" />
     <Compile Include="Services\ServerService.cs" />
@@ -315,6 +317,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\Logo_border_gray.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_videos.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

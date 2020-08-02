@@ -1,23 +1,77 @@
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mainColor2">
 
-    <Space
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="10.0dp"/>
+        android:layout_height="match_parent"
+        android:id="@+id/sessionsListView"/>
+
+    <LinearLayout
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:id="@+id/sessionsButtonsLayout1"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="35.0dp">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/sessionsButtonMap"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Original"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/sessionsButtonViewOriginal"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:text="Processed"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/sessionsButtonViewProcessed"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
-        android:weightSum="5"
-        android:id="@+id/sessionsButtonsLayout">
+        android:weightSum="4"
+        android:layout_above="@+id/sessionsButtonsLayout1">
 
         <Space
             android:layout_width="5.0dp"
@@ -71,29 +125,6 @@
             android:layout_width="5.0dp"
             android:layout_height="match_parent"/>
 
-        <Button
-            android:text="Map"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/sessionsButtonMap"
-            android:background="@drawable/button_border"/>
-
-        <Space
-            android:layout_width="5.0dp"
-            android:layout_height="match_parent"/>
-
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10.0dp"/>
-
-    <ListView
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/sessionsListView"/>
-
-</LinearLayout>
+</RelativeLayout>

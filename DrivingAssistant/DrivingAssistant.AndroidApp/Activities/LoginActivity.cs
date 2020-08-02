@@ -38,7 +38,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             SetupActivityFields();
 
             _selectedServer = HostServer.Default;
-            _textServer.Text = "Server: " + _selectedServer.Name;
+            _textServer.Text = _selectedServer.Name;
             Constants.ServerUri = _selectedServer.Address;
         }
 
@@ -77,7 +77,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetItems(serverStringList, (o, args) =>
             {
                 _selectedServer = servers.ElementAt(args.Which);
-                _textServer.Text = "Server: " + _selectedServer.Name;
+                _textServer.Text = _selectedServer.Name;
                 Constants.ServerUri = _selectedServer.Address;
             });
 
@@ -99,7 +99,7 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             if (ValidateFields())
             {
-                var progressDialog = ProgressDialog.Show(this, "Login", "Logging in...");
+                var progressDialog = ProgressDialog.Show(this, "Login", "Logging in ...");
                 if (!await Utils.CheckConnectionAsync(Constants.ServerUri))
                 {
                     Toast.MakeText(Application.Context, "Failed to connect to server!", ToastLength.Short).Show();

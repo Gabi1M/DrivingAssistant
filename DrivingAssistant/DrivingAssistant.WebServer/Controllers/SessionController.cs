@@ -127,7 +127,9 @@ namespace DrivingAssistant.WebServer.Controllers
                 {
                     using var videoService = new MssqlVideoService();
                     using var reportService = new MssqlReportService();
+                    using var userService = new MssqlUserService();
                     var session = await _sessionService.GetById(id);
+                    var user = await userService.GetById(session.UserId);
                     session.Status = SessionStatus.Processing;
                     await _sessionService.SetAsync(session);
                     var linkedVideos = await videoService.GetBySession(session.Id);
@@ -155,6 +157,9 @@ namespace DrivingAssistant.WebServer.Controllers
 
                     session.Status = SessionStatus.Processed;
                     await _sessionService.SetAsync(session);
+
+                    await Utils.SendEmail(user.Email, session.Name + " Finished Processing", "");
+
                 }).Start();
                 return Ok();
             }

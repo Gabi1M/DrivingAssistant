@@ -72,15 +72,47 @@
         android:layout_width="match_parent"
         android:layout_height="20.0dp"/>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="35.0dp"
-        android:id="@+id/loginServer"
-        android:gravity="center"
         android:layout_marginLeft="40.0dp"
         android:layout_marginRight="40.0dp"
-        android:textColor="@color/mainColor1"
-        android:background="@drawable/textbox_border"/>
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:background="@drawable/textbox_border">
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Server"
+            android:textColor="@color/mainColor1"/>
+
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="0.0dp"
+            android:layout_height="25.0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="3"
+            android:editable="false"
+            android:hint="Server"
+            android:singleLine="true"
+            android:textColor="@color/mainColor1"
+            android:textColorHint="@color/mainColor3"
+            android:background="@drawable/textbox_border"
+            android:id="@+id/loginServer"/>
+
+        <Space
+            android:layout_width="5.0dp"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"

@@ -114,10 +114,10 @@
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="60.0dp"
-        android:layout_marginRight="60.0dp"
-        android:layout_marginBottom="20.0dp"
+        android:layout_height="35.0dp"
+        android:layout_marginLeft="100.0dp"
+        android:layout_marginRight="100.0dp"
+        android:layout_marginBottom="10.0dp"
         android:layout_alignParentBottom="true"
         android:id="@+id/settingsButtonSave"
         android:text="Save"

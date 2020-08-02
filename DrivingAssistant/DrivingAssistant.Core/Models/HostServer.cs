@@ -10,6 +10,7 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("Address")]
         public string Address { get; set; }
 
+        //===========================================================//
         public static HostServer Default = new HostServer
         {
             Name = "Default",

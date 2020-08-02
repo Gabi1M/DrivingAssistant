@@ -15,7 +15,7 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class VideoController : ControllerBase
     {
-        private static readonly IVideoService VideoService = new MssqlVideoService();
+        private static readonly IVideoService _videoService = new MssqlVideoService();
         private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
 
         //============================================================
@@ -25,7 +25,7 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var videos = (await VideoService.GetAsync());
+                var videos = (await _videoService.GetAsync());
                 return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
@@ -43,7 +43,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var video = await VideoService.GetById(id);
+                var video = await _videoService.GetById(id);
                 return Ok(JsonConvert.SerializeObject(video, Formatting.Indented));
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var processedId = Convert.ToInt64(Request.Query["ProcessedId"].First());
-                var video = await VideoService.GetByProcessedId(processedId);
+                var video = await _videoService.GetByProcessedId(processedId);
                 return Ok(JsonConvert.SerializeObject(video, Formatting.Indented));
             }
             catch (Exception ex)
@@ -79,7 +79,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var sessionId = Convert.ToInt64(Request.Query["SessionId"].First());
-                var videos = await VideoService.GetBySession(sessionId);
+                var videos = await _videoService.GetBySession(sessionId);
                 return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var videos = await VideoService.GetByUser(userId);
+                var videos = await _videoService.GetByUser(userId);
                 return Ok(JsonConvert.SerializeObject(videos, Formatting.Indented));
             }
             catch (Exception ex)
@@ -115,7 +115,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var video = await VideoService.GetById(id);
+                var video = await _videoService.GetById(id);
                 return File(System.IO.File.Open(video.Filepath, FileMode.Open, FileAccess.Read, FileShare.Read), "image/jpeg");
             }
             catch (Exception ex)
@@ -156,7 +156,17 @@ namespace DrivingAssistant.WebServer.Controllers
                     ProcessedId = -1,
                     SessionId = sessionId,
                 };
-                return Ok(await VideoService.SetAsync(video));
+                video.Id = await _videoService.SetAsync(video);
+
+                var thumbnail = new Thumbnail
+                {
+                    Id = -1,
+                    VideoId = video.Id,
+                    Filepath = ImageProcessor.ExtractThumbnail(video.Filepath)
+                };
+                using var thumbnailService = new MssqlThumbnailService();
+                await thumbnailService.SetAsync(thumbnail);
+                return Ok(await _videoService.SetAsync(video));
             }
             catch (Exception ex)
             {
@@ -174,7 +184,7 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 using var streamReader = new StreamReader(Request.Body);
                 var video = JsonConvert.DeserializeObject<Video>(await streamReader.ReadToEndAsync());
-                return Ok(await VideoService.SetAsync(video));
+                return Ok(await _videoService.SetAsync(video));
             }
             catch (Exception ex)
             {
@@ -191,13 +201,13 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var video = await VideoService.GetById(id);
-                await VideoService.DeleteAsync(video);
+                var video = await _videoService.GetById(id);
+                await _videoService.DeleteAsync(video);
                 try
                 {
-                    var originalVideo = await VideoService.GetByProcessedId(video.Id);
+                    var originalVideo = await _videoService.GetByProcessedId(video.Id);
                     originalVideo.ProcessedId = -1;
-                    await VideoService.SetAsync(originalVideo);
+                    await _videoService.SetAsync(originalVideo);
                 }
                 catch (Exception)
                 {

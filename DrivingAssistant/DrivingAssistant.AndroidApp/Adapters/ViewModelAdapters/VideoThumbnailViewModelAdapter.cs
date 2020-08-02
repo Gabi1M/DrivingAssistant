@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Android.App;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Services;
@@ -15,6 +16,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         private readonly ICollection<Video> _videos;
 
         private readonly VideoService _videoService = new VideoService();
+        private readonly ThumbnailService _thumbnailService = new ThumbnailService();
 
         //============================================================
         public VideoThumbnailViewModelAdapter(Activity activity, ICollection<Video> videos)
@@ -42,13 +44,16 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var view = convertView ?? _activity.LayoutInflater.Inflate(Resource.Layout.view_model_videoThumbnail_list, parent, false);
-            var textType = view.FindViewById<TextView>(Resource.Id.videoThumbnailTextType);
             var textDescription = view.FindViewById<TextView>(Resource.Id.videoThumbnailTextDescription);
             var imageView = view.FindViewById<ImageView>(Resource.Id.videoThumbnailImage);
             imageView.SetScaleType(ImageView.ScaleType.Center);
 
             var currentVideo = _videos.ElementAt(position);
+            var thumbnail = _thumbnailService.GetByVideoAsync(currentVideo.Id).Result;
+            var thumbnailImage = Bitmap.CreateScaledBitmap(_thumbnailService.DownloadAsync(thumbnail.Id).Result, 128, 128, false);
+
             textDescription.Text = "Name: " + currentVideo.Description;
+            imageView.SetImageBitmap(thumbnailImage);
 
             return view;
         }
