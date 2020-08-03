@@ -155,7 +155,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             var session = _currentSessions.ElementAt(_selectedPosition);
             if (session.Status == SessionStatus.Unprocessed)
             {
-                Toast.MakeText(Context, "Session already submited!", ToastLength.Short).Show();
+                Toast.MakeText(Context, "Session has not been processed yet!", ToastLength.Short).Show();
                 return;
             }
 

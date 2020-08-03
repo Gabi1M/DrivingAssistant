@@ -81,9 +81,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> SetVideoStreamAsync(Stream videoStream)
+        public async Task<long> SetVideoStreamAsync(Stream videoStream, string description)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.UploadVideoStream + "?Encoding=mp4"))
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.UploadVideoStream + "?Encoding=mp4&Description=" + description))
             {
                 Method = "POST"
             };

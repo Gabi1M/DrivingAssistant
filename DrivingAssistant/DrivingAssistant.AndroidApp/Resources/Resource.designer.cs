@@ -4406,56 +4406,59 @@ namespace DrivingAssistant.AndroidApp
 			// aapt resource value: 0x7F080134
 			public const int useLogo = 2131231028;
 			
-			// aapt resource value: 0x7F08013D
-			public const int videosButtonAdd = 2131231037;
+			// aapt resource value: 0x7F080135
+			public const int videoListButtonView = 2131231029;
 			
 			// aapt resource value: 0x7F08013E
-			public const int videosButtonDelete = 2131231038;
+			public const int videosButtonAdd = 2131231038;
 			
 			// aapt resource value: 0x7F08013F
-			public const int videosButtonModify = 2131231039;
+			public const int videosButtonDelete = 2131231039;
 			
 			// aapt resource value: 0x7F080140
-			public const int videosButtonView = 2131231040;
+			public const int videosButtonModify = 2131231040;
 			
 			// aapt resource value: 0x7F080141
-			public const int videosListView = 2131231041;
-			
-			// aapt resource value: 0x7F080135
-			public const int videoTextDateTime = 2131231029;
-			
-			// aapt resource value: 0x7F080136
-			public const int videoTextDescription = 2131231030;
-			
-			// aapt resource value: 0x7F080137
-			public const int videoTextSource = 2131231031;
-			
-			// aapt resource value: 0x7F080138
-			public const int videoTextStatus = 2131231032;
-			
-			// aapt resource value: 0x7F080139
-			public const int videoThumbnailImage = 2131231033;
-			
-			// aapt resource value: 0x7F08013A
-			public const int videoThumbnailTextDescription = 2131231034;
-			
-			// aapt resource value: 0x7F08013B
-			public const int videoThumbnailTextType = 2131231035;
-			
-			// aapt resource value: 0x7F08013C
-			public const int videoView = 2131231036;
+			public const int videosButtonView = 2131231041;
 			
 			// aapt resource value: 0x7F080142
-			public const int view_offset_helper = 2131231042;
+			public const int videosListView = 2131231042;
+			
+			// aapt resource value: 0x7F080136
+			public const int videoTextDateTime = 2131231030;
+			
+			// aapt resource value: 0x7F080137
+			public const int videoTextDescription = 2131231031;
+			
+			// aapt resource value: 0x7F080138
+			public const int videoTextSource = 2131231032;
+			
+			// aapt resource value: 0x7F080139
+			public const int videoTextStatus = 2131231033;
+			
+			// aapt resource value: 0x7F08013A
+			public const int videoThumbnailImage = 2131231034;
+			
+			// aapt resource value: 0x7F08013B
+			public const int videoThumbnailTextDateAdded = 2131231035;
+			
+			// aapt resource value: 0x7F08013C
+			public const int videoThumbnailTextDescription = 2131231036;
+			
+			// aapt resource value: 0x7F08013D
+			public const int videoView = 2131231037;
 			
 			// aapt resource value: 0x7F080143
-			public const int visible = 2131231043;
+			public const int view_offset_helper = 2131231043;
 			
 			// aapt resource value: 0x7F080144
-			public const int withText = 2131231044;
+			public const int visible = 2131231044;
 			
 			// aapt resource value: 0x7F080145
-			public const int wrap_content = 2131231045;
+			public const int withText = 2131231045;
+			
+			// aapt resource value: 0x7F080146
+			public const int wrap_content = 2131231046;
 			
 			static Id()
 			{

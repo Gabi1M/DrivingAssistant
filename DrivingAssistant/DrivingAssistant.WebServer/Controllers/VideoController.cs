@@ -146,11 +146,17 @@ namespace DrivingAssistant.WebServer.Controllers
 
                 var encoding = Request.Query["Encoding"].First();
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body, encoding);
+                if (encoding.ToLower() == "h264")
+                {
+                    var newFilepath = ImageProcessor.ConvertH264ToMkv(filepath);
+                    System.IO.File.Delete(filepath);
+                    filepath = newFilepath;
+                }
                 var video = new Video
                 {
                     Filepath = filepath,
                     Source = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    Description = string.Empty,
+                    Description = Request.Query.ContainsKey("Description") ? Request.Query["Description"].ToString() : string.Empty,
                     DateAdded = DateTime.Now,
                     Id = -1,
                     ProcessedId = -1,
@@ -166,7 +172,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 };
                 using var thumbnailService = new MssqlThumbnailService();
                 await thumbnailService.SetAsync(thumbnail);
-                return Ok(await _videoService.SetAsync(video));
+                return Ok(video.Id);
             }
             catch (Exception ex)
             {

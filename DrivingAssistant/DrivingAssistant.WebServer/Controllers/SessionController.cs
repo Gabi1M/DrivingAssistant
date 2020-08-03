@@ -141,7 +141,7 @@ namespace DrivingAssistant.WebServer.Controllers
                         {
                             Filepath = processedFilename,
                             Source = video.Source,
-                            Description = video.Description,
+                            Description = !string.IsNullOrEmpty(video.Description) ? video.Description + "_processed" : string.Empty,
                             DateAdded = DateTime.Now,
                             Id = -1,
                             ProcessedId = -1,
@@ -153,12 +153,21 @@ namespace DrivingAssistant.WebServer.Controllers
                         report.Id = await reportService.SetAsync(report);
                         video.ProcessedId = processedVideo.Id;
                         await videoService.SetAsync(video);
+
+                        var thumbnail = new Thumbnail
+                        {
+                            Id = -1,
+                            VideoId = processedVideo.Id,
+                            Filepath = ImageProcessor.ExtractThumbnail(processedVideo.Filepath)
+                        };
+                        using var thumbnailService = new MssqlThumbnailService();
+                        await thumbnailService.SetAsync(thumbnail);
                     }
 
                     session.Status = SessionStatus.Processed;
                     await _sessionService.SetAsync(session);
 
-                    await Utils.SendEmail(user.Email, session.Name + " Finished Processing", "");
+                    //await Utils.SendEmail(user.Email, session.Name + " Finished Processing", session.Name + " Finished Processing");
 
                 }).Start();
                 return Ok();

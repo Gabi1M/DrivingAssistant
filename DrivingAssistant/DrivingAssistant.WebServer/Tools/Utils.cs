@@ -10,17 +10,34 @@ namespace DrivingAssistant.WebServer.Tools
     public static class Utils
     {
         //============================================================
-        public static string GetRandomFilename(string format)
+        public static string GetRandomFilename(string format, bool thumbnail = false)
         {
-            var directory = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString();
-            if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory)))
+            string path;
+            if (thumbnail)
             {
-                Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory));
+                var directory = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString();
+                if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory)))
+                {
+                    Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory));
+                }
+                path = Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory, Path.GetRandomFileName()) + format;
+                while (File.Exists(path))
+                {
+                    path = Path.Combine(Constants.ServerConstants.GetImageStoragePath(), directory, Path.GetRandomFileName()) + format;
+                }
             }
-            var path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
-            while (File.Exists(path))
+            else
             {
+                var directory = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString();
+                if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory)))
+                {
+                    Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory));
+                }
                 path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
+                while (File.Exists(path))
+                {
+                    path = Path.Combine(Constants.ServerConstants.GetVideoStoragePath(), directory, Path.GetRandomFileName()) + format;
+                }
             }
 
             return path;

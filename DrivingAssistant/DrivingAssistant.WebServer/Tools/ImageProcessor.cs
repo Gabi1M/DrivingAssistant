@@ -166,11 +166,37 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
+        public static string ConvertH264ToMkv(string filename)
+        {
+            var newFilename = Utils.GetRandomFilename(".mkv");
+            using var video = new VideoCapture(filename);
+            using var videoWriter = new VideoWriter(newFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
+            while (true)
+            {
+                try
+                {
+                    var frame = video.QueryFrame();
+                    if (frame == null)
+                    {
+                        break;
+                    }
+                    videoWriter.Write(frame);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException(ex);
+                }
+            }
+
+            return newFilename;
+        }
+
+        //======================================================//
         public static string ExtractThumbnail(string filename)
         {
             using var video = new VideoCapture(filename);
             using var capturedImage = video.QueryFrame();
-            var savedFilename = Utils.GetRandomFilename(".jpg");
+            var savedFilename = Utils.GetRandomFilename(".jpg", true);
             capturedImage.Save(savedFilename);
             return savedFilename;
         }

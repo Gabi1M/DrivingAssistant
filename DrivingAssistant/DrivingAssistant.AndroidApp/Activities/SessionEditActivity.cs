@@ -200,21 +200,33 @@ namespace DrivingAssistant.AndroidApp.Activities
                 return;
             }
 
-            var progressDialog = ProgressDialog.Show(this, "Video Upload", "Uploading...");
-            var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream());
-            var video = await _videoService.GetVideoByIdAsync(videoId);
-            if (_newSession)
+            var alert = new AlertDialog.Builder(this);
+            alert.SetTitle("Choose a unique description for this media");
+            var textEdit = new EditText(this);
+            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
+            textEdit.LayoutParameters = layoutParams;
+            textEdit.Gravity = GravityFlags.Center;
+            alert.SetView(textEdit);
+            alert.SetPositiveButton("Ok", async (o, args) =>
             {
-                _videoList.Add(video);
-                await RefreshVideoSource();
-            }
-            else
-            {
-                video.SessionId = _currentSession.Id;
-                await _videoService.UpdateVideoAsync(video);
-                await RefreshVideoSource(true);
-            }
-            progressDialog.Dismiss();
+                var progressDialog = ProgressDialog.Show(this, "Video Upload", "Uploading...");
+                var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
+                var video = await _videoService.GetVideoByIdAsync(videoId);
+                if (_newSession)
+                {
+                    _videoList.Add(video);
+                    await RefreshVideoSource();
+                }
+                else
+                {
+                    video.SessionId = _currentSession.Id;
+                    await _videoService.UpdateVideoAsync(video);
+                    await RefreshVideoSource(true);
+                }
+                progressDialog.Dismiss();
+            });
+            alert.SetNegativeButton("Cancel", (o, args) => { });
+            alert.Create().Show();
         }
 
         //============================================================
@@ -485,8 +497,8 @@ namespace DrivingAssistant.AndroidApp.Activities
                     Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
                     StartDateTime = _selectedStartDateTime ?? DateTime.Now,
                     EndDateTime = _selectedEndDateTime ?? DateTime.Now,
-                    StartLocation = _selectedStartPoint ?? new Point(0,0),
-                    EndLocation = _selectedEndPoint ?? new Point(0,0),
+                    StartLocation = _selectedStartPoint ?? new Point(0, 0),
+                    EndLocation = _selectedEndPoint ?? new Point(0, 0),
                     Waypoints = _selectedWaypoints,
                     Id = -1,
                     Status = SessionStatus.Unprocessed,

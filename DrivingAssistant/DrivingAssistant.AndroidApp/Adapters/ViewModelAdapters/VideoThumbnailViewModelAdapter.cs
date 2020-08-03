@@ -45,6 +45,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         {
             var view = convertView ?? _activity.LayoutInflater.Inflate(Resource.Layout.view_model_videoThumbnail_list, parent, false);
             var textDescription = view.FindViewById<TextView>(Resource.Id.videoThumbnailTextDescription);
+            var textDateAdded = view.FindViewById<TextView>(Resource.Id.videoThumbnailTextDateAdded);
             var imageView = view.FindViewById<ImageView>(Resource.Id.videoThumbnailImage);
             imageView.SetScaleType(ImageView.ScaleType.Center);
 
@@ -52,6 +53,7 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             var thumbnail = _thumbnailService.GetByVideoAsync(currentVideo.Id).Result;
             var thumbnailImage = Bitmap.CreateScaledBitmap(_thumbnailService.DownloadAsync(thumbnail.Id).Result, 128, 128, false);
 
+            textDateAdded.Text = "Date Added: " + currentVideo.DateAdded.ToString("dd.MM.yyyy HH:mm:ss");
             textDescription.Text = "Name: " + currentVideo.Description;
             imageView.SetImageBitmap(thumbnailImage);
 

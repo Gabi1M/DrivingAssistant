@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Support.V7.App;
@@ -18,6 +20,7 @@ namespace DrivingAssistant.AndroidApp.Activities
     {
         private IEnumerable<Video> _videos;
         private ListView _videoListView;
+        private Button _buttonView;
 
         private int _selectedPosition = -1;
         private View _selectedView;
@@ -36,7 +39,24 @@ namespace DrivingAssistant.AndroidApp.Activities
         private void SetupActivityFields()
         {
             _videoListView = FindViewById<ListView>(Resource.Id.videosListView);
+            _buttonView = FindViewById<Button>(Resource.Id.videoListButtonView);
             _videos = JsonConvert.DeserializeObject<IEnumerable<Video>>(Intent.GetStringExtra("videos"));
+            _buttonView.Click += OnButtonViewClick;
+        }
+
+        //============================================================
+        private void OnButtonViewClick(object sender, EventArgs e)
+        {
+            if (_selectedPosition == -1)
+            {
+                Toast.MakeText(this, "No video selected!", ToastLength.Short).Show();
+                return;
+            }
+
+            var video = _videos.ElementAt(_selectedPosition);
+            var intent = new Intent(this, typeof(VideoActivity));
+            intent.PutExtra("video", JsonConvert.SerializeObject(video));
+            StartActivity(intent);
         }
 
         //============================================================

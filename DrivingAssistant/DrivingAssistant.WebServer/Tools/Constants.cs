@@ -7,12 +7,12 @@ namespace DrivingAssistant.WebServer.Tools
         //============================================================
         public static class ServerConstants
         {
-            private const string LinuxImageStoragePath = @"/mnt/hdd/CloudStorage/Images";
+            private const string LinuxThumbnailStoragePath = @"/mnt/hdd/CloudStorage/Thumbnails";
             private const string LinuxVideoStoragePath = @"/mnt/hdd/CloudStorage/Videos";
             private const string LinuxPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=cloud;Username=pi;Password=1234";
             private const string LinuxMSSQLConnectionString = @"";
 
-            private const string WindowsImageStoragePath = @"E:\CloudStorage\Images";
+            private const string WindowsThumbnailStoragePath = @"E:\CloudStorage\Thumbnails";
             private const string WindowsVideoStoragePath = @"E:\CloudStorage\Videos";
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=cloud;Username=postgres;Password=1234";
             private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
@@ -25,7 +25,7 @@ namespace DrivingAssistant.WebServer.Tools
             //============================================================
             public static string GetImageStoragePath()
             {
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? LinuxImageStoragePath : WindowsImageStoragePath;
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? LinuxThumbnailStoragePath : WindowsThumbnailStoragePath;
             }
 
             //============================================================
