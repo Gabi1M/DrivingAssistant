@@ -137,7 +137,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 if (Request.Query.ContainsKey("UserId"))
                 {
                     var userSettings = await _userSettingsService.GetByUser(Convert.ToInt64(Request.Query["UserId"].First()));
-                    if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.CameraIp &&
+                    if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.CameraHost &&
                         userSettings.CameraSessionId != -1)
                     {
                         sessionId = userSettings.CameraSessionId;

@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Dataset.DrivingAssistantTableAdapters;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
@@ -31,7 +32,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Id = row.Id,
                     UserId = row.UserId,
                     CameraSessionId = row.CameraSessionId,
-                    CameraIp = row.CameraIp
+                    CameraHost = row.CameraHost,
+                    CameraUsername = row.CameraUsername,
+                    CameraPassword = Crypto.DecryptAes(row.CameraPassword)
                 });
             });
         }
@@ -48,7 +51,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Id = row.Id,
                     UserId = row.UserId,
                     CameraSessionId = row.CameraSessionId,
-                    CameraIp = row.CameraIp
+                    CameraHost = row.CameraHost,
+                    CameraUsername = row.CameraUsername,
+                    CameraPassword = Crypto.DecryptAes(row.CameraPassword)
                 }).First();
             });
         }
@@ -65,7 +70,9 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     Id = row.Id,
                     UserId = row.UserId,
                     CameraSessionId = row.CameraSessionId,
-                    CameraIp = row.CameraIp
+                    CameraHost = row.CameraHost,
+                    CameraUsername = row.CameraUsername,
+                    CameraPassword = Crypto.DecryptAes(row.CameraPassword)
                 }).First();
             });
         }
@@ -76,7 +83,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.CameraSessionId, userSettings.CameraIp, ref idOut);
+                _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.CameraSessionId,
+                    userSettings.CameraHost, userSettings.CameraUsername, Crypto.EncryptAes(userSettings.CameraPassword), ref idOut);
                 return idOut ?? -1;
             });
         }

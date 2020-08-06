@@ -32,8 +32,8 @@ namespace DrivingAssistant.AndroidApp.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SimpleStorage.SetContext(ApplicationContext);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            SimpleStorage.SetContext(ApplicationContext);
             SetContentView(Resource.Layout.activity_login);
             SetupActivityFields();
 
@@ -107,23 +107,30 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var users = await _userService.GetAllAsync();
-                if (users.Any(x =>
-                    x.Username.Trim() == _textInputUsername.Text.Trim() &&
-                    x.Password.Trim() == Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim())))
+                try
                 {
-                    var user = users.First(x =>
-                        x.Username.Trim() == _textInputUsername.Text.Trim() && x.Password.Trim() ==
-                        Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()));
-                    progressDialog.Dismiss();
-                    var intent = new Intent(Application.Context, typeof(MainActivity));
-                    intent.PutExtra("user", JsonConvert.SerializeObject(user));
-                    StartActivity(intent);
+                    var users = await _userService.GetAllAsync();
+                    if (users.Any(x =>
+                        x.Username.Trim() == _textInputUsername.Text.Trim() &&
+                        x.Password.Trim() == Crypto.EncryptSha256(_textInputPassword.Text.Trim())))
+                    {
+                        var user = users.First(x =>
+                            x.Username.Trim() == _textInputUsername.Text.Trim() && x.Password.Trim() ==
+                            Crypto.EncryptSha256(_textInputPassword.Text.Trim()));
+                        progressDialog.Dismiss();
+                        var intent = new Intent(Application.Context, typeof(MainActivity));
+                        intent.PutExtra("user", JsonConvert.SerializeObject(user));
+                        StartActivity(intent);
+                    }
+                    else
+                    {
+                        progressDialog.Dismiss();
+                        Toast.MakeText(Application.Context, "Username or password incorrect!", ToastLength.Short).Show();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    progressDialog.Dismiss();
-                    Toast.MakeText(Application.Context, "Username or password incorrect!", ToastLength.Short).Show();
+                    Toast.MakeText(this, "Failed to login user!\n" + ex.Message, ToastLength.Long).Show();
                 }
             }
         }

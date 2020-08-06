@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Android.App;
 using Android.Graphics;
@@ -50,12 +51,19 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
             imageView.SetScaleType(ImageView.ScaleType.Center);
 
             var currentVideo = _videos.ElementAt(position);
-            var thumbnail = _thumbnailService.GetByVideoAsync(currentVideo.Id).Result;
-            var thumbnailImage = Bitmap.CreateScaledBitmap(_thumbnailService.DownloadAsync(thumbnail.Id).Result, 128, 128, false);
+            try
+            {
+                var thumbnail = _thumbnailService.GetByVideoAsync(currentVideo.Id).Result;
+                var thumbnailImage = Bitmap.CreateScaledBitmap(_thumbnailService.DownloadAsync(thumbnail.Id).Result, 128, 128, false);
+                imageView.SetImageBitmap(thumbnailImage);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(_activity, "Failed to load thumbnail image!\n" + ex.Message, ToastLength.Short).Show();
+            }
 
             textDateAdded.Text = "Date Added: " + currentVideo.DateAdded.ToString("dd.MM.yyyy HH:mm:ss");
             textDescription.Text = "Name: " + currentVideo.Description;
-            imageView.SetImageBitmap(thumbnailImage);
 
             return view;
         }

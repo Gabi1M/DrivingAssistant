@@ -57,6 +57,9 @@
             public const string GetByUserId = "user_settings_user_id";
             public const string AddOrUpdate = "user_settings_set";
             public const string Delete = "user_settings_delete";
+            public const string StartRecording = "user_start_recording";
+            public const string StopRecording = "user_stop_recording";
+            public const string RecordingStatus = "user_recording_status";
         }
 
         //============================================================

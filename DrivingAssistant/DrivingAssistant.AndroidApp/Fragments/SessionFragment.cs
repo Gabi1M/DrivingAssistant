@@ -83,9 +83,16 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
-            _currentSessions = (await _sessionService.GetByUserAsync(_user.Id)).ToList();
-            _listView.Adapter?.Dispose();
-            _listView.Adapter = new SessionViewModelAdapter(Activity, _currentSessions);
+            try
+            {
+                _currentSessions = (await _sessionService.GetByUserAsync(_user.Id)).ToList();
+                _listView.Adapter?.Dispose();
+                _listView.Adapter = new SessionViewModelAdapter(Activity, _currentSessions);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(Context, "Failed to refresh data!\n" + ex.Message, ToastLength.Short).Show();
+            }
         }
 
         //============================================================
@@ -135,12 +142,19 @@ namespace DrivingAssistant.AndroidApp.Fragments
 
             var session = _currentSessions.ElementAt(_selectedPosition);
             var videoService = new VideoService();
-            var originalVideos = session.Status == SessionStatus.Processed
-                ? (await videoService.GetVideoBySessionAsync(session.Id)).Where(x => x.IsProcessed())
-                : await videoService.GetVideoBySessionAsync(session.Id);
-            var intent = new Intent(Context, typeof(VideoListActivity));
-            intent.PutExtra("videos", JsonConvert.SerializeObject(originalVideos));
-            StartActivity(intent);
+            try
+            {
+                var originalVideos = session.Status == SessionStatus.Processed
+                    ? (await videoService.GetVideoBySessionAsync(session.Id)).Where(x => x.IsProcessed())
+                    : await videoService.GetVideoBySessionAsync(session.Id);
+                var intent = new Intent(Context, typeof(VideoListActivity));
+                intent.PutExtra("videos", JsonConvert.SerializeObject(originalVideos));
+                StartActivity(intent);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(Context, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
+            }
         }
 
         //============================================================
@@ -160,10 +174,17 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             var videoService = new VideoService();
-            var processedVideos = (await videoService.GetVideoBySessionAsync(session.Id)).Where(x => !x.IsProcessed());
-            var intent = new Intent(Context, typeof(VideoListActivity));
-            intent.PutExtra("videos", JsonConvert.SerializeObject(processedVideos));
-            StartActivity(intent);
+            try
+            {
+                var processedVideos = (await videoService.GetVideoBySessionAsync(session.Id)).Where(x => !x.IsProcessed());
+                var intent = new Intent(Context, typeof(VideoListActivity));
+                intent.PutExtra("videos", JsonConvert.SerializeObject(processedVideos));
+                StartActivity(intent);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(Context, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
+            }
         }
 
         //============================================================
@@ -214,7 +235,14 @@ namespace DrivingAssistant.AndroidApp.Fragments
             }
 
             Toast.MakeText(Context, "Session submitted! It will be available shortly!", ToastLength.Long).Show();
-            await _sessionService.SubmitAsync(session.Id);
+            try
+            {
+                await _sessionService.SubmitAsync(session.Id);
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(Context, "Failed to submit!\n" + ex.Message, ToastLength.Long).Show();
+            }
             await RefreshDataSource();
         }
 
@@ -233,8 +261,15 @@ namespace DrivingAssistant.AndroidApp.Fragments
             alert.SetPositiveButton("Delete", async (o, args) =>
             {
                 var session = _currentSessions.ElementAt(_selectedPosition);
-                await _sessionService.DeleteAsync(session.Id);
-                Toast.MakeText(Context, "Session deleted!", ToastLength.Short).Show();
+                try
+                {
+                    await _sessionService.DeleteAsync(session.Id);
+                    Toast.MakeText(Context, "Session deleted!", ToastLength.Short).Show();
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(Context, "Failed to delete!\n" + ex.Message, ToastLength.Long).Show();
+                }
                 await RefreshDataSource();
             });
 

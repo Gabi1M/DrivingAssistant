@@ -12,7 +12,6 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Fragments;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
-using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Activities
 {
@@ -35,6 +34,7 @@ namespace DrivingAssistant.AndroidApp.Activities
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
             SetupActivityFields();
+            _toolbar.Title = "Home";
             SetSupportActionBar(_toolbar);
 
             _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
@@ -48,7 +48,6 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             var fragment = new HomeFragment(_user);
             SupportFragmentManager.BeginTransaction().Replace(Resource.Id.frameLayout1, fragment).Commit();
-            _toolbar.Title = "Home";
         }
 
         //============================================================
@@ -73,13 +72,6 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        /*public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
-            return true;
-        }*/
-
-        //============================================================
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId)
@@ -100,7 +92,7 @@ namespace DrivingAssistant.AndroidApp.Activities
         }
 
         //============================================================
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 

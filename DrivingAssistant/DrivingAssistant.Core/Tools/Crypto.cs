@@ -5,10 +5,10 @@ using System.Text;
 
 namespace DrivingAssistant.Core.Tools
 {
-    public static class Encryptor
+    public static class Crypto
     {
         //=========================================================================
-        public static string EncryptPassword(string password)
+        public static string EncryptAes(string password)
         {
             const string encryptionKey = "0ram@1234xxxxxxxxxxtttttuuuuuiiiiio";
             var clearBytes = Encoding.Unicode.GetBytes(password);
@@ -32,7 +32,7 @@ namespace DrivingAssistant.Core.Tools
         }
 
         //=========================================================================
-        public static string DecryptPassword(string password)
+        public static string DecryptAes(string password)
         {
             const string encryptionKey = "0ram@1234xxxxxxxxxxtttttuuuuuiiiiio";
             password = password.Replace(" ", "+");
@@ -57,7 +57,7 @@ namespace DrivingAssistant.Core.Tools
         }
 
         //=========================================================================
-        public static string Encrypt_SHA256(string data)
+        public static string EncryptSha256(string data)
         {
             using var sha256 = SHA256.Create();
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(data));

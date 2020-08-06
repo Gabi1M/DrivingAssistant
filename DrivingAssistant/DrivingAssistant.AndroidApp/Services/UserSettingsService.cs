@@ -80,5 +80,40 @@ namespace DrivingAssistant.AndroidApp.Services
 
             await request.GetResponseAsync();
         }
+
+        //============================================================
+        public async Task StartRecordingAsync(long userId)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId))
+            {
+                Method = "GET"
+            };
+
+            await request.GetResponseAsync();
+        }
+
+        //============================================================
+        public async Task StopRecordingAsync(long userId)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.StopRecording + "?UserId=" + userId))
+            {
+                Method = "GET"
+            };
+
+            await request.GetResponseAsync();
+        }
+
+        //============================================================
+        public async Task<string> GetRecordingStatus(long userId)
+        {
+            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.RecordingStatus + "?UserId=" + userId))
+            {
+                Method = "GET"
+            };
+
+            var response = await request.GetResponseAsync() as HttpWebResponse;
+            using var streamReader = new StreamReader(response?.GetResponseStream()!);
+            return await streamReader.ReadToEndAsync();
+        }
     }
 }

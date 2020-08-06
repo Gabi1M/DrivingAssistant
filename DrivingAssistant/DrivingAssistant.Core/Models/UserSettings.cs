@@ -10,8 +10,14 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("CameraSessionId")]
         public long CameraSessionId { get; set; }
 
-        [JsonProperty("CameraIp")]
-        public string CameraIp { get; set; }
+        [JsonProperty("CameraHost")]
+        public string CameraHost { get; set; }
+
+        [JsonProperty("CameraUsername")]
+        public string CameraUsername { get; set; }
+
+        [JsonProperty("CameraPassword")]
+        public string CameraPassword { get; set; }
 
         //===========================================================//
         public static UserSettings Default(long userId)
@@ -21,7 +27,9 @@ namespace DrivingAssistant.Core.Models
                 Id = -1,
                 UserId = userId,
                 CameraSessionId = -1,
-                CameraIp = string.Empty
+                CameraHost = string.Empty,
+                CameraUsername = string.Empty,
+                CameraPassword = string.Empty
             };
         }
 

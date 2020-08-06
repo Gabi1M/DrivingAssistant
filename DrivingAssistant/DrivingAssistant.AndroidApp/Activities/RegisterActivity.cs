@@ -65,31 +65,38 @@ namespace DrivingAssistant.AndroidApp.Activities
                     return;
                 }
 
-                var users = await _userService.GetAllAsync();
-                if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
+                try
                 {
-                    Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();
+                    var users = await _userService.GetAllAsync();
+                    if (users.Any(x => x.Username.Trim() == _textInputUsername.Text.Trim()))
+                    {
+                        Toast.MakeText(Application.Context, "There is already a user with the same username!", ToastLength.Short).Show();
+                        progressDialog.Dismiss();
+                        return;
+                    }
+
+                    var user = new User
+                    {
+                        Id = -1,
+                        Username = _textInputUsername.Text.Trim(),
+                        Password = Crypto.EncryptSha256(_textInputPassword.Text.Trim()),
+                        Email = _textInputEmail.Text.Trim(),
+                        FirstName = _textInputFirstName.Text.Trim(),
+                        LastName = _textInputLastName.Text.Trim(),
+                        Role = UserRole.Standard,
+                        JoinDate = DateTime.Now
+                    };
+
+                    await _userService.SetAsync(user);
                     progressDialog.Dismiss();
-                    return;
+                    Toast.MakeText(Application.Context, "Register successful!", ToastLength.Short).Show();
+                    await Task.Delay(1000);
+                    Finish();
                 }
-
-                var user = new User
+                catch (Exception ex)
                 {
-                    Id = -1,
-                    Username = _textInputUsername.Text.Trim(),
-                    Password = Encryptor.Encrypt_SHA256(_textInputPassword.Text.Trim()),
-                    Email = _textInputEmail.Text.Trim(),
-                    FirstName = _textInputFirstName.Text.Trim(),
-                    LastName = _textInputLastName.Text.Trim(),
-                    Role = UserRole.Standard,
-                    JoinDate = DateTime.Now
-                };
-
-                await _userService.SetAsync(user);
-                progressDialog.Dismiss();
-                Toast.MakeText(Application.Context, "Register successful!", ToastLength.Short).Show();
-                await Task.Delay(1000);
-                Finish();
+                    Toast.MakeText(this, "Failed to register user!\n" + ex.Message, ToastLength.Long).Show();
+                }
             }
         }
 

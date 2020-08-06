@@ -85,7 +85,15 @@ namespace DrivingAssistant.AndroidApp.Activities
             if (!_newSession)
             {
                 _currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                try
+                {
+                    _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
+                    _videoList = new List<Video>();
+                }
                 _textDescription.Text = _currentSession.Name;
                 _selectedStartDateTime = _currentSession.StartDateTime;
                 _selectedEndDateTime = _currentSession.EndDateTime;
@@ -158,7 +166,14 @@ namespace DrivingAssistant.AndroidApp.Activities
             var progressDialog = ProgressDialog.Show(this, "Deleting temporary videos", "Please wait...");
             foreach (var video in _videoList.Where(x => !x.IsInSession()))
             {
-                await _videoService.DeleteVideoAsync(video.Id);
+                try
+                {
+                    await _videoService.DeleteVideoAsync(video.Id);
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Failed to delete some temporary videos!\n" + ex.Message, ToastLength.Short).Show();
+                }
             }
             progressDialog.Dismiss();
             base.OnBackPressed();
@@ -169,7 +184,14 @@ namespace DrivingAssistant.AndroidApp.Activities
         {
             if (fetchRemote)
             {
-                _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                try
+                {
+                    _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
+                }
             }
 
             _videoListView.Adapter?.Dispose();
@@ -210,18 +232,25 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetPositiveButton("Ok", async (o, args) =>
             {
                 var progressDialog = ProgressDialog.Show(this, "Video Upload", "Uploading...");
-                var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
-                var video = await _videoService.GetVideoByIdAsync(videoId);
-                if (_newSession)
+                try
                 {
-                    _videoList.Add(video);
-                    await RefreshVideoSource();
+                    var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
+                    var video = await _videoService.GetVideoByIdAsync(videoId);
+                    if (_newSession)
+                    {
+                        _videoList.Add(video);
+                        await RefreshVideoSource();
+                    }
+                    else
+                    {
+                        video.SessionId = _currentSession.Id;
+                        await _videoService.UpdateVideoAsync(video);
+                        await RefreshVideoSource(true);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    video.SessionId = _currentSession.Id;
-                    await _videoService.UpdateVideoAsync(video);
-                    await RefreshVideoSource(true);
+                    Toast.MakeText(this, "Failed to upload video!\n" + ex.Message, ToastLength.Long).Show();
                 }
                 progressDialog.Dismiss();
             });
@@ -244,7 +273,15 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetPositiveButton("Delete", async (o, args) =>
             {
                 var video = _videoList.ElementAt(_selectedVideoPosition);
-                await _videoService.DeleteVideoAsync(video.Id);
+                try
+                {
+                    await _videoService.DeleteVideoAsync(video.Id);
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Failed to delete video!\n" + ex.Message, ToastLength.Long).Show();
+                    return;
+                }
 
                 if (_newSession)
                 {
@@ -475,42 +512,49 @@ namespace DrivingAssistant.AndroidApp.Activities
         //============================================================
         private async void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            if (!_newSession)
+            try
             {
-                _currentSession.Name = _textDescription.Text;
-                _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
-                _currentSession.EndDateTime = _selectedStartDateTime ?? DateTime.Now;
-                _currentSession.StartLocation = _selectedStartPoint;
-                _currentSession.EndLocation = _selectedEndPoint;
-                _currentSession.Waypoints = _selectedWaypoints;
-                await _sessionService.SetAsync(_currentSession);
-                foreach (var video in _videoList.Where(x => x.SessionId != _currentSession.Id))
+                if (!_newSession)
                 {
-                    video.SessionId = _currentSession.Id;
-                    await _videoService.UpdateVideoAsync(video);
+                    _currentSession.Name = _textDescription.Text;
+                    _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
+                    _currentSession.EndDateTime = _selectedStartDateTime ?? DateTime.Now;
+                    _currentSession.StartLocation = _selectedStartPoint;
+                    _currentSession.EndLocation = _selectedEndPoint;
+                    _currentSession.Waypoints = _selectedWaypoints;
+                    await _sessionService.SetAsync(_currentSession);
+                    foreach (var video in _videoList.Where(x => x.SessionId != _currentSession.Id))
+                    {
+                        video.SessionId = _currentSession.Id;
+                        await _videoService.UpdateVideoAsync(video);
+                    }
+                }
+                else
+                {
+                    _currentSession = new Session
+                    {
+                        Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
+                        StartDateTime = _selectedStartDateTime ?? DateTime.Now,
+                        EndDateTime = _selectedEndDateTime ?? DateTime.Now,
+                        StartLocation = _selectedStartPoint ?? new Point(0, 0),
+                        EndLocation = _selectedEndPoint ?? new Point(0, 0),
+                        Waypoints = _selectedWaypoints,
+                        Id = -1,
+                        Status = SessionStatus.Unprocessed,
+                        UserId = _user.Id,
+                        DateAdded = DateTime.Now
+                    };
+                    _currentSession.Id = await _sessionService.SetAsync(_currentSession);
+                    foreach (var video in _videoList)
+                    {
+                        video.SessionId = _currentSession.Id;
+                        await _videoService.UpdateVideoAsync(video);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                _currentSession = new Session
-                {
-                    Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
-                    StartDateTime = _selectedStartDateTime ?? DateTime.Now,
-                    EndDateTime = _selectedEndDateTime ?? DateTime.Now,
-                    StartLocation = _selectedStartPoint ?? new Point(0, 0),
-                    EndLocation = _selectedEndPoint ?? new Point(0, 0),
-                    Waypoints = _selectedWaypoints,
-                    Id = -1,
-                    Status = SessionStatus.Unprocessed,
-                    UserId = _user.Id,
-                    DateAdded = DateTime.Now
-                };
-                _currentSession.Id = await _sessionService.SetAsync(_currentSession);
-                foreach (var video in _videoList)
-                {
-                    video.SessionId = _currentSession.Id;
-                    await _videoService.UpdateVideoAsync(video);
-                }
+                Toast.MakeText(this, "Failed to submit session!\n" + ex.Message, ToastLength.Long).Show();
             }
 
             Finish();
