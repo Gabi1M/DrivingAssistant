@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
-using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Processing;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Tools;
@@ -133,7 +133,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     session.Status = SessionStatus.Processing;
                     await _sessionService.SetAsync(session);
                     var linkedVideos = await videoService.GetBySession(session.Id);
-                    var imageProcessor = new ImageProcessor(Parameters.Default());
+                    var imageProcessor = new LaneDepartureWarningAlgorithm(LaneDepartureWarningAlgorithm.LaneDepartureWarningParameters.Default());
                     foreach (var video in linkedVideos.Where(x => !x.IsProcessed()))
                     {
                         var processedFilename = imageProcessor.ProcessVideo(video.Filepath, 10, out var result);
@@ -158,7 +158,7 @@ namespace DrivingAssistant.WebServer.Controllers
                         {
                             Id = -1,
                             VideoId = processedVideo.Id,
-                            Filepath = ImageProcessor.ExtractThumbnail(processedVideo.Filepath)
+                            Filepath = Common.ExtractThumbnail(processedVideo.Filepath)
                         };
                         using var thumbnailService = new MssqlThumbnailService();
                         await thumbnailService.SetAsync(thumbnail);
@@ -167,7 +167,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     session.Status = SessionStatus.Processed;
                     await _sessionService.SetAsync(session);
 
-                    //await Utils.SendEmail(user.Email, session.Name + " Finished Processing", session.Name + " Finished Processing");
+                    await Utils.SendEmail(user.Email, session.Name + " Finished Processing", session.Name + " Finished Processing");
 
                 }).Start();
                 return Ok();

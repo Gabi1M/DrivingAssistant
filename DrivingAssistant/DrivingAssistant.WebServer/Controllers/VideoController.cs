@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Processing;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Tools;
@@ -148,7 +149,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 var filepath = await Utils.SaveVideoStreamToFileAsync(Request.Body, encoding);
                 if (encoding.ToLower() == "h264")
                 {
-                    var newFilepath = ImageProcessor.ConvertH264ToMkv(filepath);
+                    var newFilepath = Common.ConvertH264ToMkv(filepath);
                     System.IO.File.Delete(filepath);
                     filepath = newFilepath;
                 }
@@ -168,7 +169,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 {
                     Id = -1,
                     VideoId = video.Id,
-                    Filepath = ImageProcessor.ExtractThumbnail(video.Filepath)
+                    Filepath = Common.ExtractThumbnail(video.Filepath)
                 };
                 using var thumbnailService = new MssqlThumbnailService();
                 await thumbnailService.SetAsync(thumbnail);

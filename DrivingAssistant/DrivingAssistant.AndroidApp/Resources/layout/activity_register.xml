@@ -245,6 +245,7 @@
         android:gravity="center"
         android:layout_weight="3"
         android:hint="Password"
+        android:password="true"
         android:singleLine="true"
         android:textColor="@color/mainColor1"
         android:textColorHint="@color/mainColor3"

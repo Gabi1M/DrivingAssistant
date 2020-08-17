@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DrivingAssistant.Core.Models.BaseEntity">
+    <Position X="6.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.User">
+    <Position X="4.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAEAAACAAAAAEEQAAAAAAAAAAAAACAAAAAAAAAAg=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.UserSettings">
+    <Position X="8" Y="5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABACEAAAAAAAAAAEAAAAIAgAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Models\UserSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.Video">
+    <Position X="4.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAhAgAAAEAAAAAAAIAAAAACAAAQQAAAAAAAA=</HashCode>
+      <FileName>Models\Video.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.Thumbnail">
+    <Position X="8" Y="8.25" Width="1.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAIAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Models\Thumbnail.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.Session">
+    <Position X="6.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAQAEAAAAEAAEAAAAEgwAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\Session.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.Report">
+    <Position X="6.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAYAAIAAAEAAEAAAAAAIAAAAAAGASCAAABBBA=</HashCode>
+      <FileName>Models\Report.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.Point">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAA=</HashCode>
+      <FileName>Models\Point.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.PointExtensions">
+    <Position X="2.25" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAIAAAAAAAACAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Models\Point.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.HostServer">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAQAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\HostServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.ImageProcessing.ImageReport">
+    <Position X="10" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAIAAIAAAEAAEAAAAAAgAAAAAAGACCAAAAAAA=</HashCode>
+      <FileName>Models\ImageProcessing\ImageReport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.ImageProcessing.VideoReport">
+    <Position X="10" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEIAAAAQgAAgAAEAQAAAAAAAAAAAAAAAAAAIBABQIA=</HashCode>
+      <FileName>Models\ImageProcessing\VideoReport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Models.ImageProcessing.Parameters">
+    <Position X="12.5" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAACAAIAJgAAAACQAAAEAAAAAAAAA=</HashCode>
+      <FileName>Models\ImageProcessing\Parameters.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Tools.Crypto">
+    <Position X="15.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Tools\Crypto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Tools.Endpoints">
+    <Position X="12.5" Y="3.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.VideoEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.ReportEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.SessionEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.UserEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.UserSettingsEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="DrivingAssistant.Core.Tools.Endpoints.ThumbnailEndpoints">
+        <TypeIdentifier>
+          <NewMemberFileName>Tools\Endpoints.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tools\Endpoints.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrivingAssistant.Core.Tools.Logger">
+    <Position X="15.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAQAAAgCAAAAAIAAAAAAEAA=</HashCode>
+      <FileName>Tools\Logger.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="DrivingAssistant.Core.Enums.UserRole">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIEAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Enums\UserRole.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DrivingAssistant.Core.Enums.SessionStatus">
+    <Position X="2.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAABAhAAAAAAAAA=</HashCode>
+      <FileName>Enums\SessionStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DrivingAssistant.Core.Enums.ReportStatus">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Enums\ReportStatus.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DrivingAssistant.Core.Tools.LogType">
+    <Position X="15.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Tools\Logger.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

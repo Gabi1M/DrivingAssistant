@@ -5,11 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
-using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
@@ -20,195 +17,69 @@ using Mapsui.Styles;
 using Mapsui.UI.Android;
 using Mapsui.Utilities;
 using Mapsui.Widgets.Zoom;
-using Newtonsoft.Json;
 using Plugin.FilePicker;
-using Xamarin.Essentials;
-using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
+using Location = Xamarin.Essentials.Location;
 
-namespace DrivingAssistant.AndroidApp.Activities
+namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 {
-    [Activity(Label = "SessionEditActivity")]
-    public class SessionEditActivity : Activity
+    public class SessionEditActivityPresenter
     {
-        #region ActivityFields
-
-        private TextInputEditText _textDescription;
-        private TextView _labelStartDateTime;
-        private TextView _labelEndDateTime;
-        private TextView _labelStartLocation;
-        private TextView _labelEndLocation;
-        private TextView _labelWaypoints;
-        private ListView _videoListView;
-        private Button _videoButtonAdd;
-        private Button _videoButtonModify;
-        private Button _videoButtonDelete;
-        private Button _videoButtonView;
-        private Button _buttonSubmit;
-
-        #endregion
-
-        #region Service
+        private readonly Context _context;
+        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
 
         private readonly SessionService _sessionService = new SessionService();
         private readonly VideoService _videoService = new VideoService();
+        private readonly User _user;
+        private readonly Location _currentLocation;
 
-        #endregion
+        private ICollection<Core.Models.Video> _videos = new List<Core.Models.Video>();
+        private int _selectedPosition = -1;
+        private View _selectedView;
 
-        private User _user;
         private Session _currentSession;
-        private bool _newSession;
-
-        private ICollection<Video> _videoList = new List<Video>();
-
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
         private Point _selectedStartPoint;
         private Point _selectedEndPoint;
-        private Location _currentLocation;
         private ICollection<Point> _selectedWaypoints = new List<Point>();
 
-        private int _selectedVideoPosition = -1;
-        private View _selectedVideoView;
-
         //============================================================
-        protected override async void OnCreate(Bundle savedInstanceState)
+        public SessionEditActivityPresenter(Context context, Session currentSession, User user, Location currentLocation)
         {
-            base.OnCreate(savedInstanceState);
-            Platform.Init(this, savedInstanceState);
-            SetContentView(Resource.Layout.activity_session_edit);
-            SetupActivityFields();
-
-            _user = JsonConvert.DeserializeObject<User>(Intent.GetStringExtra("user"));
-            _newSession = !Intent.HasExtra("session");
-            _currentLocation = await Geolocation.GetLastKnownLocationAsync();
-
-            if (!_newSession)
-            {
-                _currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session"));
-                try
-                {
-                    _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
-                }
-                catch (Exception ex)
-                {
-                    Toast.MakeText(this, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
-                    _videoList = new List<Video>();
-                }
-                _textDescription.Text = _currentSession.Name;
-                _selectedStartDateTime = _currentSession.StartDateTime;
-                _selectedEndDateTime = _currentSession.EndDateTime;
-                _selectedStartPoint = _currentSession.StartLocation;
-                _selectedEndPoint = _currentSession.EndLocation;
-                _selectedWaypoints = _currentSession.Waypoints;
-                _labelStartDateTime.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
-                _labelEndDateTime.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
-                _labelStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
-                _labelEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
-                _labelWaypoints.Text = _selectedWaypoints.Count + " Selected";
-                _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _videoList);
-            }
+            _context = context;
+            _currentSession = currentSession;
+            _user = user;
+            _currentLocation = currentLocation;
         }
 
         //============================================================
-        private void SetupActivityFields()
+        public async Task BackPressed()
         {
-            #region TextInputEditText
-
-            _textDescription = FindViewById<TextInputEditText>(Resource.Id.sessionEditTextDescription);
-
-            #endregion
-
-            #region TextView
-
-            _labelStartDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartDateTime);
-            _labelEndDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
-            _labelStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
-            _labelEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
-            _labelWaypoints = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedWaypoints);
-
-            #endregion
-
-            #region ListView
-
-            _videoListView = FindViewById<ListView>(Resource.Id.sessionEditVideoList);
-
-            #endregion
-
-            #region Button
-
-            _videoButtonAdd = FindViewById<Button>(Resource.Id.videosButtonAdd);
-            _videoButtonModify = FindViewById<Button>(Resource.Id.videosButtonModify);
-            _videoButtonDelete = FindViewById<Button>(Resource.Id.videosButtonDelete);
-            _videoButtonView = FindViewById<Button>(Resource.Id.videosButtonView);
-            _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
-
-            #endregion
-
-            #region Events
-
-            _labelStartDateTime.Click += OnStartDateClick;
-            _labelEndDateTime.Click += OnEndDateClick;
-            _labelStartLocation.Click += OnStartLocationClick;
-            _labelEndLocation.Click += OnEndLocationClick;
-            _labelWaypoints.Click += OnWaypointsClick;
-            _videoListView.ItemClick += OnVideoListItemClick;
-            _videoButtonAdd.Click += OnVideoButtonAddClick;
-            _videoButtonDelete.Click += OnVideoButtonDeleteClick;
-            _videoButtonView.Click += OnVideoButtonViewClick;
-            _buttonSubmit.Click += OnSubmitButtonClick;
-
-            #endregion
-        }
-
-        //============================================================
-        public override async void OnBackPressed()
-        {
-            var progressDialog = ProgressDialog.Show(this, "Deleting temporary videos", "Please wait...");
-            foreach (var video in _videoList.Where(x => !x.IsInSession()))
+            foreach (var video in _videos.Where(x => !x.IsInSession()))
             {
                 try
                 {
                     await _videoService.DeleteVideoAsync(video.Id);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Toast.MakeText(this, "Failed to delete some temporary videos!\n" + ex.Message, ToastLength.Short).Show();
+                    //IGNORED
                 }
             }
-            progressDialog.Dismiss();
-            base.OnBackPressed();
+            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Back, null));
         }
 
         //============================================================
-        private async Task RefreshVideoSource(bool fetchRemote = false)
+        public void ItemClick(int position, View view)
         {
-            if (fetchRemote)
-            {
-                try
-                {
-                    _videoList = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
-                }
-                catch (Exception ex)
-                {
-                    Toast.MakeText(this, "Failed to retrieve video list!\n" + ex.Message, ToastLength.Long).Show();
-                }
-            }
-
-            _videoListView.Adapter?.Dispose();
-            _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _videoList);
+            _selectedView?.SetBackgroundResource(0);
+            _selectedPosition = position;
+            _selectedView = view;
+            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_ItemClick, view));
         }
 
         //============================================================
-        private void OnVideoListItemClick(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            _selectedVideoView?.SetBackgroundResource(0);
-            e.View.SetBackgroundResource(Resource.Drawable.list_element_border);
-            _selectedVideoPosition = e.Position;
-            _selectedVideoView = e.View;
-        }
-
-        //============================================================
-        private async void OnVideoButtonAddClick(object sender, EventArgs e)
+        public async Task VideoAddClick()
         {
             var filedata = await CrossFilePicker.Current.PickFile();
             if (filedata == null)
@@ -218,27 +89,27 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             if (Path.GetExtension(filedata.FilePath) != ".jpg" && Path.GetExtension(filedata.FilePath) != ".mp4")
             {
-                Toast.MakeText(this, "Selected file is not a MP4 video file!", ToastLength.Short).Show();
+                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("Selected file is not mp4 video file")));
                 return;
             }
 
-            var alert = new AlertDialog.Builder(this);
+            var alert = new AlertDialog.Builder(_context);
             alert.SetTitle("Choose a unique description for this media");
-            var textEdit = new EditText(this);
+            var textEdit = new EditText(_context);
             var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
             textEdit.LayoutParameters = layoutParams;
             textEdit.Gravity = GravityFlags.Center;
             alert.SetView(textEdit);
             alert.SetPositiveButton("Ok", async (o, args) =>
             {
-                var progressDialog = ProgressDialog.Show(this, "Video Upload", "Uploading...");
+                var progressDialog = ProgressDialog.Show(_context, "Video Upload", "Uploading...");
                 try
                 {
                     var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
                     var video = await _videoService.GetVideoByIdAsync(videoId);
-                    if (_newSession)
+                    if (_currentSession == null)
                     {
-                        _videoList.Add(video);
+                        _videos.Add(video);
                         await RefreshVideoSource();
                     }
                     else
@@ -247,45 +118,46 @@ namespace DrivingAssistant.AndroidApp.Activities
                         await _videoService.UpdateVideoAsync(video);
                         await RefreshVideoSource(true);
                     }
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, _videos));
                 }
                 catch (Exception ex)
                 {
-                    Toast.MakeText(this, "Failed to upload video!\n" + ex.Message, ToastLength.Long).Show();
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, ex));
                 }
-                progressDialog.Dismiss();
+                progressDialog?.Dismiss();
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
-            alert.Create().Show();
+            alert.Create()?.Show();
         }
 
         //============================================================
-        private void OnVideoButtonDeleteClick(object sender, EventArgs e)
+        public void VideoDeleteClick()
         {
-            if (_selectedVideoPosition == -1)
+            if (_selectedPosition == -1)
             {
-                Toast.MakeText(this, "No video selected!", ToastLength.Short).Show();
+                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
                 return;
             }
 
-            var alert = new AlertDialog.Builder(this);
+            var alert = new AlertDialog.Builder(_context);
             alert.SetTitle("Confirm Delete");
             alert.SetMessage("Action cannot be undone");
             alert.SetPositiveButton("Delete", async (o, args) =>
             {
-                var video = _videoList.ElementAt(_selectedVideoPosition);
+                var video = _videos.ElementAt(_selectedPosition);
                 try
                 {
                     await _videoService.DeleteVideoAsync(video.Id);
                 }
                 catch (Exception ex)
                 {
-                    Toast.MakeText(this, "Failed to delete video!\n" + ex.Message, ToastLength.Long).Show();
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, ex));
                     return;
                 }
 
-                if (_newSession)
+                if (_currentSession == null)
                 {
-                    _videoList.Remove(video);
+                    _videos.Remove(video);
                     await RefreshVideoSource();
                 }
                 else
@@ -296,61 +168,76 @@ namespace DrivingAssistant.AndroidApp.Activities
 
             alert.SetNegativeButton("Cancel", (o, args) => { });
             var dialog = alert.Create();
-            dialog.Show();
+            dialog?.Show();
         }
 
         //============================================================
-        private void OnVideoButtonViewClick(object sender, EventArgs e)
+        private async Task RefreshVideoSource(bool fetchRemote = false)
         {
-            if (_selectedVideoPosition == -1)
+            if (fetchRemote)
             {
-                Toast.MakeText(this, "No video selected!", ToastLength.Short).Show();
+                try
+                {
+                    _videos = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                }
+                catch (Exception)
+                {
+                    // IGNORED
+                }
+            }
+
+            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, _videos));
+        }
+
+        //============================================================
+        public void VideoViewClick()
+        {
+            if (_selectedPosition == -1)
+            {
+                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
                 return;
             }
 
-            var video = _videoList.ElementAt(_selectedVideoPosition);
-            var intent = new Intent(this, typeof(VideoActivity));
-            intent.PutExtra("video", JsonConvert.SerializeObject(video));
-            StartActivity(intent);
+            var video = _videos.ElementAt(_selectedPosition);
+            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoView, video));
         }
 
         //============================================================
-        private void OnStartDateClick(object sender, EventArgs e)
+        public void StartDateClick()
         {
-            new DatePickerDialog(this, (o, args) =>
+            new DatePickerDialog(_context, (o, args) =>
             {
                 _selectedStartDateTime = args.Date;
-                new TimePickerDialog(this, (sender1, eventArgs) =>
+                new TimePickerDialog(_context, (sender1, eventArgs) =>
                 {
                     _selectedStartDateTime = _selectedStartDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedStartDateTime = _selectedStartDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelStartDateTime.Text = _selectedStartDateTime?.ToString(Constants.DateTimeFormat);
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_StartDate, _selectedStartDateTime));
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
 
         //============================================================
-        private void OnEndDateClick(object sender, EventArgs e)
+        public void EndDateClick()
         {
-            new DatePickerDialog(this, (o, args) =>
+            new DatePickerDialog(_context, (o, args) =>
             {
-                _selectedEndDateTime = args.Date;
-                new TimePickerDialog(this, (sender1, eventArgs) =>
+                _selectedEndDateTime = args.Date; new TimePickerDialog(_context, (sender1, eventArgs) =>
                 {
                     _selectedEndDateTime = _selectedEndDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedEndDateTime = _selectedEndDateTime?.AddMinutes(eventArgs.Minute);
-                    _labelEndDateTime.Text = _selectedEndDateTime?.ToString(Constants.DateTimeFormat);
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_EndDate, _selectedEndDateTime));
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
 
         //============================================================
-        private void OnStartLocationClick(object sender, EventArgs e)
+        public void StartLocationClick()
         {
-            var alert = new AlertDialog.Builder(this);
-            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
-            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var alert = new AlertDialog.Builder(_context);
+            var view = (_context as Activity)?.LayoutInflater.Inflate(Resource.Layout.activity_map, null);
             alert.SetView(view);
+            var mapControl = view?.FindViewById<MapControl>(Resource.Id.mapControl);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
             var selectedStartPoint = _selectedStartPoint;
@@ -390,19 +277,19 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedStartPoint = selectedStartPoint;
                 if (_selectedStartPoint != null)
                 {
-                    _labelStartLocation.Text = _selectedStartPoint.X + " " + _selectedStartPoint.Y;
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_StartLocation, _selectedStartPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
-            alert.Create().Show();
+            alert.Create()?.Show();
         }
 
         //============================================================
-        private void OnEndLocationClick(object sender, EventArgs e)
+        public void EndLocationClick()
         {
-            var alert = new AlertDialog.Builder(this);
-            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
-            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var alert = new AlertDialog.Builder(_context);
+            var view = (_context as Activity)?.LayoutInflater.Inflate(Resource.Layout.activity_map, null);
+            var mapControl = view?.FindViewById<MapControl>(Resource.Id.mapControl);
             alert.SetView(view);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
@@ -441,19 +328,19 @@ namespace DrivingAssistant.AndroidApp.Activities
                 _selectedEndPoint = selectedEndPoint;
                 if (_selectedEndPoint != null)
                 {
-                    _labelEndLocation.Text = _selectedEndPoint.X + " " + _selectedEndPoint.Y;
+                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_EndLocation, _selectedEndPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
-            alert.Create().Show();
+            alert.Create()?.Show();
         }
 
         //============================================================
-        private void OnWaypointsClick(object sender, EventArgs e)
+        public void WaypointsClick()
         {
-            var alert = new AlertDialog.Builder(this);
-            var view = LayoutInflater.Inflate(Resource.Layout.activity_map, null);
-            var mapControl = view.FindViewById<MapControl>(Resource.Id.mapControl);
+            var alert = new AlertDialog.Builder(_context);
+            var view = (_context as Activity)?.LayoutInflater.Inflate(Resource.Layout.activity_map, null);
+            var mapControl = view?.FindViewById<MapControl>(Resource.Id.mapControl);
             alert.SetView(view);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
@@ -503,27 +390,27 @@ namespace DrivingAssistant.AndroidApp.Activities
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
                 _selectedWaypoints = new List<Point>(selectedWaypoints);
-                _labelWaypoints.Text = _selectedWaypoints.Count + " Selected";
+                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Waypoints, _selectedWaypoints));
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
-            alert.Create().Show();
+            alert.Create()?.Show();
         }
 
         //============================================================
-        private async void OnSubmitButtonClick(object sender, EventArgs e)
+        public async Task SubmitClick(string name)
         {
             try
             {
-                if (!_newSession)
+                if (_currentSession != null)
                 {
-                    _currentSession.Name = _textDescription.Text;
+                    _currentSession.Name = name;
                     _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
-                    _currentSession.EndDateTime = _selectedStartDateTime ?? DateTime.Now;
+                    _currentSession.EndDateTime = _selectedEndDateTime ?? DateTime.Now;
                     _currentSession.StartLocation = _selectedStartPoint;
                     _currentSession.EndLocation = _selectedEndPoint;
                     _currentSession.Waypoints = _selectedWaypoints;
-                    await _sessionService.SetAsync(_currentSession);
-                    foreach (var video in _videoList.Where(x => x.SessionId != _currentSession.Id))
+                    _currentSession.Id = await _sessionService.SetAsync(_currentSession);
+                    foreach (var video in _videos.Where(x => x.SessionId != _currentSession.Id))
                     {
                         video.SessionId = _currentSession.Id;
                         await _videoService.UpdateVideoAsync(video);
@@ -533,11 +420,11 @@ namespace DrivingAssistant.AndroidApp.Activities
                 {
                     _currentSession = new Session
                     {
-                        Name = !string.IsNullOrEmpty(_textDescription.Text) ? _textDescription.Text.Trim() : string.Empty,
+                        Name = name,
                         StartDateTime = _selectedStartDateTime ?? DateTime.Now,
                         EndDateTime = _selectedEndDateTime ?? DateTime.Now,
-                        StartLocation = _selectedStartPoint ?? new Point(0, 0),
-                        EndLocation = _selectedEndPoint ?? new Point(0, 0),
+                        StartLocation = _selectedStartPoint ?? new Point(0,0),
+                        EndLocation = _selectedEndPoint ?? new Point(0,0),
                         Waypoints = _selectedWaypoints,
                         Id = -1,
                         Status = SessionStatus.Unprocessed,
@@ -545,19 +432,18 @@ namespace DrivingAssistant.AndroidApp.Activities
                         DateAdded = DateTime.Now
                     };
                     _currentSession.Id = await _sessionService.SetAsync(_currentSession);
-                    foreach (var video in _videoList)
+                    foreach (var video in _videos)
                     {
                         video.SessionId = _currentSession.Id;
                         await _videoService.UpdateVideoAsync(video);
                     }
                 }
+                OnPropertyChanged(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Submit, null));
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, "Failed to submit session!\n" + ex.Message, ToastLength.Long).Show();
+                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Submit, ex));
             }
-
-            Finish();
         }
 
         //============================================================

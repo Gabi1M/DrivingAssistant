@@ -66,9 +66,13 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private void RefreshDataSource()
         {
+            var progressDialog = new ProgressDialog(Context);
+            progressDialog.SetMessage("Loading Data...");
+            progressDialog.Show();
             _currentServers = _serverService.GetAll().ToList();
             _listView.Adapter?.Dispose();
             _listView.Adapter = new ServerViewModelAdapter(Activity, _currentServers);
+            progressDialog.Dismiss();
         }
 
         //============================================================

@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using DrivingAssistant.Core.Models.ImageProcessing;
 using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Tools;
 using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Bitmap = System.Drawing.Bitmap;
-using Point = System.Drawing.Point;
+using Newtonsoft.Json;
 
-namespace DrivingAssistant.WebServer.Tools
+namespace DrivingAssistant.WebServer.Processing
 {
-    public class ImageProcessor
+    public class LaneDepartureWarningAlgorithm : IProcessingAlgorithm
     {
-        private readonly Parameters _parameters;
+        private readonly LaneDepartureWarningParameters _parameters;
 
         //======================================================//
-        public ImageProcessor(Parameters parameters)
+        public LaneDepartureWarningAlgorithm(LaneDepartureWarningParameters parameters)
         {
             _parameters = parameters;
         }
 
         //======================================================//
-        private static ICollection<Point> GetOverlayPoints(int width, int height)
+        private static IEnumerable<Point> GetOverlayPoints(int width, int height)
         {
             return new List<Point>
             {
@@ -37,7 +35,7 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        private static Image<Gray, byte> MaskImage(Image<Gray, byte> image, ICollection<Point> roi)
+        private static Image<Gray, byte> MaskImage(Image<Gray, byte> image, IEnumerable<Point> roi)
         {
             var maskedImage = new Image<Gray, byte>(image.Size);
             maskedImage.FillConvexPoly(roi.ToArray(), new Gray(255));
@@ -121,7 +119,6 @@ namespace DrivingAssistant.WebServer.Tools
         //======================================================//
         public string ProcessVideo(string filename, int framesToSkip, out VideoReport report)
         {
-            Console.WriteLine("Processing " + filename);
             var processedVideoFilename = Utils.GetRandomFilename(".mkv");
             using var video = new VideoCapture(filename);
             using var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
@@ -161,108 +158,49 @@ namespace DrivingAssistant.WebServer.Tools
             }
 
             report = VideoReport.FromImageResultList(imageResultList);
-            Console.WriteLine("Done");
             return processedVideoFilename;
         }
 
         //======================================================//
-        public static string ConvertH264ToMkv(string filename)
+        public class LaneDepartureWarningParameters
         {
-            var newFilename = Utils.GetRandomFilename(".mkv");
-            using var video = new VideoCapture(filename);
-            using var videoWriter = new VideoWriter(newFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
-            while (true)
+            [JsonProperty("CannyThreshold")]
+            public double CannyThreshold { get; set; }
+
+            [JsonProperty("CannyThresholdLinking")]
+            public double CannyThresholdLinking { get; set; }
+
+            [JsonProperty("HoughLinesRhoResolution")]
+            public double HoughLinesRhoResolution { get; set; }
+
+            [JsonProperty("HoughLinesThetaResolution")]
+            public double HoughLinesThetaResolution { get; set; }
+
+            [JsonProperty("HoughLinesMinimumLineWidth")]
+            public double HoughLinesMinimumLineWidth { get; set; }
+
+            [JsonProperty("HoughLinesGapBetweenLines")]
+            public double HoughLinesGapBetweenLines { get; set; }
+
+            [JsonProperty("HoughLinesThreshold")]
+            public int HoughLinesThreshold { get; set; }
+
+            [JsonProperty("DilateIterations")]
+            public int DilateIterations { get; set; }
+
+            //======================================================//
+            public static LaneDepartureWarningParameters Default()
             {
-                try
+                return new LaneDepartureWarningParameters
                 {
-                    var frame = video.QueryFrame();
-                    if (frame == null)
-                    {
-                        break;
-                    }
-                    videoWriter.Write(frame);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogException(ex);
-                }
-            }
-
-            return newFilename;
-        }
-
-        //======================================================//
-        public static string ExtractThumbnail(string filename)
-        {
-            using var video = new VideoCapture(filename);
-            using var capturedImage = video.QueryFrame();
-            var savedFilename = Utils.GetRandomFilename(".jpg", true);
-            capturedImage.Save(savedFilename);
-            return savedFilename;
-        }
-    }
-
-    public static class ImageProcessorExtender
-    {
-        //======================================================//
-        public static Bitmap ToBitmap(this Image<Bgr, byte> image)
-        {
-            var size = image.Size;
-            var bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format24bppRgb);
-            var bitmapData = bitmap.LockBits(new Rectangle(Point.Empty, size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-            using var mat = new Mat(size.Height, size.Width, DepthType.Cv8U, image.NumberOfChannels, bitmapData.Scan0, bitmapData.Stride);
-            image.Mat.CopyTo(mat);
-            bitmap.UnlockBits(bitmapData);
-            image.Dispose();
-            return bitmap;
-        }
-
-        //======================================================//
-        public static Point GetCenterPoint(this LineSegment2D line)
-        {
-            return new Point((line.P1.X + line.P2.X) / 2, (line.P1.Y + line.P2.Y) / 2);
-        }
-
-        //======================================================//
-        public static LineSegment2D OrientLine(this LineSegment2D line)
-        {
-            return line.P1.Y > line.P2.Y ? new LineSegment2D(line.P2, line.P1) : line;
-        }
-
-        //======================================================//
-        public static double GetAngle(this LineSegment2D line, LineSegment2D referenceLine)
-        {
-            var angle = line.GetExteriorAngleDegree(referenceLine);
-            if (angle < 0)
-            {
-                angle *= -1;
-            }
-
-            return angle;
-        }
-
-        //======================================================//
-        public static Point GetIntersection(this LineSegment2D line1, LineSegment2D line2)
-        {
-            var a1 = line1.P2.Y - line1.P1.Y;
-            var b1 = line1.P1.X - line1.P2.X;
-            var c1 = a1 * (line1.P1.X) + b1 * (line1.P1.Y);
-
-            var a2 = line2.P2.Y - line2.P1.Y;
-            var b2 = line2.P1.X - line2.P2.X;
-            var c2 = a2 * (line2.P1.X) + b2 * (line2.P1.Y);
-
-            var determinant = a1 * b2 - a2 * b1;
-
-            if (determinant == 0)
-            {
-                return new Point(int.MaxValue, int.MaxValue);
-            }
-            else
-            {
-                var x = (b2 * c1 - b1 * c2) / determinant;
-                var y = (a1 * c2 - a2 * c1) / determinant;
-                return new Point(x, y);
+                    CannyThreshold = 100,
+                    CannyThresholdLinking = 150,
+                    HoughLinesRhoResolution = 1,
+                    HoughLinesThetaResolution = Math.PI / 100,
+                    HoughLinesMinimumLineWidth = 5,
+                    HoughLinesGapBetweenLines = 5,
+                    HoughLinesThreshold = 10
+                };
             }
         }
     }

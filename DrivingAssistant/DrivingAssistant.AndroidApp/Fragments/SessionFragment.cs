@@ -8,6 +8,9 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities;
+using DrivingAssistant.AndroidApp.Activities.Map;
+using DrivingAssistant.AndroidApp.Activities.SessionEdit;
+using DrivingAssistant.AndroidApp.Activities.VideoList;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.Core.Enums;
@@ -83,6 +86,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async Task RefreshDataSource()
         {
+            var progressDialog = new ProgressDialog(Context);
+            progressDialog.SetMessage("Loading Data...");
+            progressDialog.Show();
             try
             {
                 _currentSessions = (await _sessionService.GetByUserAsync(_user.Id)).ToList();
@@ -93,6 +99,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             {
                 Toast.MakeText(Context, "Failed to refresh data!\n" + ex.Message, ToastLength.Short).Show();
             }
+            progressDialog.Dismiss();
         }
 
         //============================================================

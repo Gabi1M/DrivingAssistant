@@ -71,10 +71,12 @@ namespace DrivingAssistant.WebServer.Tools
                 Text = message
             };
 
-            using var emailClient = new SmtpClient();
-            await emailClient.ConnectAsync(Constants.ServerConstants.MailHost, Constants.ServerConstants.MailPort);
-            emailClient.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
+            using var emailClient = new SmtpClient
+            {
+                ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true
+            };
             emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
+            await emailClient.ConnectAsync(Constants.ServerConstants.MailHost, Constants.ServerConstants.MailPort);
             await emailClient.AuthenticateAsync(Constants.ServerConstants.SenderAddress, Constants.ServerConstants.SenderPassword);
 
             await emailClient.SendAsync(mailMessage);

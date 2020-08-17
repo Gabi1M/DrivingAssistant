@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using Android.App;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using AndroidX.AppCompat.App;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments
@@ -66,6 +67,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async void PopulateFields()
         {
+            var progressDialog = new ProgressDialog(Context);
+            progressDialog.SetMessage("Loading Data...");
+            progressDialog.Show();
             try
             {
                 _userSettings = await _userSettingsService.GetByUserAsync(_user.Id);
@@ -102,6 +106,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
             {
                 Toast.MakeText(Context, "Failed to retrieve settings!\n" + ex.Message, ToastLength.Long).Show();
             }
+            progressDialog.Dismiss();
         }
 
         //============================================================
@@ -146,7 +151,7 @@ namespace DrivingAssistant.AndroidApp.Fragments
                 return false;
             }
 
-            if (cameraIp.Split('.').Length != 5)
+            if (cameraIp.Split('.').Length != 4)
             {
                 return false;
             }
@@ -157,10 +162,11 @@ namespace DrivingAssistant.AndroidApp.Fragments
         //============================================================
         private async void OnButtonSaveClick(object sender, EventArgs e)
         {
-            /*if (!Validate())
+            if (!Validate())
             {
                 Toast.MakeText(Context, "The data is not valid!!", ToastLength.Short).Show();
-            }*/
+                return;
+            }
             _userSettings.CameraHost = _textCameraHost.Text;
             _userSettings.CameraUsername = _textCameraUsername.Text;
             _userSettings.CameraPassword = _textCameraPassword.Text;
@@ -180,7 +186,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             try
             {
+                Toast.MakeText(Context, "Starting recording...", ToastLength.Short).Show();
                 await _userSettingsService.StartRecordingAsync(_user.Id);
+                _textCameraStatus.Text = await _userSettingsService.GetRecordingStatus(_user.Id);
             }
             catch (Exception)
             {
@@ -193,7 +201,9 @@ namespace DrivingAssistant.AndroidApp.Fragments
         {
             try
             {
+                Toast.MakeText(Context, "Starting recording...", ToastLength.Short).Show();
                 await _userSettingsService.StopRecordingAsync(_user.Id);
+                _textCameraStatus.Text = await _userSettingsService.GetRecordingStatus(_user.Id);
             }
             catch (Exception)
             {

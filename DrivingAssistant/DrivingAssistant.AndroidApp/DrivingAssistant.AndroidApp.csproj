@@ -44,6 +44,7 @@
     <BundleAssemblies>false</BundleAssemblies>
     <MandroidI18n />
     <NoWarn>618</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -57,6 +58,7 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -65,7 +67,7 @@
     <DebugType>portable</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -77,7 +79,7 @@
     <DebugType>portable</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -90,17 +92,27 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\LoginActivity.cs" />
-    <Compile Include="Activities\MapActivity.cs" />
-    <Compile Include="Activities\RegisterActivity.cs" />
-    <Compile Include="Activities\SessionEditActivity.cs" />
-    <Compile Include="Activities\VideoActivity.cs" />
-    <Compile Include="Activities\VideoListActivity.cs" />
+    <Compile Include="Activities\Main\MainActivityPresenter.cs" />
+    <Compile Include="Activities\Map\MapActivityPresenter.cs" />
+    <Compile Include="Activities\Register\RegisterActivityPresenter.cs" />
+    <Compile Include="Activities\SessionEdit\SessionEditActivityPresenter.cs" />
+    <Compile Include="Activities\VideoList\VideoListActivityPresenter.cs" />
+    <Compile Include="Activities\Video\VideoActivityPresenter.cs" />
+    <Compile Include="Fragments\Home\HomeFragmentPresenter.cs" />
+    <Compile Include="Tools\NotifyCommands.cs" />
+    <Compile Include="Tools\PropertyChangedEventArgs.cs" />
+    <Compile Include="Activities\Login\LoginActivity.cs" />
+    <Compile Include="Activities\Login\LoginActivityPresenter.cs" />
+    <Compile Include="Activities\Map\MapActivity.cs" />
+    <Compile Include="Activities\Register\RegisterActivity.cs" />
+    <Compile Include="Activities\SessionEdit\SessionEditActivity.cs" />
+    <Compile Include="Activities\Video\VideoActivity.cs" />
+    <Compile Include="Activities\VideoList\VideoListActivity.cs" />
     <Compile Include="Adapters\ViewModelAdapters\VideoThumbnailViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\ServerViewModelAdapter.cs" />
     <Compile Include="Adapters\ViewModelAdapters\SessionViewModelAdapter.cs" />
-    <Compile Include="Activities\MainActivity.cs" />
-    <Compile Include="Fragments\HomeFragment.cs" />
+    <Compile Include="Activities\Main\MainActivity.cs" />
+    <Compile Include="Fragments\Home\HomeFragment.cs" />
     <Compile Include="Fragments\ServerFragment.cs" />
     <Compile Include="Fragments\SessionFragment.cs" />
     <Compile Include="Fragments\SettingsFragment.cs" />
@@ -119,6 +131,7 @@
     <Compile Include="Tools\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AndroidApp.cd" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -334,6 +347,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-v21\ic_stop.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.
