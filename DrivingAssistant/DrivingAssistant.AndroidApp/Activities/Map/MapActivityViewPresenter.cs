@@ -15,13 +15,10 @@ using Xamarin.Essentials;
 
 namespace DrivingAssistant.AndroidApp.Activities.Map
 {
-    public class MapActivityPresenter
+    public class MapActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         //============================================================
-        public MapActivityPresenter(Context context)
+        public MapActivityViewPresenter(Context context)
         {
             _context = context;
         }
@@ -53,11 +50,12 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
                     MarginX = 20,
                     MarginY = 20
                 });
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MapActivity_SetupMap, map));
+
+                Notify(new NotificationEventArgs(NotificationCommand.MapActivity_SetupMap, map));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MapActivity_SetupMap, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.MapActivity_SetupMap, ex));
             }
         }
     }

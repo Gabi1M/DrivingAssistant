@@ -14,10 +14,10 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         private readonly IEnumerable<HostServer> _servers;
 
         //============================================================
-        public ServerViewModelAdapter(Activity activity, IEnumerable<HostServer> servers)
+        public ServerViewModelAdapter(Activity activity, object servers)
         {
             _activity = activity;
-            _servers = servers;
+            _servers = servers as List<HostServer>;
         }
 
         //============================================================

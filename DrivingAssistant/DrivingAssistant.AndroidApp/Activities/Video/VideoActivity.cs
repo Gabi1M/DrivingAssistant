@@ -14,7 +14,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Video
     {
         private VideoView _videoView;
         private Core.Models.Video _video;
-        private VideoActivityPresenter _presenter;
+        private VideoActivityViewPresenter _viewPresenter;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -23,23 +23,23 @@ namespace DrivingAssistant.AndroidApp.Activities.Video
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_video);
             SetupActivityFields();
-            _presenter = new VideoActivityPresenter(this);
-            _presenter.OnPropertyChanged += PresenterOnOnPropertyChanged;
+            _viewPresenter = new VideoActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnOnNotificationReceived;
             LoadVideo(_video);
         }
 
         //============================================================
-        private void PresenterOnOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.VideoActivity_LoadVideo:
+                case NotificationCommand.VideoActivity_LoadVideo:
                 {
                     var mediaController = new MediaController(this);
                     mediaController.SetAnchorView(_videoView);
@@ -62,7 +62,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Video
         //============================================================
         private void LoadVideo(Core.Models.Video video)
         {
-            _presenter.LoadVideo(video);
+            _viewPresenter.LoadVideo(video);
         }
     }
 }

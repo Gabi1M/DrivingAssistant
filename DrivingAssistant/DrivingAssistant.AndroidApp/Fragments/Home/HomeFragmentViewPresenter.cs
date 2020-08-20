@@ -11,18 +11,15 @@ using SkiaSharp;
 
 namespace DrivingAssistant.AndroidApp.Fragments.Home
 {
-    public class HomeFragmentPresenter
+    public class HomeFragmentViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         private readonly User _user;
         private readonly SessionService _sessionService = new SessionService();
         private readonly VideoService _videoService = new VideoService();
         private readonly ReportService _reportService = new ReportService();
 
         //============================================================
-        public HomeFragmentPresenter(Context context, User user)
+        public HomeFragmentViewPresenter(Context context, User user)
         {
             _context = context;
             _user = user;
@@ -60,11 +57,11 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                     Entries = sessionChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25,
                     LabelMode = LabelMode.RightOnly, Margin = 50
                 };
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateSessionChart, chart));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, chart));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateSessionChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, ex));
             }
         }
 
@@ -97,11 +94,11 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                     }
                 };
                 var chart = new PieChart { Entries = videoChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, LabelMode = LabelMode.RightOnly, Margin = 50 };
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateVideoChart, chart));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateVideoChart, chart));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateVideoChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateVideoChart, ex));
             }
         }
 
@@ -161,11 +158,11 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                     MaxValue = 100, LabelMode = LabelMode.RightOnly, Margin = 50
                 };
 
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateReportChart, new Tuple<Chart, Chart>(chartReport, chartLanePosition)));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, new Tuple<Chart, Chart>(chartReport, chartLanePosition)));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.HomeFragment_CreateReportChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, ex));
             }
         }
     }

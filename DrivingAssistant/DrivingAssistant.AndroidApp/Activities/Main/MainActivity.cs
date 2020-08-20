@@ -9,8 +9,10 @@ using Android.Support.V4.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using DrivingAssistant.AndroidApp.Fragments;
 using DrivingAssistant.AndroidApp.Fragments.Home;
+using DrivingAssistant.AndroidApp.Fragments.Server;
+using DrivingAssistant.AndroidApp.Fragments.Session;
+using DrivingAssistant.AndroidApp.Fragments.Settings;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
@@ -28,7 +30,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
         private TextView _textViewUserEmail;
         private TextView _textViewUserRole;
 
-        private MainActivityPresenter _presenter;
+        private MainActivityViewPresenter _viewPresenter;
         private User _user;
 
         //============================================================
@@ -42,24 +44,24 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
             ExtractIntent();
             SetupDrawer();
 
-            _presenter = new MainActivityPresenter(this);
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter = new MainActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
-            ChangeFragment(new HomeFragment(_user), "Home");
+            ChangeFragment(new HomeFragment(this, _user), "Home");
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.MainActivity_Navigation:
+                case NotificationCommand.MainActivity_Navigation:
                 {
                     switch (e.Data)
                     {
@@ -152,7 +154,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
         //============================================================
         public bool OnNavigationItemSelected(IMenuItem item)
         {
-            _presenter.NavigationItemSelect(item.ItemId, _user);
+            _viewPresenter.NavigationItemSelect(item.ItemId, _user);
             return true;
         }
 

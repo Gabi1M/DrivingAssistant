@@ -19,7 +19,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
         private MapControl _mapControl;
         private Point[] _sessionPoints;
 
-        private MapActivityPresenter _presenter;
+        private MapActivityViewPresenter _viewPresenter;
         
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -29,23 +29,23 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
             SetContentView(Resource.Layout.activity_map);
             SetupActivityFields();
             GetPointsFromIntent();
-            _presenter = new MapActivityPresenter(this);
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter = new MapActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
             SetupMap();
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.MapActivity_SetupMap:
+                case NotificationCommand.MapActivity_SetupMap:
                 {
                     _mapControl.Map = e.Data as Mapsui.Map;
                     var middlePoint = new Point((_sessionPoints.First().X + _sessionPoints.Last().X) / 2, (_sessionPoints.First().Y + _sessionPoints.Last().Y) / 2);
@@ -64,7 +64,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
         //============================================================
         private async void SetupMap()
         {
-            await _presenter.SetupMap(_sessionPoints);
+            await _viewPresenter.SetupMap(_sessionPoints);
         }
 
         //============================================================

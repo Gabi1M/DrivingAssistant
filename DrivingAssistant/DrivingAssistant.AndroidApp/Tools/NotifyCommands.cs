@@ -1,6 +1,6 @@
 ﻿namespace DrivingAssistant.AndroidApp.Tools
 {
-    public enum NotifyCommand
+    public enum NotificationCommand
     {
         LoginActivity_Server,
         LoginActivity_Login,
@@ -23,6 +23,25 @@
         SessionEditActivity_Submit,
         HomeFragment_CreateSessionChart,
         HomeFragment_CreateVideoChart,
-        HomeFragment_CreateReportChart
+        HomeFragment_CreateReportChart,
+        ServerFragment_ItemClick,
+        ServerFragment_Refresh,
+        ServerFragment_Add,
+        ServerFragment_Delete,
+        ServerFragment_Modify,
+        SessionFragment_ItemClick,
+        SessionFragment_Refresh,
+        SessionFragment_Add,
+        SessionFragment_Delete,
+        SessionFragment_Modify,
+        SessionFragment_Map,
+        SessionFragment_Original,
+        SessionFragment_Processed,
+        SessionFragment_Submit,
+        SettingsFragment_StartRecording,
+        SettingsFragment_StopRecording,
+        SettingsFragment_Save,
+        SettingsFragment_CameraSesstion,
+        SettingsFragment_Refresh
     }
 }

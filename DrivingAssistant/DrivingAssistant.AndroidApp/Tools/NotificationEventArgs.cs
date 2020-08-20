@@ -2,16 +2,16 @@
 
 namespace DrivingAssistant.AndroidApp.Tools
 {
-    public class PropertyChangedEventArgs : EventArgs
+    public class NotificationEventArgs : EventArgs
     {
         //============================================================
-        public PropertyChangedEventArgs(NotifyCommand command, object data)
+        public NotificationEventArgs(NotificationCommand command, object data)
         {
             Command = command;
             Data = data;
         }
 
         public object Data { get; set; }
-        public NotifyCommand Command { get; set; }
+        public NotificationCommand Command { get; set; }
     }
 }

@@ -10,15 +10,12 @@ using DrivingAssistant.Core.Tools;
 
 namespace DrivingAssistant.AndroidApp.Activities.Register
 {
-    public class RegisterActivityPresenter
+    public class RegisterActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         private readonly UserService _userService = new UserService();
 
         //============================================================
-        public RegisterActivityPresenter(Context context)
+        public RegisterActivityViewPresenter(Context context)
         {
             _context = context;
         }
@@ -29,13 +26,13 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
             if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(username) ||
                 string.IsNullOrEmpty(password) || string.IsNullOrEmpty(email))
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.RegisterActivity_Register, new Exception("Some fields were left empty!")));
+                Notify(new NotificationEventArgs(NotificationCommand.RegisterActivity_Register, new Exception("Some fields were left empty!")));
                 return;
             }
 
             if (!await Utils.CheckConnectionAsync(Constants.ServerUri))
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.RegisterActivity_Register, new Exception("Failed to connect to server!")));
+                Notify(new NotificationEventArgs(NotificationCommand.RegisterActivity_Register, new Exception("Failed to connect to server!")));
                 return;
             }
 
@@ -44,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
                 var users = await _userService.GetAllAsync();
                 if (users.Any(x => x.Username.Trim() == username.Trim()))
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.RegisterActivity_Register, new Exception("There is already an user with the same username!")));
+                    Notify(new NotificationEventArgs(NotificationCommand.RegisterActivity_Register, new Exception("There is already an user with the same username!")));
                     return;
                 }
 
@@ -61,11 +58,11 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
                 };
 
                 await _userService.SetAsync(user);
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.RegisterActivity_Register, user));
+                Notify(new NotificationEventArgs(NotificationCommand.RegisterActivity_Register, user));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.RegisterActivity_Register, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.RegisterActivity_Register, ex));
             }
         }
     }

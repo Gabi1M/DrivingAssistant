@@ -9,15 +9,13 @@ using DrivingAssistant.Core.Tools;
 
 namespace DrivingAssistant.AndroidApp.Activities.Login
 {
-    public class LoginActivityPresenter
+    public class LoginActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
         private readonly UserService _userService = new UserService();
         private readonly ServerService _serverService = new ServerService();
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
 
         //============================================================
-        public LoginActivityPresenter(Context context)
+        public LoginActivityViewPresenter(Context context)
         {
             _context = context;
         }
@@ -33,21 +31,21 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
                 var serverStringList = servers.Select(x => x.Name).ToArray();
                 alert.SetItems(serverStringList, (o, args) =>
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Server, servers.ElementAt(args.Which)));
+                    Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Server, servers.ElementAt(args.Which)));
                 });
 
                 alert.Create()?.Show();
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Server, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Server, ex));
             }
         }
 
         //============================================================
         public void RegisterButtonClicked()
         {
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Register, null));
+            Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Register, null));
         }
 
         //============================================================
@@ -55,13 +53,13 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Login, new Exception("Username or password is empty!")));
+                Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Login, new Exception("Username or password is empty!")));
                 return;
             }
 
             if (!await Utils.CheckConnectionAsync(Constants.ServerUri))
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Login, new Exception("Failed to connect to server!")));
+                Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Login, new Exception("Failed to connect to server!")));
                 return;
             }
 
@@ -72,16 +70,16 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
                     x.Username.Trim() == username && x.Password.Trim() == Crypto.EncryptSha256(password)))
                 {
                     var user = users.First(x => x.Username.Trim() == username && x.Password.Trim() == Crypto.EncryptSha256(password));
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Login, user));
+                    Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Login, user));
                 }
                 else
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Login, new Exception("Username or password incorrect!")));
+                    Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Login, new Exception("Username or password incorrect!")));
                 }
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.LoginActivity_Login, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Login, ex));
             }
         }
     }

@@ -7,17 +7,14 @@ using DrivingAssistant.AndroidApp.Tools;
 
 namespace DrivingAssistant.AndroidApp.Activities.VideoList
 {
-    public class VideoListActivityPresenter
+    public class VideoListActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         public readonly IEnumerable<Core.Models.Video> _videos;
         private int _selectedPosition = -1;
         private View _selectedView;
 
         //============================================================
-        public VideoListActivityPresenter(Context context, IEnumerable<Core.Models.Video> videos)
+        public VideoListActivityViewPresenter(Context context, IEnumerable<Core.Models.Video> videos)
         {
             _context = context;
             _videos = videos;
@@ -28,17 +25,17 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         {
             if (_selectedPosition == -1)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.VideoListActivity_View, new Exception("No video selected!")));
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_View, new Exception("No video selected!")));
                 return;
             }
 
             try
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.VideoListActivity_View, _videos.ElementAt(_selectedPosition)));
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_View, _videos.ElementAt(_selectedPosition)));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.VideoListActivity_View, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_View, ex));
             }
         }
 
@@ -48,7 +45,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             _selectedView?.SetBackgroundResource(0);
             _selectedPosition = position;
             _selectedView = view;
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.VideoListActivity_Item, view));
+            Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_Item, view));
         }
     }
 }

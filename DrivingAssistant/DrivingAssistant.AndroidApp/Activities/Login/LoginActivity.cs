@@ -21,9 +21,8 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
         private TextView _textServer;
         private Button _loginButton;
         private Button _registerButton;
-        private ProgressDialog _progressDialog;
 
-        private LoginActivityPresenter _presenter;
+        private LoginActivityViewPresenter _viewPresenter;
         private HostServer _selectedServer;
 
         //============================================================
@@ -32,8 +31,8 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SimpleStorage.SetContext(ApplicationContext);
-            _presenter = new LoginActivityPresenter(this);
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter = new LoginActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
             SetContentView(Resource.Layout.activity_login);
             SetupActivityFields();
 
@@ -43,35 +42,30 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
-            if (_progressDialog.IsShowing)
-            {
-                _progressDialog.Dismiss();
-            }
-
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.LoginActivity_Server:
+                case NotificationCommand.LoginActivity_Server:
                 {
                     _selectedServer = e.Data as HostServer;
                     _textServer.Text = _selectedServer?.Name;
                     Constants.ServerUri = _selectedServer?.Address;
                     break;
                 }
-                case NotifyCommand.LoginActivity_Register:
+                case NotificationCommand.LoginActivity_Register:
                 {
                     var intent = new Intent(this, typeof(RegisterActivity));
                     StartActivity(intent);
                     break;
                 }
-                case NotifyCommand.LoginActivity_Login:
+                case NotificationCommand.LoginActivity_Login:
                 {
                     var user = e.Data as User;
                     var intent = new Intent(Application.Context, typeof(MainActivity));
@@ -91,10 +85,10 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
                 _textInputPassword.Text = string.Empty;
             }
 
-            if (_presenter == null)
+            if (_viewPresenter == null)
             {
-                _presenter = new LoginActivityPresenter(this);
-                _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+                _viewPresenter = new LoginActivityViewPresenter(this);
+                _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
             }
             base.OnResume();
         }
@@ -116,20 +110,21 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
         //============================================================
         private void OnTextServerClick(object sender, EventArgs e)
         {
-            _presenter.TextServerClicked();
+            _viewPresenter.TextServerClicked();
         }
 
         //============================================================
         private void OnRegisterButtonClick(object sender, EventArgs e)
         {
-            _presenter.RegisterButtonClicked();
+            _viewPresenter.RegisterButtonClicked();
         }
 
         //============================================================
         private async void OnLoginButtonClick(object sender, EventArgs e)
         {
-            _progressDialog = ProgressDialog.Show(this, "Login", "Logging in ...");
-            await _presenter.LoginButtonClick(_textInputUsername.Text, _textInputPassword.Text);
+            var progressDialog = Utils.ShowProgressDialog(this, "Login", "Logging in...");
+            await _viewPresenter.LoginButtonClick(_textInputUsername.Text, _textInputPassword.Text);
+            progressDialog.Dismiss();
         }
     }
 }

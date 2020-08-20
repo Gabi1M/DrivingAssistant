@@ -22,11 +22,8 @@ using Location = Xamarin.Essentials.Location;
 
 namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 {
-    public class SessionEditActivityPresenter
+    public class SessionEditActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         private readonly SessionService _sessionService = new SessionService();
         private readonly VideoService _videoService = new VideoService();
         private readonly User _user;
@@ -44,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         private ICollection<Point> _selectedWaypoints = new List<Point>();
 
         //============================================================
-        public SessionEditActivityPresenter(Context context, Session currentSession, User user, Location currentLocation)
+        public SessionEditActivityViewPresenter(Context context, Session currentSession, User user, Location currentLocation)
         {
             _context = context;
             _currentSession = currentSession;
@@ -66,7 +63,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     //IGNORED
                 }
             }
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Back, null));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Back, null));
         }
 
         //============================================================
@@ -75,7 +72,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             _selectedView?.SetBackgroundResource(0);
             _selectedPosition = position;
             _selectedView = view;
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_ItemClick, view));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_ItemClick, view));
         }
 
         //============================================================
@@ -89,7 +86,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
             if (Path.GetExtension(filedata.FilePath) != ".jpg" && Path.GetExtension(filedata.FilePath) != ".mp4")
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("Selected file is not mp4 video file")));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, new Exception("Selected file is not mp4 video file")));
                 return;
             }
 
@@ -118,11 +115,11 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                         await _videoService.UpdateVideoAsync(video);
                         await RefreshVideoSource(true);
                     }
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, _videos));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, _videos));
                 }
                 catch (Exception ex)
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, ex));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, ex));
                 }
                 progressDialog?.Dismiss();
             });
@@ -135,7 +132,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         {
             if (_selectedPosition == -1)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
                 return;
             }
 
@@ -151,7 +148,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 }
                 catch (Exception ex)
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, ex));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, ex));
                     return;
                 }
 
@@ -186,7 +183,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 }
             }
 
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, _videos));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, _videos));
         }
 
         //============================================================
@@ -194,12 +191,12 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         {
             if (_selectedPosition == -1)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, new Exception("No video selected!")));
                 return;
             }
 
             var video = _videos.ElementAt(_selectedPosition);
-            OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_VideoView, video));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoView, video));
         }
 
         //============================================================
@@ -212,7 +209,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 {
                     _selectedStartDateTime = _selectedStartDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedStartDateTime = _selectedStartDateTime?.AddMinutes(eventArgs.Minute);
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_StartDate, _selectedStartDateTime));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_StartDate, _selectedStartDateTime));
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
@@ -226,7 +223,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 {
                     _selectedEndDateTime = _selectedEndDateTime?.AddHours(eventArgs.HourOfDay);
                     _selectedEndDateTime = _selectedEndDateTime?.AddMinutes(eventArgs.Minute);
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_EndDate, _selectedEndDateTime));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_EndDate, _selectedEndDateTime));
                 }, DateTime.Now.Hour, DateTime.Now.Minute, true).Show();
             }, DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Show();
         }
@@ -277,7 +274,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 _selectedStartPoint = selectedStartPoint;
                 if (_selectedStartPoint != null)
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_StartLocation, _selectedStartPoint));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_StartLocation, _selectedStartPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -328,7 +325,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 _selectedEndPoint = selectedEndPoint;
                 if (_selectedEndPoint != null)
                 {
-                    OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_EndLocation, _selectedEndPoint));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_EndLocation, _selectedEndPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -390,7 +387,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
                 _selectedWaypoints = new List<Point>(selectedWaypoints);
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Waypoints, _selectedWaypoints));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Waypoints, _selectedWaypoints));
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             alert.Create()?.Show();
@@ -438,11 +435,11 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                         await _videoService.UpdateVideoAsync(video);
                     }
                 }
-                OnPropertyChanged(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Submit, null));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Submit, null));
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.SessionEditActivity_Submit, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Submit, ex));
             }
         }
 

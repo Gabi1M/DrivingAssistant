@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
@@ -19,37 +20,39 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
         private ChartView _chartViewReports;
         private ChartView _chartViewLanePosition;
 
-        private readonly HomeFragmentPresenter _presenter;
+        private readonly Context _activityContext;
+        private readonly HomeFragmentViewPresenter _viewPresenter;
 
         //============================================================
-        public HomeFragment(User user)
+        public HomeFragment(Context activityContext, User user)
         {
-            _presenter = new HomeFragmentPresenter(Context, user);
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _activityContext = activityContext;
+            _viewPresenter = new HomeFragmentViewPresenter(activityContext, user);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(Context, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(_activityContext, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.HomeFragment_CreateSessionChart:
+                case NotificationCommand.HomeFragment_CreateSessionChart:
                 {
                     _chartViewSessions.Chart = e.Data as Chart;
                     break;
                 }
-                case NotifyCommand.HomeFragment_CreateVideoChart:
+                case NotificationCommand.HomeFragment_CreateVideoChart:
                 {
                     _chartViewVideos.Chart = e.Data as Chart;
                     break;
                 }
-                case NotifyCommand.HomeFragment_CreateReportChart:
+                case NotificationCommand.HomeFragment_CreateReportChart:
                 {
                     var charts = e.Data as Tuple<Chart, Chart>;
                     _chartViewReports.Chart = charts?.Item1;
@@ -81,27 +84,25 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
         //============================================================
         private async Task CreateSessionChart()
         {
-            await _presenter.CreateSessionChart();
+            await _viewPresenter.CreateSessionChart();
         }
 
         //============================================================
         private async Task CreateVideoChart()
         {
-            await _presenter.CreateVideoChart();
+            await _viewPresenter.CreateVideoChart();
         }
 
         //============================================================
         private async Task CreateReportChart()
         {
-            await _presenter.CreateReportChart();
+            await _viewPresenter.CreateReportChart();
         }
 
         //============================================================
         private async void RefreshData()
         {
-            var progressDialog = new ProgressDialog(Context);
-            progressDialog.SetMessage("Loading Data...");
-            progressDialog.Show();
+            var progressDialog = Utils.ShowProgressDialog(_activityContext, "Home", "Loading data ...");
             await CreateSessionChart();
             await CreateVideoChart();
             await CreateReportChart();

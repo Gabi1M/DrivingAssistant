@@ -3,7 +3,6 @@ using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Widget;
-using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 
 namespace DrivingAssistant.AndroidApp.Activities.Register
@@ -17,10 +16,8 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
         private Button _registerButton;
-        private ProgressDialog _progressDialog;
 
-        private RegisterActivityPresenter _presenter;
-        private readonly UserService _userService = new UserService();
+        private RegisterActivityViewPresenter _viewPresenter;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -29,29 +26,24 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_register);
             SetupActivityFields();
-            _presenter = new RegisterActivityPresenter(this);
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter = new RegisterActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
-            if (_progressDialog.IsShowing)
-            {
-                _progressDialog.Dismiss();
-            }
-
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.RegisterActivity_Register:
+                case NotificationCommand.RegisterActivity_Register:
                 {
-                    Toast.MakeText(this, "Registration successful!", ToastLength.Short)?.Show();
+                    Utils.ShowToast(this, "Registration successful!");
                     Finish();
                     break;
                 }
@@ -74,9 +66,10 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
         //============================================================
         private async void OnRegisterButtonClick(object sender, EventArgs e)
         {
-            _progressDialog = ProgressDialog.Show(this, "Register", "Registering user...");
-            await _presenter.RegisterButtonClick(_textInputFirstName.Text, _textInputLastName.Text,
+            var progressDialog = Utils.ShowProgressDialog(this, "Register", "Registering user ...");
+            await _viewPresenter.RegisterButtonClick(_textInputFirstName.Text, _textInputLastName.Text,
                 _textInputUsername.Text, _textInputPassword.Text, _textInputEmail.Text);
+            progressDialog.Dismiss();
         }
     }
 }

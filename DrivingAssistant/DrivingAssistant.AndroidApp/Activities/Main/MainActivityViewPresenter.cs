@@ -1,19 +1,18 @@
 ﻿using System;
 using Android.Content;
-using DrivingAssistant.AndroidApp.Fragments;
 using DrivingAssistant.AndroidApp.Fragments.Home;
+using DrivingAssistant.AndroidApp.Fragments.Server;
+using DrivingAssistant.AndroidApp.Fragments.Session;
+using DrivingAssistant.AndroidApp.Fragments.Settings;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 
 namespace DrivingAssistant.AndroidApp.Activities.Main
 {
-    public class MainActivityPresenter
+    public class MainActivityViewPresenter : ViewPresenter
     {
-        private readonly Context _context;
-        public event EventHandler<PropertyChangedEventArgs> OnPropertyChanged;
-
         //============================================================
-        public MainActivityPresenter(Context context)
+        public MainActivityViewPresenter(Context context)
         {
             _context = context;
         }
@@ -27,34 +26,34 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                 {
                     case Resource.Id.nav_home:
                     {
-                        OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, new HomeFragment(user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new HomeFragment(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_sessions:
                     {
-                        OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, new SessionFragment(user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SessionFragment(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_servers:
                     {
-                        OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, new ServerFragment(user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new ServerFragment(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_settings:
                     {
-                        OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, new SettingsFragment(user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SettingsFragment(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_logout:
                     {
-                        OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, null));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, null));
                         break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                OnPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(NotifyCommand.MainActivity_Navigation, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, ex));
             }
         }
     }

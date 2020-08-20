@@ -40,8 +40,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
         private User _user;
 
-        private ProgressDialog _progressDialog;
-        private SessionEditActivityPresenter _presenter;
+        private SessionEditActivityViewPresenter _viewPresenter;
 
         //============================================================
         protected override async void OnCreate(Bundle savedInstanceState)
@@ -67,79 +66,74 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, (await (new VideoService()).GetVideoBySessionAsync(currentSession.Id)).ToList());
             }
 
-            _presenter = new SessionEditActivityPresenter(this, currentSession, _user, await Geolocation.GetLastKnownLocationAsync());
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter = new SessionEditActivityViewPresenter(this, currentSession, _user, await Geolocation.GetLastKnownLocationAsync());
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
-            if (_progressDialog != null && _progressDialog.IsShowing)
-            {
-                _progressDialog.Dismiss();
-            }
-
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.SessionEditActivity_Back:
+                case NotificationCommand.SessionEditActivity_Back:
                 {
                     base.OnBackPressed();
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_ItemClick:
+                case NotificationCommand.SessionEditActivity_ItemClick:
                 {
                     var view = e.Data as View;
                     view?.SetBackgroundResource(Resource.Drawable.list_element_border);
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_VideoRefresh:
+                case NotificationCommand.SessionEditActivity_VideoRefresh:
                 {
                     _videoListView.Adapter?.Dispose();
                     _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, e.Data as List<Core.Models.Video>);
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_VideoView:
+                case NotificationCommand.SessionEditActivity_VideoView:
                 {
                     var intent = new Intent(this, typeof(VideoActivity));
                     intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.Video));
                     StartActivity(intent);
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_StartDate:
+                case NotificationCommand.SessionEditActivity_StartDate:
                 {
                     _labelStartDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_EndDate:
+                case NotificationCommand.SessionEditActivity_EndDate:
                 {
                     _labelEndDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_StartLocation:
+                case NotificationCommand.SessionEditActivity_StartLocation:
                 {
                     var startLocation = e.Data as Point;
                     _labelStartLocation.Text = startLocation.X + " " + startLocation.Y;
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_EndLocation:
+                case NotificationCommand.SessionEditActivity_EndLocation:
                 {
                     var endLocation = e.Data as Point;
                     _labelEndLocation.Text = endLocation.X + " " + endLocation.Y;
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_Waypoints:
+                case NotificationCommand.SessionEditActivity_Waypoints:
                 {
                     var waypoints = e.Data as List<Point>;
                     _labelWaypoints.Text = waypoints.Count + " Selected";
                     break;
                 }
-                case NotifyCommand.SessionEditActivity_Submit:
+                case NotificationCommand.SessionEditActivity_Submit:
                 {
                     Finish();
                     break;
@@ -202,20 +196,21 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         //============================================================
         public override async void OnBackPressed()
         {
-            _progressDialog = ProgressDialog.Show(this, "Deleting temporary videos", "Please wait...");
-            await _presenter.BackPressed();
+            var progressDialog = Utils.ShowProgressDialog(this, "Deleting temporary videos", "Please wait ...");
+            await _viewPresenter.BackPressed();
+            progressDialog.Dismiss();
         }
 
         //============================================================
         private void OnVideoListItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            _presenter.ItemClick(e.Position, e.View);
+            _viewPresenter.ItemClick(e.Position, e.View);
         }
 
         //============================================================
         private async void OnVideoButtonAddClick(object sender, EventArgs e)
         {
-            await _presenter.VideoAddClick();
+            await _viewPresenter.VideoAddClick();
         }
 
         //============================================================
@@ -227,49 +222,49 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         //============================================================
         private void OnVideoButtonDeleteClick(object sender, EventArgs e)
         {
-            _presenter.VideoDeleteClick();
+            _viewPresenter.VideoDeleteClick();
         }
 
         //============================================================
         private void OnVideoButtonViewClick(object sender, EventArgs e)
         {
-            _presenter.VideoViewClick();
+            _viewPresenter.VideoViewClick();
         }
 
         //============================================================
         private void OnStartDateClick(object sender, EventArgs e)
         {
-            _presenter.StartDateClick();
+            _viewPresenter.StartDateClick();
         }
 
         //============================================================
         private void OnEndDateClick(object sender, EventArgs e)
         {
-            _presenter.EndDateClick();
+            _viewPresenter.EndDateClick();
         }
 
         //============================================================
         private void OnStartLocationClick(object sender, EventArgs e)
         {
-            _presenter.StartLocationClick();
+            _viewPresenter.StartLocationClick();
         }
 
         //============================================================
         private void OnEndLocationClick(object sender, EventArgs e)
         {
-            _presenter.EndLocationClick();
+            _viewPresenter.EndLocationClick();
         }
 
         //============================================================
         private void OnWaypointsClick(object sender, EventArgs e)
         {
-            _presenter.WaypointsClick();
+            _viewPresenter.WaypointsClick();
         }
 
         //============================================================
         private async void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            await _presenter.SubmitClick(_textDescription.Text);
+            await _viewPresenter.SubmitClick(_textDescription.Text);
         }
     }
 }

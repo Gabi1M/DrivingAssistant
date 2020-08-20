@@ -16,10 +16,10 @@ namespace DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters
         private readonly ICollection<Session> _sessions;
 
         //============================================================
-        public SessionViewModelAdapter(Activity activity, ICollection<Session> sessions)
+        public SessionViewModelAdapter(Activity activity, object sessions)
         {
             _activity = activity;
-            _sessions = sessions;
+            _sessions = sessions as List<Session>;
         }
 
         //============================================================

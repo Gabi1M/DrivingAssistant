@@ -21,7 +21,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         private ListView _videoListView;
         private Button _buttonView;
 
-        private VideoListActivityPresenter _presenter;
+        private VideoListActivityViewPresenter _viewPresenter;
 
         //============================================================
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,32 +30,33 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_videos);
             SetupActivityFields();
-            SetupListAdapter();
 
-            _presenter = new VideoListActivityPresenter(this,
+            _viewPresenter = new VideoListActivityViewPresenter(this,
                 JsonConvert.DeserializeObject<IEnumerable<Core.Models.Video>>(Intent?.GetStringExtra("videos")!));
-            _presenter.OnPropertyChanged += PresenterOnPropertyChanged;
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
+
+            SetupListAdapter();
         }
 
         //============================================================
-        private void PresenterOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long)?.Show();
+                Utils.ShowToast(this, ex.Message, true);
                 return;
             }
 
             switch (e.Command)
             {
-                case NotifyCommand.VideoListActivity_View:
+                case NotificationCommand.VideoListActivity_View:
                 {
                     var intent = new Intent(this, typeof(VideoActivity));
                     intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.Video));
                     StartActivity(intent);
                     break;
                 }
-                case NotifyCommand.VideoListActivity_Item:
+                case NotificationCommand.VideoListActivity_Item:
                 {
                     var view = e.Data as View;
                     view?.SetBackgroundResource(Resource.Drawable.list_element_border);
@@ -75,21 +76,21 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         //============================================================
         private void OnButtonViewClick(object sender, EventArgs e)
         {
-            _presenter.ButtonViewClick();
+            _viewPresenter.ButtonViewClick();
         }
 
         //============================================================
         private void SetupListAdapter()
         {
             _videoListView.ChoiceMode = ChoiceMode.Single;
-            _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _presenter._videos.ToList());
+            _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, _viewPresenter._videos.ToList());
             _videoListView.ItemClick += OnItemClick;
         }
 
         //============================================================
         private void OnItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            _presenter.ItemClick(e.Position, e.View);
+            _viewPresenter.ItemClick(e.Position, e.View);
         }
     }
 }

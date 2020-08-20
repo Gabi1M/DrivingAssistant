@@ -11,7 +11,10 @@ namespace DrivingAssistant.WebServer.Tools
         public SshHelper(string host, string username, string password)
         {
             _client = new SshClient(new ConnectionInfo(host, 22, username,
-                new PasswordAuthenticationMethod(username, password)));
+                new PasswordAuthenticationMethod(username, password)))
+            {
+                ConnectionInfo = {Timeout = TimeSpan.FromSeconds(5)}
+            };
         }
 
         //======================================================//
