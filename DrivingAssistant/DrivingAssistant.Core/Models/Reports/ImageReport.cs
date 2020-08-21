@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace DrivingAssistant.Core.Models.ImageProcessing
+namespace DrivingAssistant.Core.Models.Reports
 {
     public class ImageReport
     {

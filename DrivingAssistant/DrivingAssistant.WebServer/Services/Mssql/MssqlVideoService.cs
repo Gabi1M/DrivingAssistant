@@ -25,12 +25,12 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<IEnumerable<Video>> GetAsync()
+        public async Task<IEnumerable<VideoRecording>> GetAsync()
         {
             return await Task.Run(() =>
             {
                 _tableAdapter.Fill(_dataset.Video);
-                return _dataset.Video.AsEnumerable().Select(row => new Video
+                return _dataset.Video.AsEnumerable().Select(row => new VideoRecording
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
@@ -44,13 +44,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<Video> GetById(long id)
+        public async Task<VideoRecording> GetById(long id)
         {
             return await Task.Run(() =>
             {
                 using var tableAdapter = new Get_Video_By_IdTableAdapter();
                 tableAdapter.Fill(_dataset.Get_Video_By_Id, id);
-                return _dataset.Get_Video_By_Id.AsEnumerable().Select(row => new Video
+                return _dataset.Get_Video_By_Id.AsEnumerable().Select(row => new VideoRecording
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
@@ -64,13 +64,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<Video> GetByProcessedId(long processedId)
+        public async Task<VideoRecording> GetByProcessedId(long processedId)
         {
             return await Task.Run(() =>
             {
                 using var tableAdapter = new Get_Video_By_Processed_IdTableAdapter();
                 tableAdapter.Fill(_dataset.Get_Video_By_Processed_Id, processedId);
-                return _dataset.Get_Video_By_Processed_Id.AsEnumerable().Select(row => new Video
+                return _dataset.Get_Video_By_Processed_Id.AsEnumerable().Select(row => new VideoRecording
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
@@ -84,13 +84,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<IEnumerable<Video>> GetBySession(long sessionId)
+        public async Task<IEnumerable<VideoRecording>> GetBySession(long sessionId)
         {
             return await Task.Run(() =>
             {
                 using var tableAdapter = new Get_Videos_By_SessionTableAdapter();
                 tableAdapter.Fill(_dataset.Get_Videos_By_Session, sessionId);
-                return _dataset.Get_Videos_By_Session.AsEnumerable().Select(row => new Video
+                return _dataset.Get_Videos_By_Session.AsEnumerable().Select(row => new VideoRecording
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
@@ -104,13 +104,13 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<IEnumerable<Video>> GetByUser(long userId)
+        public async Task<IEnumerable<VideoRecording>> GetByUser(long userId)
         {
             return await Task.Run(() =>
             {
                 using var tableAdapter = new Get_Videos_By_UserTableAdapter();
                 tableAdapter.Fill(_dataset.Get_Videos_By_User, userId);
-                return _dataset.Get_Videos_By_User.AsEnumerable().Select(row => new Video
+                return _dataset.Get_Videos_By_User.AsEnumerable().Select(row => new VideoRecording
                 {
                     Id = row.Id,
                     ProcessedId = row.ProcessedId,
@@ -124,27 +124,27 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         }
 
         //============================================================
-        public async Task<long> SetAsync(Video video)
+        public async Task<long> SetAsync(VideoRecording videoRecording)
         {
             return await Task.Run(() =>
             {
                 long? idOut = 0;
-                _tableAdapter.Insert(video.Id, video.ProcessedId, video.SessionId,
-                    video.Filepath, video.Source, video.Description, video.DateAdded, ref idOut);
+                _tableAdapter.Insert(videoRecording.Id, videoRecording.ProcessedId, videoRecording.SessionId,
+                    videoRecording.Filepath, videoRecording.Source, videoRecording.Description, videoRecording.DateAdded, ref idOut);
                 return idOut ?? -1;
             });
         }
 
         //============================================================
-        public async Task DeleteAsync(Video video)
+        public async Task DeleteAsync(VideoRecording videoRecording)
         {
             await Task.Run(async () =>
             {
-                _tableAdapter.Delete(video.Id);
+                _tableAdapter.Delete(videoRecording.Id);
                 await Task.Delay(1000);
                 try
                 {
-                    File.Delete(video.Filepath);
+                    File.Delete(videoRecording.Filepath);
                 }
                 catch (Exception ex)
                 {

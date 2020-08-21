@@ -13,12 +13,10 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class ThumbnailService
     {
-        private static readonly string _serverUri = Constants.ServerUri;
-
         //============================================================
         public async Task<IEnumerable<Thumbnail>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.GetAll))
             {
                 Method = "GET"
             };
@@ -31,7 +29,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<Thumbnail> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -44,7 +42,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<Thumbnail> GetByVideoAsync(long videoId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.GetByVideoId + "?VideoId=" + videoId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.GetByVideoId + "?VideoId=" + videoId))
             {
                 Method = "GET"
             };
@@ -57,7 +55,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<Bitmap> DownloadAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.Download + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.Download + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -69,7 +67,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<long> SetAsync(Thumbnail thumbnail)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -86,7 +84,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ThumbnailEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ThumbnailEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };

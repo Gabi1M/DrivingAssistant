@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using DrivingAssistant.AndroidApp.Tools;
-using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
 
@@ -12,84 +12,82 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class ReportService
     {
-        private static readonly string _serverUri = Constants.ServerUri;
-
         //============================================================
-        public async Task<IEnumerable<Report>> GetAllAsync()
+        public async Task<IEnumerable<LaneDepartureWarningReport>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.GetAll))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Report>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<LaneDepartureWarningReport>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<Report> GetByIdAsync(long id)
+        public async Task<LaneDepartureWarningReport> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<Report>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<LaneDepartureWarningReport>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<Report> GetByVideoAsync(long videoId)
+        public async Task<LaneDepartureWarningReport> GetByVideoAsync(long videoId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.GetByVideoId + "?VideoId=" + videoId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.GetByVideoId + "?VideoId=" + videoId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<Report>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<LaneDepartureWarningReport>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<IEnumerable<Report>> GetBySessionAsync(long sessionId)
+        public async Task<IEnumerable<LaneDepartureWarningReport>> GetBySessionAsync(long sessionId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.GetBySessionId + "?SessionId=" + sessionId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.GetBySessionId + "?SessionId=" + sessionId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Report>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<LaneDepartureWarningReport>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<IEnumerable<Report>> GetByUserAsync(long userId)
+        public async Task<IEnumerable<LaneDepartureWarningReport>> GetByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.GetByUserId + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.GetByUserId + "?UserId=" + userId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Report>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<LaneDepartureWarningReport>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<long> SetAsync(Report report)
+        public async Task<long> SetAsync(LaneDepartureWarningReport laneDepartureWarningReport)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
 
             await using var requestStream = await request.GetRequestStreamAsync();
             await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(report));
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(laneDepartureWarningReport));
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
@@ -99,7 +97,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.ReportEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };

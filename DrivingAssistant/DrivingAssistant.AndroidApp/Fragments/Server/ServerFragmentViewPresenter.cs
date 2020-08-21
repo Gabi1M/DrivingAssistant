@@ -13,7 +13,6 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
 {
     public class ServerFragmentViewPresenter : ViewPresenter
     {
-        private readonly User _user;
         private readonly ServerService _serverService = new ServerService();
 
         private IEnumerable<HostServer> _servers;
@@ -21,10 +20,9 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
         private View _selectedView;
 
         //============================================================
-        public ServerFragmentViewPresenter(Context context, User user)
+        public ServerFragmentViewPresenter(Context context)
         {
             _context = context;
-            _user = user;
         }
 
         //============================================================
@@ -39,13 +37,18 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
         {
             var alert = new AlertDialog.Builder(_context);
             alert.SetTitle("Input the server name");
-            var textEditName = new EditText(_context);
-            var textEditAddress = new EditText(_context);
-            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
-            textEditName.LayoutParameters = layoutParams;
-            textEditAddress.LayoutParameters = layoutParams;
-            textEditName.Gravity = GravityFlags.Center;
-            textEditAddress.Gravity = GravityFlags.Center;
+            var textEditName = new EditText(_context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent,
+                    ViewGroup.LayoutParams.MatchParent),
+                Gravity = GravityFlags.Center
+            };
+            var textEditAddress = new EditText(_context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent,
+                    ViewGroup.LayoutParams.MatchParent),
+                Gravity = GravityFlags.Center
+            };
             alert.SetView(textEditName);
             alert.SetPositiveButton("Ok", (o, args) =>
             {
@@ -122,13 +125,18 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
 
             var alert = new AlertDialog.Builder(_context);
             alert.SetTitle("Input the server name");
-            var textEditName = new EditText(_context);
-            var textEditAddress = new EditText(_context);
-            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
-            textEditName.LayoutParameters = layoutParams;
-            textEditAddress.LayoutParameters = layoutParams;
-            textEditName.Gravity = GravityFlags.Center;
-            textEditAddress.Gravity = GravityFlags.Center;
+            var textEditName = new EditText(_context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent,
+                    ViewGroup.LayoutParams.MatchParent),
+                Gravity = GravityFlags.Center
+            };
+            var textEditAddress = new EditText(_context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent,
+                    ViewGroup.LayoutParams.MatchParent),
+                Gravity = GravityFlags.Center
+            };
             alert.SetView(textEditName);
             alert.SetPositiveButton("Ok", (o, args) =>
             {
@@ -139,7 +147,6 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
                 {
                     var server = _servers.ElementAt(_selectedPosition);
                     _serverService.Delete(server.Name);
-
                     server = new HostServer
                     {
                         Name = textEditName.Text?.Trim(),

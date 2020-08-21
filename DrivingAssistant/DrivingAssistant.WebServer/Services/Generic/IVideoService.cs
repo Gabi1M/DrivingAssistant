@@ -1,18 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.WebServer.Services.Mssql;
+using DrivingAssistant.WebServer.Services.PostgreSQL;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public interface IVideoService : IGenericService<Video>
+    public interface IVideoService : IGenericService<VideoRecording>
     {
         //============================================================
-        public Task<Video> GetByProcessedId(long processedId);
+        public static IVideoService CreateNew()
+        {
+            if (Constants.ServerConstants.UsePostgresql)
+            {
+                return new PostgresqlVideoService();
+            }
+
+            return new MssqlVideoService();
+        }
 
         //============================================================
-        public Task<IEnumerable<Video>> GetBySession(long sessionId);
+        public Task<VideoRecording> GetByProcessedId(long processedId);
 
         //============================================================
-        public Task<IEnumerable<Video>> GetByUser(long userId);
+        public Task<IEnumerable<VideoRecording>> GetBySession(long sessionId);
+
+        //============================================================
+        public Task<IEnumerable<VideoRecording>> GetByUser(long userId);
     }
 }

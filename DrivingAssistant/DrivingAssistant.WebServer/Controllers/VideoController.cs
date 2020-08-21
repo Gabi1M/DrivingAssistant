@@ -6,7 +6,6 @@ using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Processing;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,8 +15,9 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class VideoController : ControllerBase
     {
-        private static readonly IVideoService _videoService = new MssqlVideoService();
-        private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
+        private static readonly IVideoService _videoService = IVideoService.CreateNew();
+        private static readonly IUserSettingsService _userSettingsService = IUserSettingsService.CreateNew();
+        private static readonly IThumbnailService _thumbnailService = IThumbnailService.CreateNew();
 
         //============================================================
         [HttpGet]
@@ -153,7 +153,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     System.IO.File.Delete(filepath);
                     filepath = newFilepath;
                 }
-                var video = new Video
+                var video = new VideoRecording
                 {
                     Filepath = filepath,
                     Source = Request.HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -171,8 +171,7 @@ namespace DrivingAssistant.WebServer.Controllers
                     VideoId = video.Id,
                     Filepath = Common.ExtractThumbnail(video.Filepath)
                 };
-                using var thumbnailService = new MssqlThumbnailService();
-                await thumbnailService.SetAsync(thumbnail);
+                await _thumbnailService.SetAsync(thumbnail);
                 return Ok(video.Id);
             }
             catch (Exception ex)
@@ -190,7 +189,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 using var streamReader = new StreamReader(Request.Body);
-                var video = JsonConvert.DeserializeObject<Video>(await streamReader.ReadToEndAsync());
+                var video = JsonConvert.DeserializeObject<VideoRecording>(await streamReader.ReadToEndAsync());
                 return Ok(await _videoService.SetAsync(video));
             }
             catch (Exception ex)

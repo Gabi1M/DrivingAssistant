@@ -1,9 +1,8 @@
-﻿using DrivingAssistant.Core.Models.ImageProcessing;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace DrivingAssistant.Core.Models
+namespace DrivingAssistant.Core.Models.Reports
 {
-    public class Report : BaseEntity
+    public class LaneDepartureWarningReport : BaseEntity
     {
         [JsonProperty("VideoId")]
         public long VideoId { get; set; }
@@ -45,9 +44,9 @@ namespace DrivingAssistant.Core.Models
         public int RightSideLineNumber { get; set; }
 
         //===========================================================//
-        public static Report FromImageReport(ImageReport imageReport, long videoId)
+        public static LaneDepartureWarningReport FromImageReport(ImageReport imageReport, long videoId)
         {
-            return new Report
+            return new LaneDepartureWarningReport
             {
                 Id = -1,
                 VideoId = videoId,
@@ -67,9 +66,9 @@ namespace DrivingAssistant.Core.Models
         }
 
         //===========================================================//
-        public static Report FromVideoReport(VideoReport videoReport, long videoId)
+        public static LaneDepartureWarningReport FromVideoReport(VideoReport videoReport, long videoId)
         {
-            return new Report
+            return new LaneDepartureWarningReport
             {
                 Id = -1,
                 VideoId = videoId,

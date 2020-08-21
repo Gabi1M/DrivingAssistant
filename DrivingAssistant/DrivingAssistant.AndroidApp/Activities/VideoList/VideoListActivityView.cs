@@ -10,13 +10,14 @@ using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities.Video;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
 
 namespace DrivingAssistant.AndroidApp.Activities.VideoList
 {
     [Activity(Label = "VideoListActivity", ScreenOrientation = ScreenOrientation.Portrait)]
-    public class VideoListActivity : Activity
+    public class VideoListActivityView : Activity
     {
         private ListView _videoListView;
         private Button _buttonView;
@@ -32,7 +33,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             SetupActivityFields();
 
             _viewPresenter = new VideoListActivityViewPresenter(this,
-                JsonConvert.DeserializeObject<IEnumerable<Core.Models.Video>>(Intent?.GetStringExtra("videos")!));
+                JsonConvert.DeserializeObject<IEnumerable<Core.Models.VideoRecording>>(Intent?.GetStringExtra("videos")!));
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
             SetupListAdapter();
@@ -51,8 +52,8 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             {
                 case NotificationCommand.VideoListActivity_View:
                 {
-                    var intent = new Intent(this, typeof(VideoActivity));
-                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.Video));
+                    var intent = new Intent(this, typeof(VideoActivityView));
+                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as VideoRecording));
                     StartActivity(intent);
                     break;
                 }

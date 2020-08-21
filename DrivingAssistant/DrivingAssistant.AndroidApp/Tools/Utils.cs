@@ -36,7 +36,7 @@ namespace DrivingAssistant.AndroidApp.Tools
         //============================================================
         public static void ShowToast(Context context, string message, bool _long = false)
         {
-            Toast.MakeText(context, message, _long ? ToastLength.Long : ToastLength.Short);
+            Toast.MakeText(context, message, _long ? ToastLength.Long : ToastLength.Short)?.Show();
         }
 
         //============================================================

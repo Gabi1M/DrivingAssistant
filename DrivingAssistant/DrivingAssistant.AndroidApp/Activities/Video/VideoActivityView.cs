@@ -4,16 +4,18 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Uri = Android.Net.Uri;
 
 namespace DrivingAssistant.AndroidApp.Activities.Video
 {
     [Activity(Label = "VideoActivity", ScreenOrientation = ScreenOrientation.Landscape)]
-    public class VideoActivity : Activity
+    public class VideoActivityView : Activity
     {
         private VideoView _videoView;
-        private Core.Models.Video _video;
+
+        private VideoRecording _videoRecording;
         private VideoActivityViewPresenter _viewPresenter;
 
         //============================================================
@@ -23,9 +25,11 @@ namespace DrivingAssistant.AndroidApp.Activities.Video
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_video);
             SetupActivityFields();
+
             _viewPresenter = new VideoActivityViewPresenter(this);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnOnNotificationReceived;
-            LoadVideo(_video);
+
+            LoadVideo(_videoRecording);
         }
 
         //============================================================
@@ -56,13 +60,13 @@ namespace DrivingAssistant.AndroidApp.Activities.Video
         private void SetupActivityFields()
         {
             _videoView = FindViewById<VideoView>(Resource.Id.videoView);
-            _video = JsonConvert.DeserializeObject<Core.Models.Video>(Intent?.GetStringExtra("video")!);
+            _videoRecording = JsonConvert.DeserializeObject<VideoRecording>(Intent?.GetStringExtra("video")!);
         }
 
         //============================================================
-        private void LoadVideo(Core.Models.Video video)
+        private void LoadVideo(VideoRecording videoRecording)
         {
-            _viewPresenter.LoadVideo(video);
+            _viewPresenter.LoadVideo(videoRecording);
         }
     }
 }

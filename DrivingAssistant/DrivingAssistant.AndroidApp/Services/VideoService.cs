@@ -13,77 +13,75 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class VideoService
     {
-        private static readonly string _serverUri = Constants.ServerUri;
-
         //============================================================
-        public async Task<IEnumerable<Video>> GetAllVideosAsync()
+        public async Task<IEnumerable<VideoRecording>> GetAllVideosAsync()
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.GetAll))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Video>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<VideoRecording>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<Video> GetVideoByIdAsync(long id)
+        public async Task<VideoRecording> GetVideoByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<Video>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<VideoRecording>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<Video> GetVideoByProcessedIdAsync(long processedId)
+        public async Task<VideoRecording> GetVideoByProcessedIdAsync(long processedId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.GetByProcessedId + "?ProcessedId=" + processedId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.GetByProcessedId + "?ProcessedId=" + processedId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<Video>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<VideoRecording>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<IEnumerable<Video>> GetVideoBySessionAsync(long sessionId)
+        public async Task<IEnumerable<VideoRecording>> GetVideoBySessionAsync(long sessionId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.GetBySessionId + "?SessionId=" + sessionId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.GetBySessionId + "?SessionId=" + sessionId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Video>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<VideoRecording>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<IEnumerable<Video>> GetVideoByUserAsync(long userId)
+        public async Task<IEnumerable<VideoRecording>> GetVideoByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.GetByUserId + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.GetByUserId + "?UserId=" + userId))
             {
                 Method = "GET"
             };
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Video>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<VideoRecording>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
         public async Task<long> SetVideoStreamAsync(Stream videoStream, string description)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.UploadVideoStream + "?Encoding=mp4&Description=" + description))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.UploadVideoStream + "?Encoding=mp4&Description=" + description))
             {
                 Method = "POST"
             };
@@ -96,16 +94,16 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task<long> UpdateVideoAsync(Video video)
+        public async Task<long> UpdateVideoAsync(VideoRecording videoRecording)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.Update))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.Update))
             {
                 Method = "PUT"
             };
 
             await using var requestStream = await request.GetRequestStreamAsync();
             await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(video));
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(videoRecording));
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
@@ -115,7 +113,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteVideoAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.VideoEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };

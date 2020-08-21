@@ -1,6 +1,6 @@
-﻿using DrivingAssistant.Core.Models.ImageProcessing;
+﻿using DrivingAssistant.Core.Models.Reports;
 
-namespace DrivingAssistant.WebServer.Processing
+namespace DrivingAssistant.WebServer.Processing.Algorithms
 {
     public interface IProcessingAlgorithm
     {

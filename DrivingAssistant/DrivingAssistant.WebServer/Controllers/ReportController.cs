@@ -2,10 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Mssql;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -14,7 +13,7 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class ReportController : ControllerBase
     {
-        private static readonly IReportService _reportService = new MssqlReportService();
+        private static readonly IReportService _reportService = IReportService.CreateNew();
 
         //============================================================
         [HttpGet]
@@ -113,7 +112,7 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 using var streamReader = new StreamReader(Request.Body);
-                var report = JsonConvert.DeserializeObject<Report>(await streamReader.ReadToEndAsync());
+                var report = JsonConvert.DeserializeObject<LaneDepartureWarningReport>(await streamReader.ReadToEndAsync());
                 return Ok(await _reportService.SetAsync(report));
             }
             catch (Exception ex)

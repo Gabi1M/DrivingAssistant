@@ -15,7 +15,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments.Session
 {
-    public sealed class SessionFragment : Fragment
+    public sealed class SessionFragmentView : Fragment
     {
         private readonly User _user;
 
@@ -32,10 +32,11 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         private readonly SessionFragmentViewPresenter _viewPresenter;
 
         //============================================================
-        public SessionFragment(Context activityContext, User user)
+        public SessionFragmentView(Context activityContext, User user)
         {
             _activityContext = activityContext;
             _user = user;
+
             _viewPresenter = new SessionFragmentViewPresenter(activityContext, user);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
@@ -66,7 +67,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 case NotificationCommand.SessionFragment_Map:
                 {
                     var session = e.Data as Core.Models.Session;
-                    var intent = new Intent(_activityContext, typeof(MapActivity));
+                    var intent = new Intent(_activityContext, typeof(MapActivityView));
                     intent.PutExtra("startPoint", JsonConvert.SerializeObject(session?.StartLocation));
                     intent.PutExtra("endPoint", JsonConvert.SerializeObject(session?.EndLocation));
                     intent.PutExtra("waypoints", JsonConvert.SerializeObject(session?.Waypoints));
@@ -75,21 +76,21 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 }
                 case NotificationCommand.SessionFragment_Original:
                 {
-                    var intent = new Intent(_activityContext, typeof(VideoListActivity));
-                    intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<Video>));
+                    var intent = new Intent(_activityContext, typeof(VideoListActivityView));
+                    intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<VideoRecording>));
                     StartActivity(intent);
                     break;
                 }
                 case NotificationCommand.SessionFragment_Processed:
                 {
-                    var intent = new Intent(_activityContext, typeof(VideoListActivity));
-                    intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<Video>));
+                    var intent = new Intent(_activityContext, typeof(VideoListActivityView));
+                    intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<VideoRecording>));
                     StartActivity(intent);
                     break;
                 }
                 case NotificationCommand.SessionFragment_Add:
                 {
-                    var intent = new Intent(_activityContext, typeof(SessionEditActivity));
+                    var intent = new Intent(_activityContext, typeof(SessionEditActivityView));
                     intent.PutExtra("user", JsonConvert.SerializeObject(_user));
                     StartActivityForResult(intent, 1234);
                     break;
@@ -104,7 +105,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 }
                 case NotificationCommand.SessionFragment_Modify:
                 {
-                    var intent = new Intent(_activityContext, typeof(SessionEditActivity));
+                    var intent = new Intent(_activityContext, typeof(SessionEditActivityView));
                     intent.PutExtra("user", JsonConvert.SerializeObject(_user));
                     intent.PutExtra("session", JsonConvert.SerializeObject((e.Data as Core.Models.Session)));
                     StartActivityForResult(intent, 1234);
@@ -211,9 +212,9 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         }
 
         //============================================================
-        private async void OnSubmitButtonClick(object sender, EventArgs e)
+        private void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            await _viewPresenter.SubmitButtonClick();
+            _viewPresenter.SubmitButtonClick();
         }
     }
 }

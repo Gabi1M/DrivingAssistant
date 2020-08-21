@@ -92,12 +92,10 @@ namespace DrivingAssistant.WebServer.Processing
             {
                 return new Point(int.MaxValue, int.MaxValue);
             }
-            else
-            {
-                var x = (b2 * c1 - b1 * c2) / determinant;
-                var y = (a1 * c2 - a2 * c1) / determinant;
-                return new Point(x, y);
-            }
+
+            var x = (b2 * c1 - b1 * c2) / determinant;
+            var y = (a1 * c2 - a2 * c1) / determinant;
+            return new Point(x, y);
         }
 
         //======================================================//

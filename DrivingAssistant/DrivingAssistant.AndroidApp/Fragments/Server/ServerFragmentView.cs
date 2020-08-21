@@ -10,7 +10,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments.Server
 {
-    public sealed class ServerFragment : Fragment
+    public sealed class ServerFragmentView : Fragment
     {
         private ListView _listView;
         private Button _addButton;
@@ -21,10 +21,10 @@ namespace DrivingAssistant.AndroidApp.Fragments.Server
         private readonly ServerFragmentViewPresenter _viewPresenter;
 
         //============================================================
-        public ServerFragment(Context activityContext, User user)
+        public ServerFragmentView(Context activityContext, User user)
         {
             _activityContext = activityContext;
-            _viewPresenter = new ServerFragmentViewPresenter(activityContext, user);
+            _viewPresenter = new ServerFragmentViewPresenter(activityContext);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Android.App;
 using Android.OS;
-using Android.Widget;
 using DrivingAssistant.AndroidApp.Tools;
 using Mapsui.Projection;
 using Mapsui.UI.Android;
@@ -14,11 +13,11 @@ using Point = Mapsui.Geometries.Point;
 namespace DrivingAssistant.AndroidApp.Activities.Map
 {
     [Activity(Label = "MapActivity")]
-    public class MapActivity : Activity
+    public class MapActivityView : Activity
     {
         private MapControl _mapControl;
-        private Point[] _sessionPoints;
 
+        private Point[] _sessionPoints;
         private MapActivityViewPresenter _viewPresenter;
         
         //============================================================
@@ -29,8 +28,10 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
             SetContentView(Resource.Layout.activity_map);
             SetupActivityFields();
             GetPointsFromIntent();
+
             _viewPresenter = new MapActivityViewPresenter(this);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
+
             SetupMap();
         }
 
@@ -72,9 +73,9 @@ namespace DrivingAssistant.AndroidApp.Activities.Map
         {
             var pointList = new List<Point>();
 
-            var startLocationLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent?.GetStringExtra("startPoint")!);
-            var endLocationLonLat = JsonConvert.DeserializeObject<Core.Models.Point>(Intent?.GetStringExtra("endPoint")!);
-            var waypoints = JsonConvert.DeserializeObject<ICollection<Core.Models.Point>>(Intent?.GetStringExtra("waypoints")!);
+            var startLocationLonLat = JsonConvert.DeserializeObject<Core.Models.LocationPoint>(Intent?.GetStringExtra("startPoint")!);
+            var endLocationLonLat = JsonConvert.DeserializeObject<Core.Models.LocationPoint>(Intent?.GetStringExtra("endPoint")!);
+            var waypoints = JsonConvert.DeserializeObject<ICollection<Core.Models.LocationPoint>>(Intent?.GetStringExtra("waypoints")!);
 
             var startPoint = new Point(startLocationLonLat.X, startLocationLonLat.Y);
             var endPoint = new Point(endLocationLonLat.X, endLocationLonLat.Y);

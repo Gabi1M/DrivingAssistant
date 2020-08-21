@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
 {
-    public class Video : BaseEntity
+    public class VideoRecording : BaseEntity
     {
         [JsonProperty("ProcessedId")]
         public long ProcessedId { get; set; }

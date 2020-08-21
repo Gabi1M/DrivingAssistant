@@ -5,10 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Processing;
+using DrivingAssistant.WebServer.Processing.Algorithms;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -18,8 +19,11 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class SessionController : ControllerBase
     {
-        private static readonly ISessionService _sessionService = new MssqlSessionService();
-        private static readonly IVideoService VideoService = new MssqlVideoService();
+        private static readonly ISessionService _sessionService = ISessionService.CreateNew();
+        private static readonly IVideoService _videoService = IVideoService.CreateNew();
+        private static readonly IReportService _reportService = IReportService.CreateNew();
+        private static readonly IUserService _userService = IUserService.CreateNew();
+        private static readonly IThumbnailService _thumbnailService = IThumbnailService.CreateNew();
 
         //============================================================
         [HttpGet]
@@ -101,9 +105,9 @@ namespace DrivingAssistant.WebServer.Controllers
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 var session = await _sessionService.GetById(id);
-                foreach (var video in await VideoService.GetBySession(session.Id))
+                foreach (var video in await _videoService.GetBySession(session.Id))
                 {
-                    await VideoService.DeleteAsync(video);
+                    await _videoService.DeleteAsync(video);
                 }
                 await _sessionService.DeleteAsync(session);
                 return Ok();
@@ -122,46 +126,50 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var id = Convert.ToInt64(Request.Query["Id"].First());
+                var id = Convert.ToInt64(Request.Query["Id"].Single());
+                var type = Enum.Parse<ProcessingAlgorithmType>(Request.Query["Type"].Single());
                 new Thread(async () =>
                 {
-                    using var videoService = new MssqlVideoService();
-                    using var reportService = new MssqlReportService();
-                    using var userService = new MssqlUserService();
                     var session = await _sessionService.GetById(id);
-                    var user = await userService.GetById(session.UserId);
+                    var user = await _userService.GetById(session.UserId);
                     session.Status = SessionStatus.Processing;
                     await _sessionService.SetAsync(session);
-                    var linkedVideos = await videoService.GetBySession(session.Id);
-                    var imageProcessor = new LaneDepartureWarningAlgorithm(LaneDepartureWarningAlgorithm.LaneDepartureWarningParameters.Default());
-                    foreach (var video in linkedVideos.Where(x => !x.IsProcessed()))
+                    var linkedVideos = await _videoService.GetBySession(session.Id);
+                    switch (type)
                     {
-                        var processedFilename = imageProcessor.ProcessVideo(video.Filepath, 10, out var result);
-                        var processedVideo = new Video
+                        case ProcessingAlgorithmType.Lane_Departure_Warning:
                         {
-                            Filepath = processedFilename,
-                            Source = video.Source,
-                            Description = !string.IsNullOrEmpty(video.Description) ? video.Description + "_processed" : string.Empty,
-                            DateAdded = DateTime.Now,
-                            Id = -1,
-                            ProcessedId = -1,
-                            SessionId = video.SessionId,
-                        };
+                            var imageProcessor = new LaneDepartureWarningAlgorithm(LaneDepartureWarningAlgorithm.LaneDepartureWarningParameters.Default());
+                            foreach (var video in linkedVideos.Where(x => !x.IsProcessed()))
+                            {
+                                var processedFilename = imageProcessor.ProcessVideo(video.Filepath, 10, out var result);
+                                var processedVideo = new VideoRecording
+                                {
+                                    Filepath = processedFilename,
+                                    Source = video.Source,
+                                    Description = !string.IsNullOrEmpty(video.Description) ? video.Description + "_processed" : string.Empty,
+                                    DateAdded = DateTime.Now,
+                                    Id = -1,
+                                    ProcessedId = -1,
+                                    SessionId = video.SessionId,
+                                };
 
-                        var report = Report.FromVideoReport(result, video.Id);
-                        processedVideo.Id = await videoService.SetAsync(processedVideo);
-                        report.Id = await reportService.SetAsync(report);
-                        video.ProcessedId = processedVideo.Id;
-                        await videoService.SetAsync(video);
+                                var report = LaneDepartureWarningReport.FromVideoReport(result, video.Id);
+                                processedVideo.Id = await _videoService.SetAsync(processedVideo);
+                                report.Id = await _reportService.SetAsync(report);
+                                video.ProcessedId = processedVideo.Id;
+                                await _videoService.SetAsync(video);
 
-                        var thumbnail = new Thumbnail
-                        {
-                            Id = -1,
-                            VideoId = processedVideo.Id,
-                            Filepath = Common.ExtractThumbnail(processedVideo.Filepath)
-                        };
-                        using var thumbnailService = new MssqlThumbnailService();
-                        await thumbnailService.SetAsync(thumbnail);
+                                var thumbnail = new Thumbnail
+                                {
+                                    Id = -1,
+                                    VideoId = processedVideo.Id,
+                                    Filepath = Common.ExtractThumbnail(processedVideo.Filepath)
+                                };
+                                await _thumbnailService.SetAsync(thumbnail);
+                            }
+                            break;
+                        }
                     }
 
                     session.Status = SessionStatus.Processed;

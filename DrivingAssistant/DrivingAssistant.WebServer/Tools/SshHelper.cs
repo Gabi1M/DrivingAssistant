@@ -3,24 +3,21 @@ using Renci.SshNet;
 
 namespace DrivingAssistant.WebServer.Tools
 {
-    public class SshHelper
+    public class SshHelper : IDisposable
     {
         private readonly SshClient _client;
 
         //======================================================//
-        public SshHelper(string host, string username, string password)
+        public SshHelper(string host, string username, string password, int timeoutSeconds = 5)
         {
             _client = new SshClient(new ConnectionInfo(host, 22, username,
                 new PasswordAuthenticationMethod(username, password)))
             {
-                ConnectionInfo = {Timeout = TimeSpan.FromSeconds(5)}
+                ConnectionInfo =
+                {
+                    Timeout = TimeSpan.FromSeconds(timeoutSeconds)
+                }
             };
-        }
-
-        //======================================================//
-        ~SshHelper()
-        {
-            _client.Dispose();
         }
 
         //======================================================//
@@ -36,10 +33,10 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //======================================================//
-        public string SendCommand(string commandText)
+        public string SendCommand(string commandText, int timeoutSeconds = 5)
         {
             var command = _client.CreateCommand(commandText);
-            command.CommandTimeout = TimeSpan.FromSeconds(5);
+            command.CommandTimeout = TimeSpan.FromSeconds(timeoutSeconds);
             try
             {
                return command.Execute();
@@ -48,6 +45,16 @@ namespace DrivingAssistant.WebServer.Tools
             {
                 return string.Empty;
             }
+        }
+
+        //======================================================//
+        public void Dispose()
+        {
+            if (_client.IsConnected)
+            {
+                _client.Disconnect();
+            }
+            _client.Dispose();
         }
     }
 }

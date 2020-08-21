@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using DrivingAssistant.Core.Models.ImageProcessing;
+using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Tools;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Newtonsoft.Json;
 
-namespace DrivingAssistant.WebServer.Processing
+namespace DrivingAssistant.WebServer.Processing.Algorithms
 {
     public class LaneDepartureWarningAlgorithm : IProcessingAlgorithm
     {

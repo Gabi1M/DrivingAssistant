@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Android.Content;
 using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
-using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 
@@ -53,7 +52,6 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
                     FirstName = firstName.Trim(),
                     LastName = lastName.Trim(),
                     Email = email.Trim(),
-                    Role = UserRole.Standard,
                     JoinDate = DateTime.Now
                 };
 

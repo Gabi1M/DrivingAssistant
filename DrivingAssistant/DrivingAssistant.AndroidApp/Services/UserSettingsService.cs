@@ -12,12 +12,10 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class UserSettingsService
     {
-        private static readonly string _serverUri = Constants.ServerUri;
-
         //============================================================
         public async Task<IEnumerable<UserSettings>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetAll))
             {
                 Method = "GET"
             };
@@ -30,7 +28,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<UserSettings> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -43,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<UserSettings> GetByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.GetByUserId + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetByUserId + "?UserId=" + userId))
             {
                 Method = "GET"
             };
@@ -56,7 +54,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<long> SetAsync(UserSettings userSettings)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -73,7 +71,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };
@@ -84,7 +82,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task StartRecordingAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId))
             {
                 Method = "GET"
             };
@@ -95,7 +93,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task StopRecordingAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.StopRecording + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StopRecording + "?UserId=" + userId))
             {
                 Method = "GET"
             };
@@ -106,7 +104,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<string> GetRecordingStatus(long userId)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserSettingsEndpoints.RecordingStatus + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.RecordingStatus + "?UserId=" + userId))
             {
                 Method = "GET"
             };

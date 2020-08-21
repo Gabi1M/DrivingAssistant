@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,7 +14,7 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class UserSettingsController : ControllerBase
     {
-        private static readonly IUserSettingsService _userSettingsService = new MssqlUserSettingsService();
+        private static readonly IUserSettingsService _userSettingsService = IUserSettingsService.CreateNew();
 
         //============================================================
         [HttpGet]

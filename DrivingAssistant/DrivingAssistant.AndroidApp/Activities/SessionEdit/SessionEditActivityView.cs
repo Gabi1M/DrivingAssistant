@@ -19,10 +19,8 @@ using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
 namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 {
     [Activity(Label = "SessionEditActivity")]
-    public class SessionEditActivity : Activity
+    public class SessionEditActivityView : Activity
     {
-        #region ActivityFields
-
         private TextInputEditText _textDescription;
         private TextView _labelStartDateTime;
         private TextView _labelEndDateTime;
@@ -36,10 +34,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         private Button _videoButtonView;
         private Button _buttonSubmit;
 
-        #endregion
-
         private User _user;
-
         private SessionEditActivityViewPresenter _viewPresenter;
 
         //============================================================
@@ -53,7 +48,6 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             _user = JsonConvert.DeserializeObject<User>(Intent?.GetStringExtra("user")!);
 
             Session currentSession = null;
-
             if (Intent.HasExtra("session"))
             { 
                 currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session")!);
@@ -95,13 +89,13 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 case NotificationCommand.SessionEditActivity_VideoRefresh:
                 {
                     _videoListView.Adapter?.Dispose();
-                    _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, e.Data as List<Core.Models.Video>);
+                    _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, e.Data as List<Core.Models.VideoRecording>);
                     break;
                 }
                 case NotificationCommand.SessionEditActivity_VideoView:
                 {
-                    var intent = new Intent(this, typeof(VideoActivity));
-                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.Video));
+                    var intent = new Intent(this, typeof(VideoActivityView));
+                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.VideoRecording));
                     StartActivity(intent);
                     break;
                 }
@@ -117,19 +111,19 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 }
                 case NotificationCommand.SessionEditActivity_StartLocation:
                 {
-                    var startLocation = e.Data as Point;
+                    var startLocation = e.Data as LocationPoint;
                     _labelStartLocation.Text = startLocation.X + " " + startLocation.Y;
                     break;
                 }
                 case NotificationCommand.SessionEditActivity_EndLocation:
                 {
-                    var endLocation = e.Data as Point;
+                    var endLocation = e.Data as LocationPoint;
                     _labelEndLocation.Text = endLocation.X + " " + endLocation.Y;
                     break;
                 }
                 case NotificationCommand.SessionEditActivity_Waypoints:
                 {
-                    var waypoints = e.Data as List<Point>;
+                    var waypoints = e.Data as List<LocationPoint>;
                     _labelWaypoints.Text = waypoints.Count + " Selected";
                     break;
                 }
@@ -144,39 +138,18 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         //============================================================
         private void SetupActivityFields()
         {
-            #region TextInputEditText
-
             _textDescription = FindViewById<TextInputEditText>(Resource.Id.sessionEditTextDescription);
-
-            #endregion
-
-            #region TextView
-
             _labelStartDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartDateTime);
             _labelEndDateTime = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndDateTime);
             _labelStartLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedStartPosition);
             _labelEndLocation = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedEndPosition);
             _labelWaypoints = FindViewById<TextView>(Resource.Id.sessionEditLabelSelectedWaypoints);
-
-            #endregion
-
-            #region ListView
-
             _videoListView = FindViewById<ListView>(Resource.Id.sessionEditVideoList);
-
-            #endregion
-
-            #region Button
-
             _videoButtonAdd = FindViewById<Button>(Resource.Id.videosButtonAdd);
             _videoButtonModify = FindViewById<Button>(Resource.Id.videosButtonModify);
             _videoButtonDelete = FindViewById<Button>(Resource.Id.videosButtonDelete);
             _videoButtonView = FindViewById<Button>(Resource.Id.videosButtonView);
             _buttonSubmit = FindViewById<Button>(Resource.Id.sessionEditButtonSubmit);
-
-            #endregion
-
-            #region Events
 
             _labelStartDateTime.Click += OnStartDateClick;
             _labelEndDateTime.Click += OnEndDateClick;
@@ -189,8 +162,6 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             _videoButtonDelete.Click += OnVideoButtonDeleteClick;
             _videoButtonView.Click += OnVideoButtonViewClick;
             _buttonSubmit.Click += OnSubmitButtonClick;
-
-            #endregion
         }
 
         //============================================================

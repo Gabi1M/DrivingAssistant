@@ -8,7 +8,7 @@ using DrivingAssistant.AndroidApp.Tools;
 namespace DrivingAssistant.AndroidApp.Activities.Register
 {
     [Activity(Label = "RegisterActivity")]
-    public class RegisterActivity : Activity
+    public class RegisterActivityView : Activity
     {
         private TextInputEditText _textInputFirstName;
         private TextInputEditText _textInputLastName;
@@ -26,6 +26,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Register
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_register);
             SetupActivityFields();
+
             _viewPresenter = new RegisterActivityViewPresenter(this);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }

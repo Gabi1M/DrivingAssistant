@@ -21,9 +21,6 @@ namespace DrivingAssistant.Core.Models
         [JsonProperty("Email")]
         public string Email { get; set; }
 
-        [JsonProperty("Role")]
-        public UserRole Role { get; set; }
-
         [JsonProperty("JoinDate")]
         public DateTime JoinDate { get; set; }
 

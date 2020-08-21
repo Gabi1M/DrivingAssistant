@@ -102,8 +102,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 return;
             }
 
-            var session = _sessions.ElementAt(_selectedPosition);
-            Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Map, session));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Map, _sessions.ElementAt(_selectedPosition)));
         }
 
         //============================================================
@@ -144,7 +143,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         }
 
         //============================================================
-        public async Task SubmitButtonClick()
+        public void SubmitButtonClick()
         {
             if (_selectedPosition == -1)
             {
@@ -162,9 +161,16 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
 
             try
             {
-                await _sessionService.SubmitAsync(session.Id);
-                await RefreshDataSource();
-                Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Submit, true));
+                var algorithms = Enum.GetNames(typeof(ProcessingAlgorithmType));
+                var alert = new AlertDialog.Builder(_context);
+                alert.SetTitle("Choose an algorithm for processing");
+                alert.SetItems(algorithms, async (sender, args) =>
+                {
+                    await _sessionService.SubmitAsync(session.Id, Enum.Parse<ProcessingAlgorithmType>(algorithms.ElementAt(args.Which)));
+                    await RefreshDataSource();
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Submit, true));
+                });
+                alert.Create()?.Show();
             }
             catch (Exception ex)
             {

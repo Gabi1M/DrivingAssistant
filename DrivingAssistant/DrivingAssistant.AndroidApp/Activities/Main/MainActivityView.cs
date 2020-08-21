@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
@@ -21,14 +22,13 @@ using Fragment = Android.Support.V4.App.Fragment;
 namespace DrivingAssistant.AndroidApp.Activities.Main
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false, ScreenOrientation = ScreenOrientation.Portrait)]
-    public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
+    public class MainActivityView : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         private Android.Support.V7.Widget.Toolbar _toolbar;
         private DrawerLayout _drawer;
         private NavigationView _navigationView;
         private TextView _textViewUser;
         private TextView _textViewUserEmail;
-        private TextView _textViewUserRole;
 
         private MainActivityViewPresenter _viewPresenter;
         private User _user;
@@ -47,11 +47,11 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
             _viewPresenter = new MainActivityViewPresenter(this);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
-            ChangeFragment(new HomeFragment(this, _user), "Home");
+            ChangeFragment(new HomeFragmentView(this, _user), "Home");
         }
 
         //============================================================
-        private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
+        private async void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             if (e.Data is Exception ex)
             {
@@ -65,22 +65,22 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                 {
                     switch (e.Data)
                     {
-                        case HomeFragment homeFragment:
+                        case HomeFragmentView homeFragment:
                         {
                             ChangeFragment(homeFragment, "Home");
                             break;
                         }
-                        case SessionFragment sessionFragment:
+                        case SessionFragmentView sessionFragment:
                         {
                             ChangeFragment(sessionFragment, "Sessions");
                             break;
                         }
-                        case ServerFragment serverFragment:
+                        case ServerFragmentView serverFragment:
                         {
                             ChangeFragment(serverFragment, "Servers");
                             break;
                         }
-                        case SettingsFragment settingsFragment:
+                        case SettingsFragmentView settingsFragment:
                         {
                             ChangeFragment(settingsFragment, "Settings");
                             break;
@@ -88,6 +88,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                         case null:
                         {
                             Toast.MakeText(Application.Context, "Logging out...", ToastLength.Short)?.Show();
+                            await Task.Delay(2000);
                             Finish();
                             break;
                         }
@@ -106,7 +107,6 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
             _navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             _textViewUser = _navigationView?.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUser);
             _textViewUserEmail = _navigationView?.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserEmail);
-            _textViewUserRole = _navigationView?.GetHeaderView(0).FindViewById<TextView>(Resource.Id.headerTextUserRole);
         }
 
         //============================================================
@@ -131,7 +131,6 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
             _user = JsonConvert.DeserializeObject<User>(Intent?.GetStringExtra("user")!);
             _textViewUser.Text = _user.FirstName + " " + _user.LastName;
             _textViewUserEmail.Text = _user.Email;
-            _textViewUserRole.Text = _user.Role.ToString();
         }
 
         //============================================================

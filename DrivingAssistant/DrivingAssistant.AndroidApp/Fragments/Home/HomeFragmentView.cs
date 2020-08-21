@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
-using Android.Widget;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Microcharts;
@@ -13,7 +11,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments.Home
 {
-    public sealed class HomeFragment : Fragment
+    public sealed class HomeFragmentView : Fragment
     {
         private ChartView _chartViewSessions;
         private ChartView _chartViewVideos;
@@ -24,7 +22,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
         private readonly HomeFragmentViewPresenter _viewPresenter;
 
         //============================================================
-        public HomeFragment(Context activityContext, User user)
+        public HomeFragmentView(Context activityContext, User user)
         {
             _activityContext = activityContext;
             _viewPresenter = new HomeFragmentViewPresenter(activityContext, user);

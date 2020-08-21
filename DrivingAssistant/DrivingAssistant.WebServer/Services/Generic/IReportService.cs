@@ -1,18 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DrivingAssistant.Core.Models;
+using DrivingAssistant.Core.Models.Reports;
+using DrivingAssistant.WebServer.Services.Mssql;
+using DrivingAssistant.WebServer.Services.PostgreSQL;
+using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public interface IReportService : IGenericService<Report>
+    public interface IReportService : IGenericService<LaneDepartureWarningReport>
     {
         //============================================================
-        public Task<Report> GetByVideo(long videoId);
+        public static IReportService CreateNew()
+        {
+            if (Constants.ServerConstants.UsePostgresql)
+            {
+                return new PostgresqlReportService();
+            }
+
+            return new MssqlReportService();
+        }
 
         //============================================================
-        public Task<IEnumerable<Report>> GetBySession(long sessionId);
+        public Task<LaneDepartureWarningReport> GetByVideo(long videoId);
 
         //============================================================
-        public Task<IEnumerable<Report>> GetByUser(long userId);
+        public Task<IEnumerable<LaneDepartureWarningReport>> GetBySession(long sessionId);
+
+        //============================================================
+        public Task<IEnumerable<LaneDepartureWarningReport>> GetByUser(long userId);
     }
 }

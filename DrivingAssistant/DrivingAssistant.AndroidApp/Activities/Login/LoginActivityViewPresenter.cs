@@ -28,8 +28,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
                 var servers = _serverService.GetAll();
                 var alert = new AlertDialog.Builder(_context);
                 alert.SetTitle("Choose a server");
-                var serverStringList = servers.Select(x => x.Name).ToArray();
-                alert.SetItems(serverStringList, (o, args) =>
+                alert.SetItems(servers.Select(x => x.Name).ToArray(), (o, args) =>
                 {
                     Notify(new NotificationEventArgs(NotificationCommand.LoginActivity_Server, servers.ElementAt(args.Which)));
                 });

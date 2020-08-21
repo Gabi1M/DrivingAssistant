@@ -99,7 +99,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                 long? idOut = 0;
                 _tableAdapter.Insert(session.Id, session.UserId, session.Name, session.StartDateTime,
                     session.EndDateTime, session.StartLocation.PointToString(), session.EndLocation.PointToString(),
-                    session.Waypoints.PointCollectionToString(), session.Status.ToString(), session.DateAdded, ref idOut);
+                    session.Waypoints.PointCollectionToString(), session.Status.ToString(), session.DateAdded,
+                    ref idOut);
                 return idOut ?? -1;
             });
         }

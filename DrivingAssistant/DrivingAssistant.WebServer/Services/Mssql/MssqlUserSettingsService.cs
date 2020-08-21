@@ -84,7 +84,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
             {
                 long? idOut = 0;
                 _tableAdapter.Insert(userSettings.Id, userSettings.UserId, userSettings.CameraSessionId,
-                    userSettings.CameraHost, userSettings.CameraUsername, Crypto.EncryptAes(userSettings.CameraPassword), ref idOut);
+                    userSettings.CameraHost, userSettings.CameraUsername,
+                    Crypto.EncryptAes(userSettings.CameraPassword), ref idOut);
                 return idOut ?? -1;
             });
         }

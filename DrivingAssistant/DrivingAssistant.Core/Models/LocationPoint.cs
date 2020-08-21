@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
 {
-    public class Point
+    public class LocationPoint
     {
         [JsonProperty("X")]
         public float X;
@@ -16,55 +16,51 @@ namespace DrivingAssistant.Core.Models
 
         //===========================================================//
         [JsonConstructor]
-        public Point(float x, float y)
+        public LocationPoint(float x, float y)
         {
             X = x;
             Y = y;
         }
 
         //===========================================================//
-        public Point(double x, double y)
+        public LocationPoint(double x, double y)
         {
             X = Convert.ToSingle(x);
             Y = Convert.ToSingle(y);
         }
     }
 
-    public static class PointExtensions
+    public static class LocationPointExtensions
     {
         //===========================================================//
-        public static string PointToString(this Point point)
+        public static string PointToString(this LocationPoint locationPoint)
         {
-            return point.X.ToString(CultureInfo.InvariantCulture) + "," + point.Y.ToString(CultureInfo.InvariantCulture);
+            return locationPoint.X.ToString(CultureInfo.InvariantCulture) + "," + locationPoint.Y.ToString(CultureInfo.InvariantCulture);
         }
 
         //===========================================================//
-        public static Point StringToPoint(this string str)
+        public static LocationPoint StringToPoint(this string str)
         {
             var x = Convert.ToSingle(str.Split(',')[0]);
             var y = Convert.ToSingle(str.Split(',')[1]);
-            return new Point(x, y);
+            return new LocationPoint(x, y);
         }
 
         //===========================================================//
-        public static string PointCollectionToString(this ICollection<Point> points)
+        public static string PointCollectionToString(this ICollection<LocationPoint> points)
         {
             return string.Join(";", points.Select(point => point.PointToString()));
         }
 
         //===========================================================//
-        public static ICollection<Point> StringToPointCollection(this string str)
+        public static ICollection<LocationPoint> StringToPointCollection(this string str)
         {
             if (str == string.Empty)
             {
-                return new List<Point>();
+                return new List<LocationPoint>();
             }
             var elements = str.Split(';');
-            if (elements.Length == 0)
-            {
-                return new List<Point>();
-            }
-            return elements.Select(point => point.StringToPoint()).ToList();
+            return elements.Length == 0 ? new List<LocationPoint>() : elements.Select(point => point.StringToPoint()).ToList();
         }
     }
 }

@@ -26,22 +26,22 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                 {
                     case Resource.Id.nav_home:
                     {
-                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new HomeFragment(_context, user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new HomeFragmentView(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_sessions:
                     {
-                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SessionFragment(_context, user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SessionFragmentView(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_servers:
                     {
-                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new ServerFragment(_context, user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new ServerFragmentView(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_settings:
                     {
-                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SettingsFragment(_context, user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SettingsFragmentView(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_logout:

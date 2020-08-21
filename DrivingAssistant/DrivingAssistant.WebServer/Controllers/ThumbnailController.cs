@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Services.Generic;
-using DrivingAssistant.WebServer.Services.Mssql;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -14,7 +13,7 @@ namespace DrivingAssistant.WebServer.Controllers
     [ApiController]
     public class ThumbnailController : ControllerBase
     {
-        private static readonly IThumbnailService _thumbnailService = new MssqlThumbnailService();
+        private static readonly IThumbnailService _thumbnailService = IThumbnailService.CreateNew();
 
         //============================================================
         [HttpGet]

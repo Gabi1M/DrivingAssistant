@@ -12,12 +12,10 @@ namespace DrivingAssistant.AndroidApp.Services
 {
     public class UserService
     {
-        private static readonly string _serverUri = Constants.ServerUri;
-
         //============================================================
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserEndpoints.GetAll))
             {
                 Method = "GET"
             };
@@ -30,7 +28,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<User> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -43,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<long> SetAsync(User user)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -60,7 +58,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(_serverUri + "/" + Endpoints.UserEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };

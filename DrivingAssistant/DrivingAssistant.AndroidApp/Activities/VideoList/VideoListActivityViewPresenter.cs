@@ -4,17 +4,18 @@ using System.Linq;
 using Android.Content;
 using Android.Views;
 using DrivingAssistant.AndroidApp.Tools;
+using DrivingAssistant.Core.Models;
 
 namespace DrivingAssistant.AndroidApp.Activities.VideoList
 {
     public class VideoListActivityViewPresenter : ViewPresenter
     {
-        public readonly IEnumerable<Core.Models.Video> _videos;
+        public readonly IEnumerable<VideoRecording> _videos;
         private int _selectedPosition = -1;
         private View _selectedView;
 
         //============================================================
-        public VideoListActivityViewPresenter(Context context, IEnumerable<Core.Models.Video> videos)
+        public VideoListActivityViewPresenter(Context context, IEnumerable<VideoRecording> videos)
         {
             _context = context;
             _videos = videos;

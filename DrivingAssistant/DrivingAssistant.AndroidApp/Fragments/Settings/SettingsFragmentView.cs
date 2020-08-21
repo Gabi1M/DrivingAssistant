@@ -1,5 +1,4 @@
 ﻿using System;
-using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
@@ -10,7 +9,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 
 namespace DrivingAssistant.AndroidApp.Fragments.Settings
 {
-    public sealed class SettingsFragment : Fragment
+    public sealed class SettingsFragmentView : Fragment
     {
 
         private TextView _textCameraSession;
@@ -27,7 +26,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         private readonly SettingsFragmentViewPresenter _viewPresenter;
 
         //============================================================
-        public SettingsFragment(Context activityContext, User user)
+        public SettingsFragmentView(Context activityContext, User user)
         {
             _activityContext = activityContext;
             _viewPresenter = new SettingsFragmentViewPresenter(activityContext, user);

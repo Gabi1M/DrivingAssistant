@@ -12,6 +12,7 @@ using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using Mapsui;
+using Mapsui.Geometries;
 using Mapsui.Projection;
 using Mapsui.Styles;
 using Mapsui.UI.Android;
@@ -29,16 +30,16 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         private readonly User _user;
         private readonly Location _currentLocation;
 
-        private ICollection<Core.Models.Video> _videos = new List<Core.Models.Video>();
+        private ICollection<VideoRecording> _videos = new List<VideoRecording>();
         private int _selectedPosition = -1;
         private View _selectedView;
 
         private Session _currentSession;
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
-        private Point _selectedStartPoint;
-        private Point _selectedEndPoint;
-        private ICollection<Point> _selectedWaypoints = new List<Point>();
+        private LocationPoint _selectedStartLocationPoint;
+        private LocationPoint _selectedEndLocationPoint;
+        private ICollection<LocationPoint> _selectedWaypoints = new List<LocationPoint>();
 
         //============================================================
         public SessionEditActivityViewPresenter(Context context, Session currentSession, User user, Location currentLocation)
@@ -47,6 +48,13 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             _currentSession = currentSession;
             _user = user;
             _currentLocation = currentLocation;
+
+            if (_currentSession != null)
+            {
+                _selectedStartLocationPoint = currentSession.StartLocation;
+                _selectedEndLocationPoint = currentSession.EndLocation;
+                _selectedWaypoints = currentSession.Waypoints;
+            }
         }
 
         //============================================================
@@ -58,9 +66,9 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 {
                     await _videoService.DeleteVideoAsync(video.Id);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //IGNORED
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Back, ex));
                 }
             }
             Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Back, null));
@@ -92,10 +100,11 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
             var alert = new AlertDialog.Builder(_context);
             alert.SetTitle("Choose a unique description for this media");
-            var textEdit = new EditText(_context);
-            var layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
-            textEdit.LayoutParameters = layoutParams;
-            textEdit.Gravity = GravityFlags.Center;
+            var textEdit = new EditText(_context)
+            {
+                LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
+                Gravity = GravityFlags.Center
+            };
             alert.SetView(textEdit);
             alert.SetPositiveButton("Ok", async (o, args) =>
             {
@@ -115,13 +124,17 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                         await _videoService.UpdateVideoAsync(video);
                         await RefreshVideoSource(true);
                     }
+
                     Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, _videos));
                 }
                 catch (Exception ex)
                 {
                     Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, ex));
                 }
-                progressDialog?.Dismiss();
+                finally
+                {
+                    progressDialog?.Dismiss();
+                }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
             alert.Create()?.Show();
@@ -177,9 +190,9 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 {
                     _videos = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // IGNORED
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoRefresh, ex));
                 }
             }
 
@@ -195,8 +208,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 return;
             }
 
-            var video = _videos.ElementAt(_selectedPosition);
-            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoView, video));
+            Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_VideoView, _videos.ElementAt(_selectedPosition)));
         }
 
         //============================================================
@@ -237,7 +249,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             var mapControl = view?.FindViewById<MapControl>(Resource.Id.mapControl);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
-            var selectedStartPoint = _selectedStartPoint;
+            var selectedStartPoint = _selectedStartLocationPoint;
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -254,27 +266,27 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     }
 
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-                    selectedStartPoint = new Point(tempPoint.X, tempPoint.Y);
+                    selectedStartPoint = new LocationPoint(tempPoint.X, tempPoint.Y);
 
-                    var points = new List<Mapsui.Geometries.Point>
+                    var points = new List<Point>
                     {
-                        new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)
+                        new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)
                     };
                     points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
-                    if (_selectedEndPoint != null)
+                    if (_selectedEndLocationPoint != null)
                     {
-                        points.Add(SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y));
+                        points.Add(SphericalMercator.FromLonLat(_selectedEndLocationPoint.X, _selectedEndLocationPoint.Y));
                     }
                     mapControl.Map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
-                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("StartPoint", Color.Green, 0.5, new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("StartPoint", Color.Green, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                 }
             };
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
-                _selectedStartPoint = selectedStartPoint;
-                if (_selectedStartPoint != null)
+                _selectedStartLocationPoint = selectedStartPoint;
+                if (_selectedStartLocationPoint != null)
                 {
-                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_StartLocation, _selectedStartPoint));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_StartLocation, _selectedStartLocationPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -290,7 +302,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             alert.SetView(view);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
-            var selectedEndPoint = _selectedEndPoint;
+            var selectedEndPoint = _selectedEndLocationPoint;
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -307,25 +319,25 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     }
 
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-                    selectedEndPoint = new Point(tempPoint.X, tempPoint.Y);
+                    selectedEndPoint = new LocationPoint(tempPoint.X, tempPoint.Y);
 
-                    var points = new List<Mapsui.Geometries.Point>();
-                    if (_selectedStartPoint != null)
+                    var points = new List<Point>();
+                    if (_selectedStartLocationPoint != null)
                     {
-                        points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
+                        points.Add(SphericalMercator.FromLonLat(_selectedStartLocationPoint.X, _selectedStartLocationPoint.Y));
                     }
                     points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
-                    points.Add(new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y));
+                    points.Add(new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y));
                     mapControl.Map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
-                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("EndPoint", Color.Red, 0.5, new Mapsui.Geometries.Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
+                    mapControl.Map.Layers.Add(MapTools.CreatePointLayer("EndPoint", Color.Red, 0.5, new Point(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y)));
                 }
             };
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
-                _selectedEndPoint = selectedEndPoint;
-                if (_selectedEndPoint != null)
+                _selectedEndLocationPoint = selectedEndPoint;
+                if (_selectedEndLocationPoint != null)
                 {
-                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_EndLocation, _selectedEndPoint));
+                    Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_EndLocation, _selectedEndLocationPoint));
                 }
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -341,7 +353,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             alert.SetView(view);
             mapControl.Map = SetupMap();
             mapControl.Navigator.NavigateTo(SphericalMercator.FromLonLat(_currentLocation.Longitude, _currentLocation.Latitude), mapControl.Map.Resolutions[9]);
-            var selectedWaypoints = new List<Point>(_selectedWaypoints!);
+            var selectedWaypoints = new List<LocationPoint>(_selectedWaypoints!);
             mapControl.Info += (o, args) =>
             {
                 var zoomWidgetEnvelope = mapControl.Map.Widgets.First(x => x.GetType() == typeof(ZoomInOutWidget)).Envelope;
@@ -358,27 +370,25 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     }
 
                     var tempPoint = SphericalMercator.ToLonLat(args.MapInfo.WorldPosition.X, args.MapInfo.WorldPosition.Y);
-
                     if (args.MapInfo.Feature != null && args.MapInfo.Layer.Name == "Waypoints")
                     {
                         var featurePoint = args.MapInfo.Feature.Geometry.AllVertices().First();
-                        var point = selectedWaypoints.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y)));
-                        selectedWaypoints.Remove(point);
+                        selectedWaypoints.Remove(selectedWaypoints.First(x => featurePoint.Equals(SphericalMercator.FromLonLat(x.X, x.Y))));
                     }
                     else
                     {
-                        selectedWaypoints.Add(new Point(tempPoint.X, tempPoint.Y));
+                        selectedWaypoints.Add(new LocationPoint(tempPoint.X, tempPoint.Y));
                     }
 
-                    var points = new List<Mapsui.Geometries.Point>();
-                    if (_selectedStartPoint != null)
+                    var points = new List<Point>();
+                    if (_selectedStartLocationPoint != null)
                     {
-                        points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
+                        points.Add(SphericalMercator.FromLonLat(_selectedStartLocationPoint.X, _selectedStartLocationPoint.Y));
                     }
                     points.AddRange(selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
-                    if (_selectedEndPoint != null)
+                    if (_selectedEndLocationPoint != null)
                     {
-                        points.Add(SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y));
+                        points.Add(SphericalMercator.FromLonLat(_selectedEndLocationPoint.X, _selectedEndLocationPoint.Y));
                     }
                     mapControl.Map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
                     mapControl.Map.Layers.Add(MapTools.CreatePointLayer("Waypoints", Color.Yellow, 0.5, selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)).ToArray()));
@@ -386,7 +396,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             };
             alert.SetPositiveButton("Confirm", (o, args) =>
             {
-                _selectedWaypoints = new List<Point>(selectedWaypoints);
+                _selectedWaypoints = new List<LocationPoint>(selectedWaypoints);
                 Notify(new NotificationEventArgs(NotificationCommand.SessionEditActivity_Waypoints, _selectedWaypoints));
             });
             alert.SetNegativeButton("Cancel", (o, args) => { });
@@ -403,8 +413,8 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     _currentSession.Name = name;
                     _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
                     _currentSession.EndDateTime = _selectedEndDateTime ?? DateTime.Now;
-                    _currentSession.StartLocation = _selectedStartPoint;
-                    _currentSession.EndLocation = _selectedEndPoint;
+                    _currentSession.StartLocation = _selectedStartLocationPoint;
+                    _currentSession.EndLocation = _selectedEndLocationPoint;
                     _currentSession.Waypoints = _selectedWaypoints;
                     _currentSession.Id = await _sessionService.SetAsync(_currentSession);
                     foreach (var video in _videos.Where(x => x.SessionId != _currentSession.Id))
@@ -420,8 +430,8 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                         Name = name,
                         StartDateTime = _selectedStartDateTime ?? DateTime.Now,
                         EndDateTime = _selectedEndDateTime ?? DateTime.Now,
-                        StartLocation = _selectedStartPoint ?? new Point(0,0),
-                        EndLocation = _selectedEndPoint ?? new Point(0,0),
+                        StartLocation = _selectedStartLocationPoint ?? new LocationPoint(0,0),
+                        EndLocation = _selectedEndLocationPoint ?? new LocationPoint(0,0),
                         Waypoints = _selectedWaypoints,
                         Id = -1,
                         Status = SessionStatus.Unprocessed,
@@ -465,12 +475,12 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 }
             };
 
-            if (_selectedStartPoint != null || _selectedEndPoint != null || (_selectedWaypoints != null && _selectedWaypoints.Count != 0))
+            if (_selectedStartLocationPoint != null || _selectedEndLocationPoint != null || (_selectedWaypoints != null && _selectedWaypoints.Count != 0))
             {
                 var points = new List<Mapsui.Geometries.Point>();
-                if (_selectedStartPoint != null)
+                if (_selectedStartLocationPoint != null)
                 {
-                    points.Add(SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y));
+                    points.Add(SphericalMercator.FromLonLat(_selectedStartLocationPoint.X, _selectedStartLocationPoint.Y));
                 }
 
                 if (_selectedWaypoints != null && _selectedWaypoints.Count != 0)
@@ -478,21 +488,21 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     points.AddRange(_selectedWaypoints.Select(x => SphericalMercator.FromLonLat(x.X, x.Y)));
                 }
 
-                if (_selectedEndPoint != null)
+                if (_selectedEndLocationPoint != null)
                 {
-                    points.Add(SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y));
+                    points.Add(SphericalMercator.FromLonLat(_selectedEndLocationPoint.X, _selectedEndLocationPoint.Y));
                 }
                 map.Layers.Add(MapTools.CreateLineLayer("Line", Color.Orange, 5, points.ToArray()));
             }
 
-            if (_selectedEndPoint != null)
+            if (_selectedEndLocationPoint != null)
             {
-                map.Layers.Add(MapTools.CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndPoint.X, _selectedEndPoint.Y)));
+                map.Layers.Add(MapTools.CreatePointLayer("EndPoint", Color.Red, 0.5, SphericalMercator.FromLonLat(_selectedEndLocationPoint.X, _selectedEndLocationPoint.Y)));
             }
 
-            if (_selectedStartPoint != null)
+            if (_selectedStartLocationPoint != null)
             {
-                map.Layers.Add(MapTools.CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartPoint.X, _selectedStartPoint.Y)));
+                map.Layers.Add(MapTools.CreatePointLayer("StartPoint", Color.Green, 0.5, SphericalMercator.FromLonLat(_selectedStartLocationPoint.X, _selectedStartLocationPoint.Y)));
             }
 
             if (_selectedWaypoints != null && _selectedWaypoints.Count != 0)

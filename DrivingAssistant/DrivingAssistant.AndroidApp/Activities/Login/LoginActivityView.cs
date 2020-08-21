@@ -14,7 +14,7 @@ using PerpetualEngine.Storage;
 namespace DrivingAssistant.AndroidApp.Activities.Login
 {
     [Activity(Label = "Driving Assistant", MainLauncher = true)]
-    public class LoginActivity : Activity
+    public class LoginActivityView : Activity
     {
         private TextInputEditText _textInputUsername;
         private TextInputEditText _textInputPassword;
@@ -31,10 +31,11 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SimpleStorage.SetContext(ApplicationContext);
-            _viewPresenter = new LoginActivityViewPresenter(this);
-            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
             SetContentView(Resource.Layout.activity_login);
             SetupActivityFields();
+
+            _viewPresenter = new LoginActivityViewPresenter(this);
+            _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
             _selectedServer = HostServer.Default;
             _textServer.Text = _selectedServer.Name;
@@ -61,14 +62,14 @@ namespace DrivingAssistant.AndroidApp.Activities.Login
                 }
                 case NotificationCommand.LoginActivity_Register:
                 {
-                    var intent = new Intent(this, typeof(RegisterActivity));
+                    var intent = new Intent(this, typeof(RegisterActivityView));
                     StartActivity(intent);
                     break;
                 }
                 case NotificationCommand.LoginActivity_Login:
                 {
                     var user = e.Data as User;
-                    var intent = new Intent(Application.Context, typeof(MainActivity));
+                    var intent = new Intent(Application.Context, typeof(MainActivityView));
                     intent.PutExtra("user", JsonConvert.SerializeObject(user));
                     StartActivity(intent);
                     break;

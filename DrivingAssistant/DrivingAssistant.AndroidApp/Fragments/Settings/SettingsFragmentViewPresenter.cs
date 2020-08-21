@@ -45,8 +45,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         //============================================================
         public async Task CameraSessionClick()
         {
-            var availableSessions = (await _sessionService.GetByUserAsync(_user.Id))
-                .Where(x => x.Status == SessionStatus.Unprocessed);
+            var availableSessions = (await _sessionService.GetByUserAsync(_user.Id)).Where(x => x.Status == SessionStatus.Unprocessed);
             var sessionStringList = availableSessions.Select(x => x.Name).ToList();
             sessionStringList.Add("None");
             var alert = new AlertDialog.Builder(_context);
