@@ -10,10 +10,10 @@ using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services.PostgreSQL
 {
-    public class PostgresqlSessionService : ISessionService
+    public class PostgresqlDrivingSessionService : IDrivingSessionService
     {
         //============================================================
-        public async Task<IEnumerable<Session>> GetAsync()
+        public async Task<IEnumerable<DrivingSession>> GetAsync()
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -21,10 +21,10 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await connection.OpenAsync();
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetAllSessions, connection);
                 var result = await command.ExecuteReaderAsync();
-                var sessions = new List<Session>();
+                var sessions = new List<DrivingSession>();
                 while (await result.ReadAsync())
                 {
-                    sessions.Add(new Session
+                    sessions.Add(new DrivingSession
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
@@ -52,7 +52,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<Session> GetById(long id)
+        public async Task<DrivingSession> GetById(long id)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -61,10 +61,10 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetSessionById, connection);
                 command.Parameters.AddWithValue("id", id);
                 var result = await command.ExecuteReaderAsync();
-                var sessions = new List<Session>();
+                var sessions = new List<DrivingSession>();
                 while (await result.ReadAsync())
                 {
-                    sessions.Add(new Session
+                    sessions.Add(new DrivingSession
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
@@ -92,7 +92,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<IEnumerable<Session>> GetByUser(long userId)
+        public async Task<IEnumerable<DrivingSession>> GetByUser(long userId)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -101,10 +101,10 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetSessionsByUser, connection);
                 command.Parameters.AddWithValue("user_id", userId);
                 var result = await command.ExecuteReaderAsync();
-                var sessions = new List<Session>();
+                var sessions = new List<DrivingSession>();
                 while (await result.ReadAsync())
                 {
-                    sessions.Add(new Session
+                    sessions.Add(new DrivingSession
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
@@ -132,42 +132,42 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<long> SetAsync(Session session)
+        public async Task<long> SetAsync(DrivingSession drivingSession)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
             {
                 await connection.OpenAsync();
-                if (session.Id == -1)
+                if (drivingSession.Id == -1)
                 {
                     await using var command = new NpgsqlCommand(PostgreSQLCommands.SetSession, connection);
-                    command.Parameters.AddWithValue("user_id", session.UserId);
-                    command.Parameters.AddWithValue("name", session.Name);
-                    command.Parameters.AddWithValue("start_date_time", session.StartDateTime);
-                    command.Parameters.AddWithValue("end_date_time", session.EndDateTime);
-                    command.Parameters.AddWithValue("start_location", session.StartLocation.PointToString());
-                    command.Parameters.AddWithValue("end_location", session.EndLocation.PointToString());
-                    command.Parameters.AddWithValue("waypoints", session.Waypoints.PointCollectionToString());
-                    command.Parameters.AddWithValue("status", session.Status.ToString());
-                    command.Parameters.AddWithValue("date_added", session.DateAdded);
+                    command.Parameters.AddWithValue("user_id", drivingSession.UserId);
+                    command.Parameters.AddWithValue("name", drivingSession.Name);
+                    command.Parameters.AddWithValue("start_date_time", drivingSession.StartDateTime);
+                    command.Parameters.AddWithValue("end_date_time", drivingSession.EndDateTime);
+                    command.Parameters.AddWithValue("start_location", drivingSession.StartLocation.PointToString());
+                    command.Parameters.AddWithValue("end_location", drivingSession.EndLocation.PointToString());
+                    command.Parameters.AddWithValue("waypoints", drivingSession.Waypoints.PointCollectionToString());
+                    command.Parameters.AddWithValue("status", drivingSession.Status.ToString());
+                    command.Parameters.AddWithValue("date_added", drivingSession.DateAdded);
                     var result = Convert.ToInt64(await command.ExecuteScalarAsync());
                     return result;
                 }
                 else
                 {
                     await using var command = new NpgsqlCommand(PostgreSQLCommands.UpdateSession, connection);
-                    command.Parameters.AddWithValue("id", session.Id);
-                    command.Parameters.AddWithValue("user_id", session.UserId);
-                    command.Parameters.AddWithValue("name", session.Name);
-                    command.Parameters.AddWithValue("start_date_time", session.StartDateTime);
-                    command.Parameters.AddWithValue("end_date_time", session.EndDateTime);
-                    command.Parameters.AddWithValue("start_location", session.StartLocation.PointToString());
-                    command.Parameters.AddWithValue("end_location", session.EndLocation.PointToString());
-                    command.Parameters.AddWithValue("waypoints", session.Waypoints.PointCollectionToString());
-                    command.Parameters.AddWithValue("status", session.Status.ToString());
-                    command.Parameters.AddWithValue("date_added", session.DateAdded);
+                    command.Parameters.AddWithValue("id", drivingSession.Id);
+                    command.Parameters.AddWithValue("user_id", drivingSession.UserId);
+                    command.Parameters.AddWithValue("name", drivingSession.Name);
+                    command.Parameters.AddWithValue("start_date_time", drivingSession.StartDateTime);
+                    command.Parameters.AddWithValue("end_date_time", drivingSession.EndDateTime);
+                    command.Parameters.AddWithValue("start_location", drivingSession.StartLocation.PointToString());
+                    command.Parameters.AddWithValue("end_location", drivingSession.EndLocation.PointToString());
+                    command.Parameters.AddWithValue("waypoints", drivingSession.Waypoints.PointCollectionToString());
+                    command.Parameters.AddWithValue("status", drivingSession.Status.ToString());
+                    command.Parameters.AddWithValue("date_added", drivingSession.DateAdded);
                     await command.ExecuteNonQueryAsync();
-                    return session.Id;
+                    return drivingSession.Id;
                 }
             }
             catch (Exception ex)
@@ -181,14 +181,14 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task DeleteAsync(Session session)
+        public async Task DeleteAsync(DrivingSession drivingSession)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
             {
                 await connection.OpenAsync();
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.DeleteSession, connection);
-                command.Parameters.AddWithValue("id", session.Id);
+                command.Parameters.AddWithValue("id", drivingSession.Id);
                 await command.ExecuteNonQueryAsync();
             }
             catch (Exception ex)

@@ -101,7 +101,7 @@
     <Compile Include="Fragments\Home\HomeFragmentViewPresenter.cs" />
     <Compile Include="Fragments\Server\ServerFragmentViewPresenter.cs" />
     <Compile Include="Fragments\Session\SessionFragmentViewPresenter.cs" />
-    <Compile Include="Fragments\Settings\SettingsFragmentViewPresenter.cs" />
+    <Compile Include="Fragments\Camera\RemoteCameraFragmentViewPresenter.cs" />
     <Compile Include="Tools\NotifyCommands.cs" />
     <Compile Include="Tools\ViewPresenter.cs" />
     <Compile Include="Tools\NotificationEventArgs.cs" />
@@ -119,7 +119,7 @@
     <Compile Include="Fragments\Home\HomeFragmentView.cs" />
     <Compile Include="Fragments\Server\ServerFragmentView.cs" />
     <Compile Include="Fragments\Session\SessionFragmentView.cs" />
-    <Compile Include="Fragments\Settings\SettingsFragmentView.cs" />
+    <Compile Include="Fragments\Camera\RemoteCameraFragmentView.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ThumbnailService.cs" />
@@ -128,14 +128,13 @@
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Services\SessionService.cs" />
     <Compile Include="Services\UserService.cs" />
-    <Compile Include="Services\UserSettingsService.cs" />
+    <Compile Include="Services\RemoteCameraService.cs" />
     <Compile Include="Tools\CacheManager.cs" />
     <Compile Include="Tools\Constants.cs" />
     <Compile Include="Tools\MapTools.cs" />
     <Compile Include="Tools\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AndroidApp.cd" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -284,7 +283,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\fragment_settings.xml">
+    <AndroidResource Include="Resources\layout\fragment_camera.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -351,7 +350,9 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-v21\ic_stop.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-v21\ic_menu_remote_camera.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

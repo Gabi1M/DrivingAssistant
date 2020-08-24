@@ -8,18 +8,18 @@ using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 
-namespace DrivingAssistant.AndroidApp.Fragments.Settings
+namespace DrivingAssistant.AndroidApp.Fragments.Camera
 {
-    public class SettingsFragmentViewPresenter : ViewPresenter
+    public class RemoteCameraFragmentViewPresenter : ViewPresenter
     {
         private readonly User _user;
-        private readonly UserSettingsService _userSettingsService = new UserSettingsService();
+        private readonly RemoteCameraService _remoteCameraService = new RemoteCameraService();
         private readonly SessionService _sessionService = new SessionService();
 
-        private UserSettings _userSettings;
+        private RemoteCamera _remoteCamera;
 
         //============================================================
-        public SettingsFragmentViewPresenter(Context context, User user)
+        public RemoteCameraFragmentViewPresenter(Context context, User user)
         {
             _context = context;
             _user = user;
@@ -28,18 +28,18 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         //============================================================
         public async Task RefreshData()
         {
-            _userSettings = await _userSettingsService.GetByUserAsync(_user.Id);
+            _remoteCamera = await _remoteCameraService.GetByUserAsync(_user.Id);
             string cameraStatus;
             try
             {
-                cameraStatus = await _userSettingsService.GetRecordingStatus(_user.Id);
+                cameraStatus = await _remoteCameraService.GetRecordingStatus(_user.Id);
             }
             catch (Exception)
             {
                 cameraStatus = "Failed to retrieve camera status!";
             }
-            var cameraSessionName = _userSettings.CameraSessionId == -1 ? "None" : (await _sessionService.GetByIdAsync(_userSettings.CameraSessionId)).Name;
-            Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<UserSettings, string, string>(_userSettings, cameraStatus, cameraSessionName)));
+            var cameraSessionName = _remoteCamera.DestinationSessionId == -1 ? "None" : (await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId)).Name;
+            Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, string, string>(_remoteCamera, cameraStatus, cameraSessionName)));
         }
 
         //============================================================
@@ -54,13 +54,13 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
             {
                 if (args.Which == sessionStringList.Count - 1)
                 {
-                    _userSettings.CameraSessionId = -1;
+                    _remoteCamera.DestinationSessionId = -1;
                     Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_CameraSesstion, "None"));
                 }
                 else
                 {
                     var selectedSession = availableSessions.ElementAt(args.Which);
-                    _userSettings.CameraSessionId = selectedSession.Id;
+                    _remoteCamera.DestinationSessionId = selectedSession.Id;
                     Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_CameraSesstion, selectedSession.Name));
                 }
             });
@@ -69,12 +69,39 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         }
 
         //============================================================
+        public void AutoProcessTypeClick()
+        {
+            try
+            {
+                var algorithms = Enum.GetNames(typeof(ProcessingAlgorithmType));
+                var alert = new AlertDialog.Builder(_context);
+                alert.SetItems(algorithms, (sender, args) =>
+                {
+                    _remoteCamera.AutoProcessSessionType = Enum.Parse<ProcessingAlgorithmType>(algorithms.ElementAt(args.Which));
+                    Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_AutoProcessType, _remoteCamera.AutoProcessSessionType));
+                });
+                alert.Create()?.Show();
+            }
+            catch (Exception ex)
+            {
+                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_AutoProcessType, ex));
+            }
+        }
+
+        //============================================================
         public async Task StartRecordingClick()
         {
             try
             {
-                await _userSettingsService.StartRecordingAsync(_user.Id);
-                var status = await _userSettingsService.GetRecordingStatus(_user.Id);
+                var cameraSession = await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId);
+                if (cameraSession.Status == SessionStatus.Processed)
+                {
+                    Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StartRecording, new Exception("The destination session is unavailable!")));
+                    return;
+                }
+
+                await _remoteCameraService.StartRecordingAsync(_user.Id, _remoteCamera.VideoLength);
+                var status = await _remoteCameraService.GetRecordingStatus(_user.Id);
                 Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StartRecording, status));
             }
             catch (Exception)
@@ -88,8 +115,8 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         {
             try
             {
-                await _userSettingsService.StopRecordingAsync(_user.Id);
-                var status = await _userSettingsService.GetRecordingStatus(_user.Id);
+                await _remoteCameraService.StopRecordingAsync(_user.Id);
+                var status = await _remoteCameraService.GetRecordingStatus(_user.Id);
                 Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StopRecording, status));
             }
             catch (Exception)
@@ -99,7 +126,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
         }
 
         //============================================================
-        public async Task SaveClick(string cameraHost, string cameraUsername, string cameraPassword)
+        public async Task SaveClick(string cameraHost, string cameraUsername, string cameraPassword, string videoLength, bool autoProcess)
         {
             if (string.IsNullOrEmpty(cameraHost) || string.IsNullOrEmpty(cameraUsername) ||
                 string.IsNullOrEmpty(cameraPassword))
@@ -108,12 +135,14 @@ namespace DrivingAssistant.AndroidApp.Fragments.Settings
                 return;
             }
 
-            _userSettings.CameraHost = cameraHost;
-            _userSettings.CameraUsername = cameraUsername;
-            _userSettings.CameraPassword = cameraPassword;
+            _remoteCamera.Host = cameraHost;
+            _remoteCamera.Username = cameraUsername;
+            _remoteCamera.Password = cameraPassword;
+            _remoteCamera.VideoLength = Convert.ToInt32(videoLength);
+            _remoteCamera.AutoProcessSession = autoProcess;
             try
             {
-                await _userSettingsService.SetAsync(_userSettings);
+                await _remoteCameraService.SetAsync(_remoteCamera);
                 Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Save, null));
             }
             catch (Exception)

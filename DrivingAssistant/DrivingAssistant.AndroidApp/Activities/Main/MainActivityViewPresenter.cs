@@ -1,9 +1,9 @@
 ﻿using System;
 using Android.Content;
+using DrivingAssistant.AndroidApp.Fragments.Camera;
 using DrivingAssistant.AndroidApp.Fragments.Home;
 using DrivingAssistant.AndroidApp.Fragments.Server;
 using DrivingAssistant.AndroidApp.Fragments.Session;
-using DrivingAssistant.AndroidApp.Fragments.Settings;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 
@@ -41,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                     }
                     case Resource.Id.nav_settings:
                     {
-                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new SettingsFragmentView(_context, user)));
+                        Notify(new NotificationEventArgs(NotificationCommand.MainActivity_Navigation, new RemoteCameraFragmentView(_context, user)));
                         break;
                     }
                     case Resource.Id.nav_logout:

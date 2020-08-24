@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Services.PostgreSQL;
@@ -7,20 +6,20 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public interface ISessionService : IGenericService<Session>
+    public interface IRemoteCameraService : IGenericService<RemoteCamera>
     {
         //============================================================
-        public static ISessionService CreateNew()
+        public static IRemoteCameraService CreateNew()
         {
             if (Constants.ServerConstants.UsePostgresql)
             {
-                return new PostgresqlSessionService();
+                return new PostgresqlRemoteCameraService();
             }
 
-            return new MssqlSessionService();
+            return new MssqlRemoteCameraService();
         }
 
         //============================================================
-        public Task<IEnumerable<Session>> GetByUser(long userId);
+        public Task<RemoteCamera> GetByUser(long userId);
     }
 }

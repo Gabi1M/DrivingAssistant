@@ -8,18 +8,18 @@
         public const string UpdateUser = @"update users set username = @username, password = @password, first_name = @first_name, last_name = @last_name, email = @email, join_date = @join_date where id = @id;";
         public const string DeleteUser = @"delete from users where id = @id;";
 
-        public const string GetAllUserSettings = @"select * from user_settings;";
-        public const string GetUserSettingsById = @"select * from user_settings where id = @id;";
-        public const string GetUserSettingsByUser = @"select * from user_settings s where s.user_id = @user_id;";
-        public const string SetUserSettings = @"insert into user_settings(user_id, camera_session_id, camera_host, camera_username, camera_password) values (@user_id, @camera_session_id, @camera_host, @camera_username, @camera_password) returning id;";
-        public const string UpdateUserSettings = @"update user_settings set user_id = @user_id, camera_session_id = @camera_session_id, camera_host = @camera_host, camera_username = @camera_username, camera_password = @camera_password where id = @id;";
-        public const string DeleteUserSettings = @"delete from user_settings where id = @id;";
+        public const string GetAllUserSettings = @"select * from remote_camera;";
+        public const string GetUserSettingsById = @"select * from remote_camera where id = @id;";
+        public const string GetUserSettingsByUser = @"select * from remote_camera s where s.user_id = @user_id;";
+        public const string SetUserSettings = @"insert into remote_camera(user_id, session_id, host, username, password, video_length, auto_process_session, auto_process_session_type) values (@user_id, @session_id, @host, @username, @password, @video_length, @auto_process_session, @auto_process_session_type) returning id;";
+        public const string UpdateUserSettings = @"update remote_camera set user_id = @user_id, session_id = @session_id, host = @host, username = @username, password = @password, video_length = @video_length, auto_process_session = @auto_process_session, auto_process_session_type = @auto_process_session_type where id = @id;";
+        public const string DeleteUserSettings = @"delete from remote_camera where id = @id;";
 
         public const string GetAllSessions = @"select * from driving_session;";
         public const string GetSessionById = @"select * from driving_session where id = @id;";
         public const string GetSessionsByUser = @"select * from driving_session where user_id = @user_id;";
         public const string SetSession = @"insert into driving_session(user_id, name, start_date_time, end_date_time, start_location, end_location, waypoints, status, date_added) values (@user_id, @name, @start_date_time, @end_date_time, @start_location, @end_location, @waypoints, @status, @date_added) returning id;";
-        public const string UpdateSession = @"update driving_session set user_id = @user_id, name = @name, start_date_time = @start_date_time, end_date_time = @end_date_time, start_location = @start_location, end_location = @end_location, waypoints = @waypoints, status = @status, date_added = @date_added;";
+        public const string UpdateSession = @"update driving_session set user_id = @user_id, name = @name, start_date_time = @start_date_time, end_date_time = @end_date_time, start_location = @start_location, end_location = @end_location, waypoints = @waypoints, status = @status, date_added = @date_added where id = @id;";
         public const string DeleteSession = @"delete from driving_session where id = @id";
 
         public const string GetAllVideos = @"select * from video;";

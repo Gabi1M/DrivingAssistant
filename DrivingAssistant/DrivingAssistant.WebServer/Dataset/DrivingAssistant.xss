@@ -16,17 +16,17 @@
     <Shape ID="DesignTable:Get_Videos_By_User" ZOrder="14" X="2072" Y="1073" Height="290" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
     <Shape ID="DesignTable:Get_Video_By_Id" ZOrder="12" X="1143" Y="1071" Height="290" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
     <Shape ID="DesignTable:Get_Video_By_Processed_Id" ZOrder="13" X="1454" Y="1071" Height="290" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
-    <Shape ID="DesignTable:Session" ZOrder="11" X="1416" Y="545" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
-    <Shape ID="DesignTable:Get_Sessions_By_Id" ZOrder="10" X="1148" Y="1463" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
-    <Shape ID="DesignTable:Get_Sessions_By_User" ZOrder="9" X="1470" Y="1465" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
-    <Shape ID="DesignTable:Thumbnail" ZOrder="8" X="2643" Y="547" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
-    <Shape ID="DesignTable:Get_Thumbnail_By_Id" ZOrder="7" X="1153" Y="2922" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
-    <Shape ID="DesignTable:Get_Thumbnail_By_Video" ZOrder="6" X="1469" Y="2924" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
-    <Shape ID="DesignTable:UserSettings" ZOrder="5" X="2335" Y="547" Height="263" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="196" />
-    <Shape ID="DesignTable:Get_UserSettings_By_Id" ZOrder="4" X="1156" Y="2651" Height="263" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="196" />
-    <Shape ID="DesignTable:Get_UserSettings_By_User" ZOrder="3" X="1467" Y="2650" Height="263" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="196" />
-    <Shape ID="DesignTable:User" ZOrder="2" X="2041" Y="548" Height="290" Width="278" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
-    <Shape ID="DesignTable:Get_Users_By_Id" ZOrder="1" X="1155" Y="2332" Height="290" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
+    <Shape ID="DesignTable:Thumbnail" ZOrder="11" X="2643" Y="547" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
+    <Shape ID="DesignTable:Get_Thumbnail_By_Id" ZOrder="5" X="1157" Y="2990" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
+    <Shape ID="DesignTable:Get_Thumbnail_By_Video" ZOrder="4" X="1473" Y="2992" Height="182" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="115" />
+    <Shape ID="DesignTable:User" ZOrder="10" X="2041" Y="548" Height="290" Width="278" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
+    <Shape ID="DesignTable:Get_Users_By_Id" ZOrder="9" X="1155" Y="2332" Height="290" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="223" />
+    <Shape ID="DesignTable:RemoteCamera" ZOrder="8" X="2332" Y="550" Height="344" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="277" />
+    <Shape ID="DesignTable:Get_RemoteCamera_By_Id" ZOrder="7" X="1156" Y="2631" Height="344" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="277" />
+    <Shape ID="DesignTable:Get_RemoteCamera_By_User" ZOrder="6" X="1466" Y="2631" Height="344" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="277" />
+    <Shape ID="DesignTable:DrivingSession" ZOrder="3" X="1416" Y="548" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
+    <Shape ID="DesignTable:Get_DrivingSession_By_Id" ZOrder="2" X="1151" Y="1446" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
+    <Shape ID="DesignTable:Get_DrivingSession_By_User" ZOrder="1" X="1467" Y="1445" Height="371" Width="300" AdapterExpanded="true" DataTableExpanded="true" OldAdapterHeight="0" OldDataTableHeight="0" SplitterPosition="304" />
   </Shapes>
   <Connectors />
 </DiagramLayout>

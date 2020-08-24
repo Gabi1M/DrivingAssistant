@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.Core.Models
 {
-    public class Session : BaseEntity
+    public class DrivingSession : BaseEntity
     {
         [JsonProperty("UserId")]
         public long UserId { get; set; }

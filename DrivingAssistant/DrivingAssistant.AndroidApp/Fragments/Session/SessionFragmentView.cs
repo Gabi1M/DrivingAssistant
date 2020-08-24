@@ -66,7 +66,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 }
                 case NotificationCommand.SessionFragment_Map:
                 {
-                    var session = e.Data as Core.Models.Session;
+                    var session = e.Data as DrivingSession;
                     var intent = new Intent(_activityContext, typeof(MapActivityView));
                     intent.PutExtra("startPoint", JsonConvert.SerializeObject(session?.StartLocation));
                     intent.PutExtra("endPoint", JsonConvert.SerializeObject(session?.EndLocation));
@@ -107,7 +107,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 {
                     var intent = new Intent(_activityContext, typeof(SessionEditActivityView));
                     intent.PutExtra("user", JsonConvert.SerializeObject(_user));
-                    intent.PutExtra("session", JsonConvert.SerializeObject((e.Data as Core.Models.Session)));
+                    intent.PutExtra("session", JsonConvert.SerializeObject((e.Data as DrivingSession)));
                     StartActivityForResult(intent, 1234);
                     break;
                 }

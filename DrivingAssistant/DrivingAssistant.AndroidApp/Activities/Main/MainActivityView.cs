@@ -10,10 +10,10 @@ using Android.Support.V4.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using DrivingAssistant.AndroidApp.Fragments.Camera;
 using DrivingAssistant.AndroidApp.Fragments.Home;
 using DrivingAssistant.AndroidApp.Fragments.Server;
 using DrivingAssistant.AndroidApp.Fragments.Session;
-using DrivingAssistant.AndroidApp.Fragments.Settings;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
@@ -72,7 +72,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                         }
                         case SessionFragmentView sessionFragment:
                         {
-                            ChangeFragment(sessionFragment, "Sessions");
+                            ChangeFragment(sessionFragment, "Driving Sessions");
                             break;
                         }
                         case ServerFragmentView serverFragment:
@@ -80,9 +80,9 @@ namespace DrivingAssistant.AndroidApp.Activities.Main
                             ChangeFragment(serverFragment, "Servers");
                             break;
                         }
-                        case SettingsFragmentView settingsFragment:
+                        case RemoteCameraFragmentView settingsFragment:
                         {
-                            ChangeFragment(settingsFragment, "Settings");
+                            ChangeFragment(settingsFragment, "Remote Camera");
                             break;
                         }
                         case null:

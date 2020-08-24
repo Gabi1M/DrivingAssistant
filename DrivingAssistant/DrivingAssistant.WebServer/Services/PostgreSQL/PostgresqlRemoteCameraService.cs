@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
@@ -9,10 +10,10 @@ using Npgsql;
 
 namespace DrivingAssistant.WebServer.Services.PostgreSQL
 {
-    public class PostgresqlUserSettingsService : IUserSettingsService
+    public class PostgresqlRemoteCameraService : IRemoteCameraService
     {
         //============================================================
-        public async Task<IEnumerable<UserSettings>> GetAsync()
+        public async Task<IEnumerable<RemoteCamera>> GetAsync()
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -20,17 +21,20 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await connection.OpenAsync();
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetAllUserSettings, connection);
                 var result = await command.ExecuteReaderAsync();
-                var userSettings = new List<UserSettings>();
+                var userSettings = new List<RemoteCamera>();
                 while (await result.ReadAsync())
                 {
-                    userSettings.Add(new UserSettings
+                    userSettings.Add(new RemoteCamera
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
-                        CameraSessionId = Convert.ToInt64(result["camera_session_id"]),
-                        CameraHost = result["camera_host"].ToString(),
-                        CameraUsername = result["camera_username"].ToString(),
-                        CameraPassword = result["camera_password"].ToString()
+                        DestinationSessionId = Convert.ToInt64(result["session_id"]),
+                        Host = result["host"].ToString(),
+                        Username = result["username"].ToString(),
+                        Password = result["password"].ToString(),
+                        VideoLength = Convert.ToInt32(result["video_length"]),
+                        AutoProcessSession = Convert.ToBoolean(result["auto_process_session"]),
+                        AutoProcessSessionType = Enum.Parse<ProcessingAlgorithmType>(result["auto_process_session_type"].ToString()!)
                     });
                 }
 
@@ -47,7 +51,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<UserSettings> GetById(long id)
+        public async Task<RemoteCamera> GetById(long id)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -56,17 +60,20 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetUserSettingsById, connection);
                 command.Parameters.AddWithValue("id", id);
                 var result = await command.ExecuteReaderAsync();
-                var userSettings = new List<UserSettings>();
+                var userSettings = new List<RemoteCamera>();
                 while (await result.ReadAsync())
                 {
-                    userSettings.Add(new UserSettings
+                    userSettings.Add(new RemoteCamera
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
-                        CameraSessionId = Convert.ToInt64(result["camera_session_id"]),
-                        CameraHost = result["camera_host"].ToString(),
-                        CameraUsername = result["camera_username"].ToString(),
-                        CameraPassword = result["camera_password"].ToString()
+                        DestinationSessionId = Convert.ToInt64(result["session_id"]),
+                        Host = result["host"].ToString(),
+                        Username = result["username"].ToString(),
+                        Password = result["password"].ToString(),
+                        VideoLength = Convert.ToInt32(result["video_length"]),
+                        AutoProcessSession = Convert.ToBoolean(result["auto_process_session"]),
+                        AutoProcessSessionType = Enum.Parse<ProcessingAlgorithmType>(result["auto_process_session_type"].ToString()!)
                     });
                 }
 
@@ -83,7 +90,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<UserSettings> GetByUser(long userId)
+        public async Task<RemoteCamera> GetByUser(long userId)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
@@ -92,17 +99,20 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.GetUserSettingsByUser, connection);
                 command.Parameters.AddWithValue("user_id", userId);
                 var result = await command.ExecuteReaderAsync();
-                var userSettings = new List<UserSettings>();
+                var userSettings = new List<RemoteCamera>();
                 while (await result.ReadAsync())
                 {
-                    userSettings.Add(new UserSettings
+                    userSettings.Add(new RemoteCamera
                     {
                         Id = Convert.ToInt64(result["id"]),
                         UserId = Convert.ToInt64(result["user_id"]),
-                        CameraSessionId = Convert.ToInt64(result["camera_session_id"]),
-                        CameraHost = result["camera_host"].ToString(),
-                        CameraUsername = result["camera_username"].ToString(),
-                        CameraPassword = result["camera_password"].ToString()
+                        DestinationSessionId = Convert.ToInt64(result["session_id"]),
+                        Host = result["host"].ToString(),
+                        Username = result["username"].ToString(),
+                        Password = result["password"].ToString(),
+                        VideoLength = Convert.ToInt32(result["video_length"]),
+                        AutoProcessSession = Convert.ToBoolean(result["auto_process_session"]),
+                        AutoProcessSessionType = Enum.Parse<ProcessingAlgorithmType>(result["auto_process_session_type"].ToString()!)
                     });
                 }
 
@@ -119,34 +129,40 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task<long> SetAsync(UserSettings userSettings)
+        public async Task<long> SetAsync(RemoteCamera remoteCamera)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
             {
                 await connection.OpenAsync();
-                if (userSettings.Id == -1)
+                if (remoteCamera.Id == -1)
                 {
                     await using var command = new NpgsqlCommand(PostgreSQLCommands.SetUserSettings, connection);
-                    command.Parameters.AddWithValue("user_id", userSettings.UserId);
-                    command.Parameters.AddWithValue("camera_session_id", userSettings.CameraSessionId);
-                    command.Parameters.AddWithValue("camera_host", userSettings.CameraHost);
-                    command.Parameters.AddWithValue("camera_username", userSettings.CameraUsername);
-                    command.Parameters.AddWithValue("camera_password", userSettings.CameraPassword);
+                    command.Parameters.AddWithValue("user_id", remoteCamera.UserId);
+                    command.Parameters.AddWithValue("session_id", remoteCamera.DestinationSessionId);
+                    command.Parameters.AddWithValue("host", remoteCamera.Host);
+                    command.Parameters.AddWithValue("username", remoteCamera.Username);
+                    command.Parameters.AddWithValue("password", remoteCamera.Password);
+                    command.Parameters.AddWithValue("video_length", remoteCamera.VideoLength);
+                    command.Parameters.AddWithValue("auto_process_session", remoteCamera.AutoProcessSession);
+                    command.Parameters.AddWithValue("auto_process_session_type", remoteCamera.AutoProcessSessionType.ToString());
                     var result = Convert.ToInt64(await command.ExecuteScalarAsync());
                     return result;
                 }
                 else
                 {
                     await using var command = new NpgsqlCommand(PostgreSQLCommands.UpdateUserSettings, connection);
-                    command.Parameters.AddWithValue("id", userSettings.Id);
-                    command.Parameters.AddWithValue("user_id", userSettings.UserId);
-                    command.Parameters.AddWithValue("camera_session_id", userSettings.CameraSessionId);
-                    command.Parameters.AddWithValue("camera_host", userSettings.CameraHost);
-                    command.Parameters.AddWithValue("camera_username", userSettings.CameraUsername);
-                    command.Parameters.AddWithValue("camera_password", userSettings.CameraPassword);
+                    command.Parameters.AddWithValue("id", remoteCamera.Id);
+                    command.Parameters.AddWithValue("user_id", remoteCamera.UserId);
+                    command.Parameters.AddWithValue("session_id", remoteCamera.DestinationSessionId);
+                    command.Parameters.AddWithValue("host", remoteCamera.Host);
+                    command.Parameters.AddWithValue("username", remoteCamera.Username);
+                    command.Parameters.AddWithValue("password", remoteCamera.Password);
+                    command.Parameters.AddWithValue("video_length", remoteCamera.VideoLength);
+                    command.Parameters.AddWithValue("auto_process_session", remoteCamera.AutoProcessSession);
+                    command.Parameters.AddWithValue("auto_process_session_type", remoteCamera.AutoProcessSessionType.ToString());
                     await command.ExecuteNonQueryAsync();
-                    return userSettings.Id;
+                    return remoteCamera.Id;
                 }
             }
             catch (Exception ex)
@@ -160,14 +176,14 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
         }
 
         //============================================================
-        public async Task DeleteAsync(UserSettings userSettings)
+        public async Task DeleteAsync(RemoteCamera remoteCamera)
         {
             await using var connection = new NpgsqlConnection(Constants.ServerConstants.GetPsqlConnectionString());
             try
             {
                 await connection.OpenAsync();
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.DeleteUserSettings, connection);
-                command.Parameters.AddWithValue("id", userSettings.Id);
+                command.Parameters.AddWithValue("id", remoteCamera.Id);
                 await command.ExecuteNonQueryAsync();
             }
             catch (Exception ex)

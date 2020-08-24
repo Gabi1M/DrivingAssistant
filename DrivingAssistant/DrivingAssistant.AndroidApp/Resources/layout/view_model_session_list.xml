@@ -11,15 +11,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="10"
+        android:weightSum="6"
         android:orientation="horizontal">
 
         <LinearLayout
             android:orientation="vertical"
             android:minWidth="25px"
             android:minHeight="25px"
-            android:layout_weight="2"
-            android:layout_width="wrap_content"
+            android:layout_width="150px"
             android:layout_height="match_parent"
             android:id="@+id/linearLayout3">
 
@@ -32,8 +31,7 @@
         </LinearLayout>
 
         <Space
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
+            android:layout_width="20px"
             android:layout_height="match_parent"/>
 
         <LinearLayout
@@ -82,13 +80,11 @@
         </LinearLayout>
 
         <Space
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
+            android:layout_width="20px"
             android:layout_height="match_parent"/>
 
         <LinearLayout
-            android:layout_weight="2"
-            android:layout_width="wrap_content"
+            android:layout_width="100px"
             android:layout_height="match_parent"
             android:orientation="vertical">
 

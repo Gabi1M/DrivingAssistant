@@ -16,7 +16,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class VideoController : ControllerBase
     {
         private static readonly IVideoService _videoService = IVideoService.CreateNew();
-        private static readonly IUserSettingsService _userSettingsService = IUserSettingsService.CreateNew();
+        private static readonly IRemoteCameraService _remoteCameraService = IRemoteCameraService.CreateNew();
         private static readonly IThumbnailService _thumbnailService = IThumbnailService.CreateNew();
 
         //============================================================
@@ -137,11 +137,11 @@ namespace DrivingAssistant.WebServer.Controllers
                 var sessionId = -1L;
                 if (Request.Query.ContainsKey("UserId"))
                 {
-                    var userSettings = await _userSettingsService.GetByUser(Convert.ToInt64(Request.Query["UserId"].First()));
-                    if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.CameraHost &&
-                        userSettings.CameraSessionId != -1)
+                    var userSettings = await _remoteCameraService.GetByUser(Convert.ToInt64(Request.Query["UserId"].First()));
+                    if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.Host &&
+                        userSettings.DestinationSessionId != -1)
                     {
-                        sessionId = userSettings.CameraSessionId;
+                        sessionId = userSettings.DestinationSessionId;
                     }
                 }
 

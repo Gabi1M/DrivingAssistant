@@ -14,7 +14,7 @@ namespace DrivingAssistant.AndroidApp.Services
     public class SessionService
     {
         //============================================================
-        public async Task<IEnumerable<Session>> GetAllAsync()
+        public async Task<IEnumerable<DrivingSession>> GetAllAsync()
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetAll))
             {
@@ -23,11 +23,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Session>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<DrivingSession>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<Session> GetByIdAsync(long id)
+        public async Task<DrivingSession> GetByIdAsync(long id)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetById + "?Id=" + id))
             {
@@ -36,11 +36,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<Session>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<DrivingSession>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<IEnumerable<Session>> GetByUserAsync(long userId)
+        public async Task<IEnumerable<DrivingSession>> GetByUserAsync(long userId)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetByUserId + "?UserId=" + userId))
             {
@@ -49,11 +49,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<Session>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<DrivingSession>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<long> SetAsync(Session session)
+        public async Task<long> SetAsync(DrivingSession drivingSession)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.AddOrUpdate))
             {
@@ -62,7 +62,7 @@ namespace DrivingAssistant.AndroidApp.Services
 
             await using var requestStream = await request.GetRequestStreamAsync();
             await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(session));
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(drivingSession));
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);

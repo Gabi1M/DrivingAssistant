@@ -34,7 +34,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         private int _selectedPosition = -1;
         private View _selectedView;
 
-        private Session _currentSession;
+        private DrivingSession _currentDrivingSession;
         private DateTime? _selectedStartDateTime;
         private DateTime? _selectedEndDateTime;
         private LocationPoint _selectedStartLocationPoint;
@@ -42,18 +42,18 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         private ICollection<LocationPoint> _selectedWaypoints = new List<LocationPoint>();
 
         //============================================================
-        public SessionEditActivityViewPresenter(Context context, Session currentSession, User user, Location currentLocation)
+        public SessionEditActivityViewPresenter(Context context, DrivingSession currentDrivingSession, User user, Location currentLocation)
         {
             _context = context;
-            _currentSession = currentSession;
+            _currentDrivingSession = currentDrivingSession;
             _user = user;
             _currentLocation = currentLocation;
 
-            if (_currentSession != null)
+            if (_currentDrivingSession != null)
             {
-                _selectedStartLocationPoint = currentSession.StartLocation;
-                _selectedEndLocationPoint = currentSession.EndLocation;
-                _selectedWaypoints = currentSession.Waypoints;
+                _selectedStartLocationPoint = currentDrivingSession.StartLocation;
+                _selectedEndLocationPoint = currentDrivingSession.EndLocation;
+                _selectedWaypoints = currentDrivingSession.Waypoints;
             }
         }
 
@@ -113,14 +113,14 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 {
                     var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
                     var video = await _videoService.GetVideoByIdAsync(videoId);
-                    if (_currentSession == null)
+                    if (_currentDrivingSession == null)
                     {
                         _videos.Add(video);
                         await RefreshVideoSource();
                     }
                     else
                     {
-                        video.SessionId = _currentSession.Id;
+                        video.SessionId = _currentDrivingSession.Id;
                         await _videoService.UpdateVideoAsync(video);
                         await RefreshVideoSource(true);
                     }
@@ -165,7 +165,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                     return;
                 }
 
-                if (_currentSession == null)
+                if (_currentDrivingSession == null)
                 {
                     _videos.Remove(video);
                     await RefreshVideoSource();
@@ -188,7 +188,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             {
                 try
                 {
-                    _videos = (await _videoService.GetVideoBySessionAsync(_currentSession.Id)).ToList();
+                    _videos = (await _videoService.GetVideoBySessionAsync(_currentDrivingSession.Id)).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -408,24 +408,24 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
         {
             try
             {
-                if (_currentSession != null)
+                if (_currentDrivingSession != null)
                 {
-                    _currentSession.Name = name;
-                    _currentSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
-                    _currentSession.EndDateTime = _selectedEndDateTime ?? DateTime.Now;
-                    _currentSession.StartLocation = _selectedStartLocationPoint;
-                    _currentSession.EndLocation = _selectedEndLocationPoint;
-                    _currentSession.Waypoints = _selectedWaypoints;
-                    _currentSession.Id = await _sessionService.SetAsync(_currentSession);
-                    foreach (var video in _videos.Where(x => x.SessionId != _currentSession.Id))
+                    _currentDrivingSession.Name = name;
+                    _currentDrivingSession.StartDateTime = _selectedStartDateTime ?? DateTime.Now;
+                    _currentDrivingSession.EndDateTime = _selectedEndDateTime ?? DateTime.Now;
+                    _currentDrivingSession.StartLocation = _selectedStartLocationPoint;
+                    _currentDrivingSession.EndLocation = _selectedEndLocationPoint;
+                    _currentDrivingSession.Waypoints = _selectedWaypoints;
+                    _currentDrivingSession.Id = await _sessionService.SetAsync(_currentDrivingSession);
+                    foreach (var video in _videos.Where(x => x.SessionId != _currentDrivingSession.Id))
                     {
-                        video.SessionId = _currentSession.Id;
+                        video.SessionId = _currentDrivingSession.Id;
                         await _videoService.UpdateVideoAsync(video);
                     }
                 }
                 else
                 {
-                    _currentSession = new Session
+                    _currentDrivingSession = new DrivingSession
                     {
                         Name = name,
                         StartDateTime = _selectedStartDateTime ?? DateTime.Now,
@@ -438,10 +438,10 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                         UserId = _user.Id,
                         DateAdded = DateTime.Now
                     };
-                    _currentSession.Id = await _sessionService.SetAsync(_currentSession);
+                    _currentDrivingSession.Id = await _sessionService.SetAsync(_currentDrivingSession);
                     foreach (var video in _videos)
                     {
-                        video.SessionId = _currentSession.Id;
+                        video.SessionId = _currentDrivingSession.Id;
                         await _videoService.UpdateVideoAsync(video);
                     }
                 }
@@ -477,7 +477,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
             if (_selectedStartLocationPoint != null || _selectedEndLocationPoint != null || (_selectedWaypoints != null && _selectedWaypoints.Count != 0))
             {
-                var points = new List<Mapsui.Geometries.Point>();
+                var points = new List<Point>();
                 if (_selectedStartLocationPoint != null)
                 {
                     points.Add(SphericalMercator.FromLonLat(_selectedStartLocationPoint.X, _selectedStartLocationPoint.Y));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Tools;
+using DrivingAssistant.WebServer.Processing;
 using DrivingAssistant.WebServer.Services.Generic;
 using DrivingAssistant.WebServer.Tools;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,9 @@ using Newtonsoft.Json;
 namespace DrivingAssistant.WebServer.Controllers
 {
     [ApiController]
-    public class UserSettingsController : ControllerBase
+    public class RemoteCameraController : ControllerBase
     {
-        private static readonly IUserSettingsService _userSettingsService = IUserSettingsService.CreateNew();
+        private static readonly IRemoteCameraService _remoteCameraService = IRemoteCameraService.CreateNew();
 
         //============================================================
         [HttpGet]
@@ -23,8 +24,8 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var userSettings = await _userSettingsService.GetAsync();
-                return Ok(JsonConvert.SerializeObject(userSettings, Formatting.Indented));
+                var remoteCameras = await _remoteCameraService.GetAsync();
+                return Ok(JsonConvert.SerializeObject(remoteCameras, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -41,8 +42,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var userSettings = await _userSettingsService.GetById(id);
-                return Ok(JsonConvert.SerializeObject(userSettings, Formatting.Indented));
+                var remoteCamera = await _remoteCameraService.GetById(id);
+                return Ok(JsonConvert.SerializeObject(remoteCamera, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -59,8 +60,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var userSettings = await _userSettingsService.GetByUser(userId);
-                return Ok(JsonConvert.SerializeObject(userSettings, Formatting.Indented));
+                var remoteCamera = await _remoteCameraService.GetByUser(userId);
+                return Ok(JsonConvert.SerializeObject(remoteCamera, Formatting.Indented));
             }
             catch (Exception ex)
             {
@@ -77,8 +78,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 using var streamReader = new StreamReader(Request.Body);
-                var userSettings = JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
-                return Ok(await _userSettingsService.SetAsync(userSettings));
+                var remoteCamera = JsonConvert.DeserializeObject<RemoteCamera>(await streamReader.ReadToEndAsync());
+                return Ok(await _remoteCameraService.SetAsync(remoteCamera));
             }
             catch (Exception ex)
             {
@@ -95,8 +96,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var id = Convert.ToInt64(Request.Query["Id"].First());
-                var userSettings = await _userSettingsService.GetById(id);
-                await _userSettingsService.DeleteAsync(userSettings);
+                var remoteCamera = await _remoteCameraService.GetById(id);
+                await _remoteCameraService.DeleteAsync(remoteCamera);
                 return Ok();
             }
             catch (Exception ex)
@@ -113,11 +114,14 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var userSettings = await _userSettingsService.GetByUser(userId);
-                var sshHelper = new SshHelper(userSettings.CameraHost, "pi", "caca");
+                var userId = Convert.ToInt64(Request.Query["UserId"].Single());
+                var videoLength = Convert.ToInt32(Request.Query["VideoLength"].Single());
+                var remoteCamera = await _remoteCameraService.GetByUser(userId);
+                var sshHelper = new SshHelper(remoteCamera.Host, "pi", "caca");
                 sshHelper.Connect();
-                sshHelper.SendCommand("nohup python camera_script.py &");
+                var url = "http://192.168.0.101:3287/upload_video_stream?Encoding=h264&UserId=" + userId;
+                var arguments = "\'" + url + "\' \'" + videoLength + "\'";
+                sshHelper.SendCommand("nohup python camera_script.py " + arguments + " &");
                 sshHelper.Disconnect();
                 return Ok();
             }
@@ -136,14 +140,20 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var userSettings = await _userSettingsService.GetByUser(userId);
-                var sshHelper = new SshHelper(userSettings.CameraHost, "pi", "caca");
+                var remoteCamera = await _remoteCameraService.GetByUser(userId);
+                var sshHelper = new SshHelper(remoteCamera.Host, "pi", "caca");
                 sshHelper.Connect();
                 var processes = sshHelper.SendCommand("ps -A -eo pid,args | grep python").Split('\n');
                 var process = processes.First(x => x.Contains("camera_script.py"));
                 var pid = process.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
                 sshHelper.SendCommand("kill " + pid.Trim());
                 sshHelper.Disconnect();
+
+                if (remoteCamera.AutoProcessSession)
+                {
+                    ProcessThread.ProcessSession(remoteCamera.DestinationSessionId, remoteCamera.AutoProcessSessionType);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -161,8 +171,8 @@ namespace DrivingAssistant.WebServer.Controllers
             try
             {
                 var userId = Convert.ToInt64(Request.Query["UserId"].First());
-                var userSettings = await _userSettingsService.GetByUser(userId);
-                var sshHelper = new SshHelper(userSettings.CameraHost, "pi", "caca");
+                var remoteCamera = await _remoteCameraService.GetByUser(userId);
+                var sshHelper = new SshHelper(remoteCamera.Host, "pi", "caca");
                 sshHelper.Connect();
                 var processes = sshHelper.SendCommand("ps -A -eo pid,args | grep python").Split('\n');
                 return Ok(processes.Any(x => x.Contains("script.py")) ? "Running" : "Stopped");

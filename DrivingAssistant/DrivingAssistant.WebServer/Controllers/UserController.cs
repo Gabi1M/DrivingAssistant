@@ -14,7 +14,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class UserController : ControllerBase
     {
         private static readonly IUserService _userService = IUserService.CreateNew();
-        private static readonly IUserSettingsService _userSettingsService = IUserSettingsService.CreateNew();
+        private static readonly IRemoteCameraService _remoteCameraService = IRemoteCameraService.CreateNew();
 
         //============================================================
         [HttpGet]
@@ -63,7 +63,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 var userId = await _userService.SetAsync(user);
                 if (user.Id == -1)
                 {
-                    await _userSettingsService.SetAsync(UserSettings.Default(userId));
+                    await _remoteCameraService.SetAsync(RemoteCamera.Default(userId));
                 }
                 return Ok(userId);
             }
@@ -84,7 +84,7 @@ namespace DrivingAssistant.WebServer.Controllers
                 var id = Convert.ToInt64(Request.Query["Id"].First());
                 var user = await _userService.GetById(id);
                 await _userService.DeleteAsync(user);
-                await _userSettingsService.DeleteAsync(await _userSettingsService.GetByUser(id));
+                await _remoteCameraService.DeleteAsync(await _remoteCameraService.GetByUser(id));
                 return Ok();
             }
             catch (Exception ex)

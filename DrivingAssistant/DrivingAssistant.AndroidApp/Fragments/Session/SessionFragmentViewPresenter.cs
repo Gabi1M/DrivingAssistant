@@ -18,7 +18,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         private readonly SessionService _sessionService = new SessionService();
         private readonly VideoService _videoService = new VideoService();
 
-        private IEnumerable<Core.Models.Session> _sessions;
+        private IEnumerable<DrivingSession> _sessions;
         private int _selectedPosition;
         private View _selectedView;
 

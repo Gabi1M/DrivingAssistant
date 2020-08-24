@@ -42,6 +42,7 @@
         SettingsFragment_StopRecording,
         SettingsFragment_Save,
         SettingsFragment_CameraSesstion,
+        SettingsFragment_AutoProcessType,
         SettingsFragment_Refresh
     }
 }

@@ -47,20 +47,20 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
             _user = JsonConvert.DeserializeObject<User>(Intent?.GetStringExtra("user")!);
 
-            Session currentSession = null;
+            DrivingSession currentDrivingSession = null;
             if (Intent.HasExtra("session"))
             { 
-                currentSession = JsonConvert.DeserializeObject<Session>(Intent.GetStringExtra("session")!);
-                _textDescription.Text = currentSession.Name;
-                _labelStartDateTime.Text = currentSession.StartDateTime.ToString(Constants.DateTimeFormat);
-                _labelEndDateTime.Text = currentSession.EndDateTime.ToString(Constants.DateTimeFormat);
-                _labelStartLocation.Text = currentSession.StartLocation.X + " " + currentSession.StartLocation.Y;
-                _labelEndLocation.Text = currentSession.EndLocation.X + " " + currentSession.EndLocation.Y;
-                _labelWaypoints.Text = currentSession.Waypoints.Count + " Selected";
-                _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, (await (new VideoService()).GetVideoBySessionAsync(currentSession.Id)).ToList());
+                currentDrivingSession = JsonConvert.DeserializeObject<DrivingSession>(Intent.GetStringExtra("session")!);
+                _textDescription.Text = currentDrivingSession.Name;
+                _labelStartDateTime.Text = currentDrivingSession.StartDateTime.ToString(Constants.DateTimeFormat);
+                _labelEndDateTime.Text = currentDrivingSession.EndDateTime.ToString(Constants.DateTimeFormat);
+                _labelStartLocation.Text = currentDrivingSession.StartLocation.X + " " + currentDrivingSession.StartLocation.Y;
+                _labelEndLocation.Text = currentDrivingSession.EndLocation.X + " " + currentDrivingSession.EndLocation.Y;
+                _labelWaypoints.Text = currentDrivingSession.Waypoints.Count + " Selected";
+                _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, (await (new VideoService()).GetVideoBySessionAsync(currentDrivingSession.Id)).ToList());
             }
 
-            _viewPresenter = new SessionEditActivityViewPresenter(this, currentSession, _user, await Geolocation.GetLastKnownLocationAsync());
+            _viewPresenter = new SessionEditActivityViewPresenter(this, currentDrivingSession, _user, await Geolocation.GetLastKnownLocationAsync());
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
         }
 

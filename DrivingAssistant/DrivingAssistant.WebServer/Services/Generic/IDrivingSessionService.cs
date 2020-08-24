@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
 using DrivingAssistant.WebServer.Services.Mssql;
 using DrivingAssistant.WebServer.Services.PostgreSQL;
@@ -6,20 +7,20 @@ using DrivingAssistant.WebServer.Tools;
 
 namespace DrivingAssistant.WebServer.Services.Generic
 {
-    public interface IUserSettingsService : IGenericService<UserSettings>
+    public interface IDrivingSessionService : IGenericService<DrivingSession>
     {
         //============================================================
-        public static IUserSettingsService CreateNew()
+        public static IDrivingSessionService CreateNew()
         {
             if (Constants.ServerConstants.UsePostgresql)
             {
-                return new PostgresqlUserSettingsService();
+                return new PostgresqlDrivingSessionService();
             }
 
-            return new MssqlUserSettingsService();
+            return new MssqlDrivingSessionService();
         }
 
         //============================================================
-        public Task<UserSettings> GetByUser(long userId);
+        public Task<IEnumerable<DrivingSession>> GetByUser(long userId);
     }
 }

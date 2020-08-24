@@ -10,10 +10,10 @@ using Newtonsoft.Json;
 
 namespace DrivingAssistant.AndroidApp.Services
 {
-    public class UserSettingsService
+    public class RemoteCameraService
     {
         //============================================================
-        public async Task<IEnumerable<UserSettings>> GetAllAsync()
+        public async Task<IEnumerable<RemoteCamera>> GetAllAsync()
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetAll))
             {
@@ -22,11 +22,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<IEnumerable<UserSettings>>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<IEnumerable<RemoteCamera>>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<UserSettings> GetByIdAsync(long id)
+        public async Task<RemoteCamera> GetByIdAsync(long id)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetById + "?Id=" + id))
             {
@@ -35,11 +35,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<RemoteCamera>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<UserSettings> GetByUserAsync(long userId)
+        public async Task<RemoteCamera> GetByUserAsync(long userId)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetByUserId + "?UserId=" + userId))
             {
@@ -48,11 +48,11 @@ namespace DrivingAssistant.AndroidApp.Services
 
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return JsonConvert.DeserializeObject<UserSettings>(await streamReader.ReadToEndAsync());
+            return JsonConvert.DeserializeObject<RemoteCamera>(await streamReader.ReadToEndAsync());
         }
 
         //============================================================
-        public async Task<long> SetAsync(UserSettings userSettings)
+        public async Task<long> SetAsync(RemoteCamera remoteCamera)
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.AddOrUpdate))
             {
@@ -61,7 +61,7 @@ namespace DrivingAssistant.AndroidApp.Services
 
             await using var requestStream = await request.GetRequestStreamAsync();
             await using var streamWriter = new StreamWriter(requestStream);
-            await streamWriter.WriteAsync(JsonConvert.SerializeObject(userSettings));
+            await streamWriter.WriteAsync(JsonConvert.SerializeObject(remoteCamera));
             await streamWriter.FlushAsync();
             var response = await request.GetResponseAsync() as HttpWebResponse;
             using var streamReader = new StreamReader(response?.GetResponseStream()!);
@@ -80,9 +80,9 @@ namespace DrivingAssistant.AndroidApp.Services
         }
 
         //============================================================
-        public async Task StartRecordingAsync(long userId)
+        public async Task StartRecordingAsync(long userId, int videoLength)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId + "&VideoLength=" + videoLength))
             {
                 Method = "GET"
             };
