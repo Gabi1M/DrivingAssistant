@@ -1,7 +1,7 @@
 ﻿using System;
 using Renci.SshNet;
 
-namespace DrivingAssistant.WebServer.Tools
+namespace DrivingAssistant.AndroidApp.Tools
 {
     public class SshHelper : IDisposable
     {

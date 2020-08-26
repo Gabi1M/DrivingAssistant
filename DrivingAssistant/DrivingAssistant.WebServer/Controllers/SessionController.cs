@@ -20,7 +20,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.SessionEndpoints.GetAll)]
+        [Route(Endpoints.DrivingSessionEndpoints.GetAll)]
         public async Task<IActionResult> GetAllAsync()
         {
             try
@@ -37,7 +37,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.SessionEndpoints.GetById)]
+        [Route(Endpoints.DrivingSessionEndpoints.GetById)]
         public async Task<IActionResult> GetByIdAsync()
         {
             try
@@ -55,7 +55,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.SessionEndpoints.GetByUserId)]
+        [Route(Endpoints.DrivingSessionEndpoints.GetByUserId)]
         public async Task<IActionResult> GetByUserAsync()
         {
             try
@@ -73,7 +73,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpPost]
-        [Route(Endpoints.SessionEndpoints.AddOrUpdate)]
+        [Route(Endpoints.DrivingSessionEndpoints.AddOrUpdate)]
         public async Task<IActionResult> PostAsync()
         {
             try
@@ -91,7 +91,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpDelete]
-        [Route(Endpoints.SessionEndpoints.Delete)]
+        [Route(Endpoints.DrivingSessionEndpoints.Delete)]
         public async Task<IActionResult> DeleteAsync()
         {
             try
@@ -114,7 +114,7 @@ namespace DrivingAssistant.WebServer.Controllers
 
         //============================================================
         [HttpGet]
-        [Route(Endpoints.SessionEndpoints.Submit)]
+        [Route(Endpoints.DrivingSessionEndpoints.Submit)]
         public IActionResult ProcessSession()
         {
             try

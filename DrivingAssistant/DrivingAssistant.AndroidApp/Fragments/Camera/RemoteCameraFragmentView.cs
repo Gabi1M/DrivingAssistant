@@ -50,12 +50,14 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
             {
                 case NotificationCommand.SettingsFragment_StartRecording:
                 {
-                    _textCameraStatus.Text = e.Data as string;
+                    var status = (RemoteCameraStatus)e.Data;
+                    UpdateStatus(status);
                     break;
                 }
                 case NotificationCommand.SettingsFragment_StopRecording:
                 {
-                    _textCameraStatus.Text = e.Data as string;
+                    var status = (RemoteCameraStatus)e.Data;
+                    UpdateStatus(status);
                     break;
                 }
                 case NotificationCommand.SettingsFragment_CameraSesstion:
@@ -75,15 +77,15 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
                 }
                 case NotificationCommand.SettingsFragment_Refresh:
                 {
-                    var (remoteCamera, item2, item3) = (Tuple<Core.Models.RemoteCamera, string, string>) e.Data;
+                    var (remoteCamera, item2, item3) = (Tuple<RemoteCamera, RemoteCameraStatus, string>) e.Data;
                     _textCameraHost.Text = remoteCamera.Host;
                     _textCameraUsername.Text = remoteCamera.Username;
                     _textCameraPassword.Text = remoteCamera.Password;
                     _textCameraVideoLength.Text = remoteCamera.VideoLength.ToString();
                     _checkAutoProcess.Checked = remoteCamera.AutoProcessSession;
                     _textAutoProcessType.Text = remoteCamera.AutoProcessSessionType.ToString();
-                    _textCameraStatus.Text = item2;
                     _textCameraSession.Text = item3;
+                    UpdateStatus(item2);
                     break;
                 }
             }
@@ -119,6 +121,29 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
             _buttonStartRecording.Click += OnStartRecordingClick;
             _buttonStopRecording.Click += OnStopRecordingClick;
             _buttonSave.Click += OnButtonSaveClick;
+        }
+
+        //============================================================
+        private void UpdateStatus(RemoteCameraStatus status)
+        {
+            switch (status)
+            {
+                case RemoteCameraStatus.Running:
+                {
+                    _textCameraStatus.Text = "Running";
+                    break;
+                }
+                case RemoteCameraStatus.Stopped:
+                {
+                    _textCameraStatus.Text = "Stopped";
+                    break;
+                }
+                case RemoteCameraStatus.Failed_to_retrieve:
+                {
+                    _textCameraStatus.Text = "Failed to retrieve";
+                    break;
+                }
+            }
         }
 
         //============================================================

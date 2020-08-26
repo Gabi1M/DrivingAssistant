@@ -59,12 +59,15 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
                 var middleVerticalLine = new LineSegment2D(new Point(image.Width / 2, 0), new Point(image.Width / 2, image.Height));
 
                 var leftSideLines = lines.Where(x =>
-                    middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) > 10 &&
-                    x.GetAngle(middleVerticalLine) < 55).OrderBy(x => x.P1.Y);
+                    middleVerticalLine.Side(x.GetCenterPoint()) == 1 && x.GetAngle(middleVerticalLine) >= 0 &&
+                    x.GetAngle(middleVerticalLine) < 80);
 
                 var rightSideLines = lines.Where(x =>
-                    middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) > 55 &&
-                    x.GetAngle(middleVerticalLine) < 90).OrderBy(x => x.P1.Y);
+                    middleVerticalLine.Side(x.GetCenterPoint()) == -1 && x.GetAngle(middleVerticalLine) >= 0 &&
+                    x.GetAngle(middleVerticalLine) < 80);
+
+                leftSideLines = leftSideLines.OrderBy(x => x.P2.Y).ThenByDescending(x => x.P2.X);
+                rightSideLines = rightSideLines.OrderBy(x => x.P2.Y).ThenBy(x => x.P2.X);
 
                 var connectingLine = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), rightSideLines.Last().GetCenterPoint());
                 var intersection = connectingLine.GetIntersection(middleVerticalLine);
@@ -72,14 +75,14 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
                 var intersectionLeft = new LineSegment2D(leftSideLines.Last().GetCenterPoint(), intersection);
                 var intersectionRight = new LineSegment2D(rightSideLines.Last().GetCenterPoint(), intersection);
 
-
                 var rightSidePercent = (100 * intersectionLeft.Length) / connectingLine.Length;
                 var leftSidePercent = (100 * intersectionRight.Length) / connectingLine.Length;
 
                 processedImage.Draw(intersectionLeft, new Bgr(255, 0, 0), 2);
                 processedImage.Draw(intersectionRight, new Bgr(0, 0, 255), 2);
 
-                lines.AsParallel().ForAll(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
+                leftSideLines.ToList().ForEach(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
+                rightSideLines.ToList().ForEach(x => processedImage.Draw(x, new Bgr(0, 255, 0), 2));
 
                 report = new ImageReport
                 {

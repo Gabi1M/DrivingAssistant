@@ -29,17 +29,21 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
         public async Task RefreshData()
         {
             _remoteCamera = await _remoteCameraService.GetByUserAsync(_user.Id);
-            string cameraStatus;
+            var status = RemoteCameraStatus.Failed_to_retrieve;
             try
             {
-                cameraStatus = await _remoteCameraService.GetRecordingStatus(_user.Id);
+                await Task.Run(async () =>
+                {
+                    using var remoteCameraController = new RemoteCameraController(_remoteCamera);
+                    status = await remoteCameraController.GetStatusAsync();
+                });
             }
             catch (Exception)
             {
-                cameraStatus = "Failed to retrieve camera status!";
+                //Ignored
             }
             var cameraSessionName = _remoteCamera.DestinationSessionId == -1 ? "None" : (await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId)).Name;
-            Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, string, string>(_remoteCamera, cameraStatus, cameraSessionName)));
+            Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, RemoteCameraStatus, string>(_remoteCamera, status, cameraSessionName)));
         }
 
         //============================================================
@@ -93,16 +97,10 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
         {
             try
             {
-                var cameraSession = await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId);
-                if (cameraSession.Status == SessionStatus.Processed)
-                {
-                    Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StartRecording, new Exception("The destination session is unavailable!")));
-                    return;
-                }
-
-                await _remoteCameraService.StartRecordingAsync(_user.Id, _remoteCamera.VideoLength);
-                var status = await _remoteCameraService.GetRecordingStatus(_user.Id);
-                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StartRecording, status));
+               using var remoteCameraController = new RemoteCameraController(_remoteCamera);
+               await remoteCameraController.StartRecordingAsync();
+               var status = await remoteCameraController.GetStatusAsync();
+               Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StartRecording, status));
             }
             catch (Exception)
             {
@@ -115,13 +113,14 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
         {
             try
             {
-                await _remoteCameraService.StopRecordingAsync(_user.Id);
-                var status = await _remoteCameraService.GetRecordingStatus(_user.Id);
+                using var remoteCameraController = new RemoteCameraController(_remoteCamera);
+                await remoteCameraController.StopRecordingAsync();
+                var status = await remoteCameraController.GetStatusAsync();
                 Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StopRecording, status));
             }
             catch (Exception)
             {
-                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StopRecording, "Failed to stop camera recording!"));
+                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StopRecording, new Exception("Failed to stop camera recording!")));
             }
         }
 

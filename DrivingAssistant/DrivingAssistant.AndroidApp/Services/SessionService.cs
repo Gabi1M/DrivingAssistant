@@ -16,7 +16,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<IEnumerable<DrivingSession>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.GetAll))
             {
                 Method = "GET"
             };
@@ -29,7 +29,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<DrivingSession> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -42,7 +42,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<IEnumerable<DrivingSession>> GetByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.GetByUserId + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.GetByUserId + "?UserId=" + userId))
             {
                 Method = "GET"
             };
@@ -55,7 +55,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<long> SetAsync(DrivingSession drivingSession)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -72,7 +72,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };
@@ -83,7 +83,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task SubmitAsync(long id, ProcessingAlgorithmType algorithmType)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.SessionEndpoints.Submit + "?Id=" + id + "&Type=" + algorithmType))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.DrivingSessionEndpoints.Submit + "?Id=" + id + "&Type=" + algorithmType))
             {
                 Method = "GET"
             };

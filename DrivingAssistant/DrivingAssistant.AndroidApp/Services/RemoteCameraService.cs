@@ -15,7 +15,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<IEnumerable<RemoteCamera>> GetAllAsync()
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetAll))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.RemoteCameraEndpoints.GetAll))
             {
                 Method = "GET"
             };
@@ -28,7 +28,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<RemoteCamera> GetByIdAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetById + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.RemoteCameraEndpoints.GetById + "?Id=" + id))
             {
                 Method = "GET"
             };
@@ -41,7 +41,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<RemoteCamera> GetByUserAsync(long userId)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.GetByUserId + "?UserId=" + userId))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.RemoteCameraEndpoints.GetByUserId + "?UserId=" + userId))
             {
                 Method = "GET"
             };
@@ -54,7 +54,7 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task<long> SetAsync(RemoteCamera remoteCamera)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.AddOrUpdate))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.RemoteCameraEndpoints.AddOrUpdate))
             {
                 Method = "POST"
             };
@@ -71,47 +71,12 @@ namespace DrivingAssistant.AndroidApp.Services
         //============================================================
         public async Task DeleteAsync(long id)
         {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.Delete + "?Id=" + id))
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.RemoteCameraEndpoints.Delete + "?Id=" + id))
             {
                 Method = "DELETE"
             };
 
             await request.GetResponseAsync();
-        }
-
-        //============================================================
-        public async Task StartRecordingAsync(long userId, int videoLength)
-        {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StartRecording + "?UserId=" + userId + "&VideoLength=" + videoLength))
-            {
-                Method = "GET"
-            };
-
-            await request.GetResponseAsync();
-        }
-
-        //============================================================
-        public async Task StopRecordingAsync(long userId)
-        {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.StopRecording + "?UserId=" + userId))
-            {
-                Method = "GET"
-            };
-
-            await request.GetResponseAsync();
-        }
-
-        //============================================================
-        public async Task<string> GetRecordingStatus(long userId)
-        {
-            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.UserSettingsEndpoints.RecordingStatus + "?UserId=" + userId))
-            {
-                Method = "GET"
-            };
-
-            var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var streamReader = new StreamReader(response?.GetResponseStream()!);
-            return await streamReader.ReadToEndAsync();
         }
     }
 }

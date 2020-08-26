@@ -19,11 +19,9 @@ namespace DrivingAssistant.Core.Tools
                 encryptor.Key = pdb.GetBytes(32);
                 encryptor.IV = pdb.GetBytes(16);
                 using var ms = new MemoryStream();
-                using (var cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
-                {
-                    cs.Write(clearBytes, 0, clearBytes.Length);
-                    cs.Close();
-                }
+                using var cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write);
+                cs.Write(clearBytes, 0, clearBytes.Length);
+                cs.Close();
 
                 password = Convert.ToBase64String(ms.ToArray());
             }
@@ -44,11 +42,9 @@ namespace DrivingAssistant.Core.Tools
                 encryptor.Key = pdb.GetBytes(32);
                 encryptor.IV = pdb.GetBytes(16);
                 using var ms = new MemoryStream();
-                using (var cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
-                {
-                    cs.Write(cipherBytes, 0, cipherBytes.Length);
-                    cs.Close();
-                }
+                using var cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write);
+                cs.Write(cipherBytes, 0, cipherBytes.Length);
+                cs.Close();
 
                 password = Encoding.Unicode.GetString(ms.ToArray());
             }

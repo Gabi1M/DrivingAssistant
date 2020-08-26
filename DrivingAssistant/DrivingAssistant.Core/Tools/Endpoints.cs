@@ -30,7 +30,7 @@
         }
 
         //============================================================
-        public static class SessionEndpoints
+        public static class DrivingSessionEndpoints
         {
             public const string GetAll = "sessions_all";
             public const string GetById = "sessions_id";
@@ -50,16 +50,13 @@
         }
 
         //============================================================
-        public static class UserSettingsEndpoints
+        public static class RemoteCameraEndpoints
         {
-            public const string GetAll = "user_settings_all";
-            public const string GetById = "user_settings_id";
-            public const string GetByUserId = "user_settings_user_id";
-            public const string AddOrUpdate = "user_settings_set";
-            public const string Delete = "user_settings_delete";
-            public const string StartRecording = "user_start_recording";
-            public const string StopRecording = "user_stop_recording";
-            public const string RecordingStatus = "user_recording_status";
+            public const string GetAll = "remote_camera_all";
+            public const string GetById = "remote_camera_id";
+            public const string GetByUserId = "remote_camera_user_id";
+            public const string AddOrUpdate = "remote_camera_set";
+            public const string Delete = "remote_camera_delete";
         }
 
         //============================================================
