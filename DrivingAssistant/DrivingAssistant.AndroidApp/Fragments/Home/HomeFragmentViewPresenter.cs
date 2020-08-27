@@ -33,12 +33,6 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                 var sessions = await _sessionService.GetByUserAsync(_user.Id);
                 var sessionChartEntries = new[]
                 {
-                    /*new ChartEntry(sessions.Count())
-                    {
-                        Color = new SKColor(0, 255, 0),
-                        Label = "Total",
-                        ValueLabel = sessions.Count().ToString()
-                    },*/
                     new ChartEntry(sessions.Count(x => x.Status == SessionStatus.Processed))
                     {
                         Color = new SKColor(0,0,255),
@@ -74,23 +68,17 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                 var videos = await _videoService.GetVideoByUserAsync(_user.Id);
                 var videoChartEntries = new[]
                 {
-                    /*new ChartEntry(videos.Count())
-                    {
-                        Color = new SKColor(0, 255, 0),
-                        Label = "Total",
-                        ValueLabel = videos.Count().ToString()
-                    },*/
                     new ChartEntry(videos.Count(x => x.IsProcessed()))
                     {
                         Color = new SKColor(0,0,255),
                         Label = "Processed",
                         ValueLabel = videos.Count(x => x.IsProcessed()).ToString()
                     },
-                    new ChartEntry(videos.Count(x => !x.IsProcessed()))
+                    new ChartEntry(videos.Count() - videos.Count(x => x.IsProcessed()) * 2)
                     {
                         Color = new SKColor(255, 0,0),
                         Label = "Unprocessed",
-                        ValueLabel = (videos.Count() - videos.Count(x => x.IsProcessed())).ToString()
+                        ValueLabel = (videos.Count() - videos.Count(x => x.IsProcessed()) * 2).ToString()
                     }
                 };
                 var chart = new PieChart { Entries = videoChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, LabelMode = LabelMode.RightOnly, Margin = 50 };
@@ -110,12 +98,6 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                 var reports = await _reportService.GetByUserAsync(_user.Id);
                 var reportChartEntries = new[]
                 {
-                    /*new ChartEntry(reports.Sum(x => x.ProcessedFrames))
-                    {
-                        Color = new SKColor(0, 255, 0),
-                        Label = "Total",
-                        ValueLabel = reports.Sum(x => x.ProcessedFrames).ToString()
-                    },*/
                     new ChartEntry(reports.Sum(x => x.SuccessFrames))
                     {
                         Color = new SKColor(0,0,255),
