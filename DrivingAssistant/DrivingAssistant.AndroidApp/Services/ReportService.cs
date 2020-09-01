@@ -7,6 +7,7 @@ using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
+using Environment = Android.OS.Environment;
 
 namespace DrivingAssistant.AndroidApp.Services
 {
@@ -103,6 +104,22 @@ namespace DrivingAssistant.AndroidApp.Services
             };
 
             await request.GetResponseAsync();
+        }
+
+        //============================================================
+        public async Task<string> DownloadReport(long videoId)
+        {
+            var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.ReportEndpoints.DownloadReport + "?VideoId=" + videoId))
+            {
+                Method = "GET"
+            };
+
+            using var response = await request.GetResponseAsync() as HttpWebResponse;
+            await using var responseStream = response?.GetResponseStream();
+            var filename = Path.Combine(Environment.ExternalStorageDirectory.Path, videoId + ".html");
+            await using var file = File.Create(filename);
+            await responseStream.CopyToAsync(file);
+            return filename;
         }
     }
 }

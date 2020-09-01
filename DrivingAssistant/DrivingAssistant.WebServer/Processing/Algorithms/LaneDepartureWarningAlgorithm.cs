@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Tools;
@@ -49,9 +50,10 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
 
             try
             {
-                var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
-                var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
-                var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+                var grayImage = processedImage.Convert<Gray, byte>();
+                var maskedImage = MaskImage(grayImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
+                var cannyImage = maskedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
+                var lines = cannyImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
                     _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
                     _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 
@@ -96,7 +98,6 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
                     LeftSideLineNumber = leftSideLines.Count(),
                     RightSideLineNumber = rightSideLines.Count()
                 };
-
             }
             catch (Exception ex)
             {
@@ -122,7 +123,7 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
         //======================================================//
         public string ProcessVideo(string filename, int framesToSkip, out VideoReport report)
         {
-            var processedVideoFilename = Utils.GetRandomFilename(".mkv");
+            var processedVideoFilename = Utils.GetRandomFilename(".mkv", FileType.Video);
             using var video = new VideoCapture(filename);
             using var videoWriter = new VideoWriter(processedVideoFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             var imageResultList = new List<ImageReport>();

@@ -39,7 +39,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                         SpanLineAngle = Convert.ToDouble(result["span_line_angle"]),
                         SpanLineLength = Convert.ToDouble(result["span_line_length"]),
                         LeftSideLineNumber = Convert.ToInt32(result["left_side_line_number"]),
-                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"])
+                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"]),
+                        PdfPath = result["pdf_path"].ToString()
                     });
                 }
 
@@ -83,7 +84,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                         SpanLineAngle = Convert.ToDouble(result["span_line_angle"]),
                         SpanLineLength = Convert.ToDouble(result["span_line_length"]),
                         LeftSideLineNumber = Convert.ToInt32(result["left_side_line_number"]),
-                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"])
+                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"]),
+                        PdfPath = result["pdf_path"].ToString()
                     });
                 }
 
@@ -127,7 +129,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                         SpanLineAngle = Convert.ToDouble(result["span_line_angle"]),
                         SpanLineLength = Convert.ToDouble(result["span_line_length"]),
                         LeftSideLineNumber = Convert.ToInt32(result["left_side_line_number"]),
-                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"])
+                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"]),
+                        PdfPath = result["pdf_path"].ToString()
                     });
                 }
 
@@ -171,7 +174,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                         SpanLineAngle = Convert.ToDouble(result["span_line_angle"]),
                         SpanLineLength = Convert.ToDouble(result["span_line_length"]),
                         LeftSideLineNumber = Convert.ToInt32(result["left_side_line_number"]),
-                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"])
+                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"]),
+                        PdfPath = result["pdf_path"].ToString()
                     });
                 }
 
@@ -215,7 +219,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                         SpanLineAngle = Convert.ToDouble(result["span_line_angle"]),
                         SpanLineLength = Convert.ToDouble(result["span_line_length"]),
                         LeftSideLineNumber = Convert.ToInt32(result["left_side_line_number"]),
-                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"])
+                        RightSideLineNumber = Convert.ToInt32(result["right_side_line_number"]),
+                        PdfPath = result["pdf_path"].ToString()
                     });
                 }
 
@@ -254,6 +259,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                     command.Parameters.AddWithValue("span_line_length", laneDepartureWarningReport.SpanLineLength);
                     command.Parameters.AddWithValue("left_side_line_number", laneDepartureWarningReport.LeftSideLineNumber);
                     command.Parameters.AddWithValue("right_side_line_number", laneDepartureWarningReport.RightSideLineNumber);
+                    command.Parameters.AddWithValue("pdf_path", laneDepartureWarningReport.PdfPath);
                     var result = Convert.ToInt64(await command.ExecuteScalarAsync());
                     return result;
                 }
@@ -274,6 +280,7 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                     command.Parameters.AddWithValue("span_line_length", laneDepartureWarningReport.SpanLineLength);
                     command.Parameters.AddWithValue("left_side_line_number", laneDepartureWarningReport.LeftSideLineNumber);
                     command.Parameters.AddWithValue("right_side_line_number", laneDepartureWarningReport.RightSideLineNumber);
+                    command.Parameters.AddWithValue("pdf_path", laneDepartureWarningReport.PdfPath);
                     await command.ExecuteNonQueryAsync();
                     return laneDepartureWarningReport.Id;
                 }

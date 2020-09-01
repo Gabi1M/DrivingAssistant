@@ -105,6 +105,24 @@ namespace DrivingAssistant.WebServer.Controllers
         }
 
         //============================================================
+        [HttpGet]
+        [Route(Endpoints.ReportEndpoints.DownloadReport)]
+        public async Task<IActionResult> DownloadReport()
+        {
+            try
+            {
+                var videoId = Convert.ToInt64(Request.Query["VideoId"].First());
+                var report = await _reportService.GetByVideo(videoId);
+                return File(System.IO.File.Open(report.PdfPath, FileMode.Open, FileAccess.Read, FileShare.Read), "text/html");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, LogType.Error, true);
+                return Problem(ex.Message);
+            }
+        }
+
+        //============================================================
         [HttpPost]
         [Route(Endpoints.ReportEndpoints.AddOrUpdate)]
         public async Task<IActionResult> PostAsync()

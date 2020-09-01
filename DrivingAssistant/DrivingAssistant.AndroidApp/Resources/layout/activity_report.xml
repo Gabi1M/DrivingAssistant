@@ -1,0 +1,609 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainColor2">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Road Position"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="200.0dp"
+                android:id="@+id/reportChartRoadPosition"
+                android:textColor="@color/mainColor1"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:background="@drawable/textbox_border">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50.0dp"
+                android:text="Frames"
+                android:gravity="center"
+                android:textColor="@color/mainColor1"
+                android:textSize="30.0dp"/>
+
+            <Microcharts.Droid.ChartView
+                android:layout_width="match_parent"
+                android:layout_height="200.0dp"
+                android:id="@+id/reportChartFrames"
+                android:textColor="@color/mainColor1"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5.0dp"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Total Processed Frames"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextTotalFrames"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Successful Frames"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextSuccessFrames"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Failed Frames"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextFailFrames"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Success Rate"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextSuccessRate"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Left Side Percent"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextLeftSidePercent"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Right Side Percent"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextRightSidePercent"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Left Side Line Length"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextLeftSideLineLength"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Right Side Line Length"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextRightSideLineLength"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Span Line Angle"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextSpanLineAngle"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Span Line Length"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextSpanLineLength"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Left Side Line Number"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextLeftSideLineNumber"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45.0dp"
+            android:layout_marginLeft="20.0dp"
+            android:layout_marginRight="20.0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:background="@drawable/textbox_border">
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Right Side Line Number"
+                android:textColor="@color/mainColor1"/>
+
+            <TextView
+                android:layout_width="0.0dp"
+                android:layout_height="35.0dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:textColor="@color/mainColor1"
+                android:textColorHint="@color/mainColor3"
+                android:background="@drawable/textbox_border"
+                android:id="@+id/reportTextRightSideLineNumber"/>
+
+            <Space
+                android:layout_width="5.0dp"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10.0dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="35.0dp"
+            android:layout_marginLeft="100.0dp"
+            android:layout_marginRight="100.0dp"
+            android:layout_marginBottom="10.0dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/reportButtonDownload"
+            android:text="Download"
+            android:background="@drawable/button_border"/>
+
+    </LinearLayout>
+
+</ScrollView>

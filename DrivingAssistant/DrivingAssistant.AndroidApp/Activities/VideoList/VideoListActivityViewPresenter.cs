@@ -41,6 +41,31 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         }
 
         //============================================================
+        public void ButtonViewReportClick()
+        {
+            if (_selectedPosition == -1)
+            {
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, new Exception("No video selected!")));
+                return;
+            }
+
+            try
+            {
+                var video = _videos.ElementAt(_selectedPosition);
+                /*if (!video.IsProcessed())
+                {
+                    Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, new Exception("The selected video was not processed yet!")));
+                    return;
+                }*/
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, _videos.ElementAt(_selectedPosition)));
+            }
+            catch (Exception ex)
+            {
+                Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, ex));
+            }
+        }
+
+        //============================================================
         public void ItemClick(int position, View view)
         {
             _selectedView?.SetBackgroundResource(0);

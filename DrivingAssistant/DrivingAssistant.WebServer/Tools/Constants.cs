@@ -9,11 +9,13 @@ namespace DrivingAssistant.WebServer.Tools
         {
             private const string LinuxThumbnailStoragePath = @"/mnt/hdd/CloudStorage/Thumbnails";
             private const string LinuxVideoStoragePath = @"/mnt/hdd/CloudStorage/Videos";
+            private const string LinuxPdfStoragePath = @"/mnt/hdd/CloudStorage/Pdfs";
             private const string LinuxPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=driving_assistant;Username=pi;Password=1234";
             private const string LinuxMSSQLConnectionString = @"";
 
             private const string WindowsThumbnailStoragePath = @"E:\CloudStorage\Thumbnails";
             private const string WindowsVideoStoragePath = @"E:\CloudStorage\Videos";
+            private const string WindowsPdfStoragePath = @"E:\CloudStorage\Pdfs";
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=driving_assistant;Username=postgres;Password=1234";
             private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
 
@@ -34,6 +36,12 @@ namespace DrivingAssistant.WebServer.Tools
             public static string GetVideoStoragePath()
             {
                 return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? LinuxVideoStoragePath : WindowsVideoStoragePath;
+            }
+
+            //============================================================
+            public static string GetPdfStoragePath()
+            {
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? LinuxPdfStoragePath : WindowsPdfStoragePath;
             }
 
             //============================================================

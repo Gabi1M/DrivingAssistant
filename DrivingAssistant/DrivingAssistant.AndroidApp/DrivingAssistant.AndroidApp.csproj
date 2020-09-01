@@ -95,6 +95,8 @@
     <Compile Include="Activities\Main\MainActivityViewPresenter.cs" />
     <Compile Include="Activities\Map\MapActivityViewPresenter.cs" />
     <Compile Include="Activities\Register\RegisterActivityViewPresenter.cs" />
+    <Compile Include="Activities\Report\ReportActivityView.cs" />
+    <Compile Include="Activities\Report\ReportActivityViewPresenter.cs" />
     <Compile Include="Activities\SessionEdit\SessionEditActivityViewPresenter.cs" />
     <Compile Include="Activities\VideoList\VideoListActivityViewPresenter.cs" />
     <Compile Include="Activities\Video\VideoActivityViewPresenter.cs" />
@@ -357,6 +359,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-v21\ic_menu_remote_camera.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_report.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

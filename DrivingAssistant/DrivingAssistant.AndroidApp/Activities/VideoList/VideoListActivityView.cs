@@ -7,6 +7,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using DrivingAssistant.AndroidApp.Activities.Report;
 using DrivingAssistant.AndroidApp.Activities.Video;
 using DrivingAssistant.AndroidApp.Adapters.ViewModelAdapters;
 using DrivingAssistant.AndroidApp.Tools;
@@ -21,6 +22,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
     {
         private ListView _videoListView;
         private Button _buttonView;
+        private Button _buttonViewReport;
 
         private VideoListActivityViewPresenter _viewPresenter;
 
@@ -33,7 +35,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             SetupActivityFields();
 
             _viewPresenter = new VideoListActivityViewPresenter(this,
-                JsonConvert.DeserializeObject<IEnumerable<Core.Models.VideoRecording>>(Intent?.GetStringExtra("videos")!));
+                JsonConvert.DeserializeObject<IEnumerable<VideoRecording>>(Intent?.GetStringExtra("videos")!));
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
             SetupListAdapter();
@@ -57,6 +59,13 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
                     StartActivity(intent);
                     break;
                 }
+                case NotificationCommand.VideoListActivity_ViewReport:
+                {
+                    var intent = new Intent(this, typeof(ReportActivityView));
+                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as VideoRecording));
+                    StartActivity(intent);
+                    break;
+                }
                 case NotificationCommand.VideoListActivity_Item:
                 {
                     var view = e.Data as View;
@@ -71,13 +80,23 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         {
             _videoListView = FindViewById<ListView>(Resource.Id.videosListView);
             _buttonView = FindViewById<Button>(Resource.Id.videoListButtonView);
+            _buttonViewReport = FindViewById<Button>(Resource.Id.videoListButtonViewReport);
+
             _buttonView.Click += OnButtonViewClick;
+            _buttonViewReport.Click += OnButtonViewReportClick;
         }
+
 
         //============================================================
         private void OnButtonViewClick(object sender, EventArgs e)
         {
             _viewPresenter.ButtonViewClick();
+        }
+
+        //============================================================
+        private void OnButtonViewReportClick(object sender, EventArgs e)
+        {
+            _viewPresenter.ButtonViewReportClick();
         }
 
         //============================================================

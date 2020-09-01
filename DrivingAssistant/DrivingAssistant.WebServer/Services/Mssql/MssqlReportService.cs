@@ -41,7 +41,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineAngle = row.SpanLineAngle,
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
-                    RightSideLineNumber = row.RightSideLineNumber
+                    RightSideLineNumber = row.RightSideLineNumber,
+                    PdfPath = row.PdfPath
                 });
             });
         }
@@ -68,7 +69,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineAngle = row.SpanLineAngle,
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
-                    RightSideLineNumber = row.RightSideLineNumber
+                    RightSideLineNumber = row.RightSideLineNumber,
+                    PdfPath = row.PdfPath
                 }).First();
             });
         }
@@ -95,7 +97,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineAngle = row.SpanLineAngle,
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
-                    RightSideLineNumber = row.RightSideLineNumber
+                    RightSideLineNumber = row.RightSideLineNumber,
+                    PdfPath = row.PdfPath
                 }).First();
             });
         }
@@ -122,7 +125,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineAngle = row.SpanLineAngle,
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
-                    RightSideLineNumber = row.RightSideLineNumber
+                    RightSideLineNumber = row.RightSideLineNumber,
+                    PdfPath = row.PdfPath
                 });
             });
         }
@@ -149,7 +153,8 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     SpanLineAngle = row.SpanLineAngle,
                     SpanLineLength = row.SpanLineLength,
                     LeftSideLineNumber = row.LeftSideLineNumber,
-                    RightSideLineNumber = row.RightSideLineNumber
+                    RightSideLineNumber = row.RightSideLineNumber,
+                    PdfPath = row.PdfPath
                 });
             });
         }
@@ -166,7 +171,7 @@ namespace DrivingAssistant.WebServer.Services.Mssql
                     laneDepartureWarningReport.LeftSidePercent, laneDepartureWarningReport.RightSidePercent,
                     laneDepartureWarningReport.LeftSideLineLength, laneDepartureWarningReport.RightSideLineLength,
                     laneDepartureWarningReport.SpanLineAngle, laneDepartureWarningReport.SpanLineLength,
-                    laneDepartureWarningReport.LeftSideLineNumber, laneDepartureWarningReport.RightSideLineNumber,
+                    laneDepartureWarningReport.LeftSideLineNumber, laneDepartureWarningReport.RightSideLineNumber, laneDepartureWarningReport.PdfPath,
                     ref idOut);
                 return idOut ?? -1;
             });

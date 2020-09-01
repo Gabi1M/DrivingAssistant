@@ -25,6 +25,7 @@
             public const string GetByVideoId = "reports_video_id";
             public const string GetBySessionId = "reports_session_id";
             public const string GetByUserId = "reports_user_id";
+            public const string DownloadReport = "reports_download";
             public const string AddOrUpdate = "reports_set";
             public const string Delete = "reports_delete";
         }

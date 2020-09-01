@@ -43,6 +43,9 @@ namespace DrivingAssistant.Core.Models.Reports
         [JsonProperty("RightSideLineNumber")]
         public int RightSideLineNumber { get; set; }
 
+        [JsonProperty("PdfPath")]
+        public string PdfPath { get; set; }
+
         //===========================================================//
         public static LaneDepartureWarningReport FromImageReport(ImageReport imageReport, long videoId)
         {
@@ -85,6 +88,27 @@ namespace DrivingAssistant.Core.Models.Reports
                 LeftSideLineNumber = videoReport.AverageLeftSideLineNumber,
                 RightSideLineNumber = videoReport.AverageRightSideLineNumber
             };
+        }
+
+        //===========================================================//
+        public string ToPdfString()
+        {
+            var pdfText = string.Empty;
+            pdfText += "Report ID: " + Id + "\n";
+            pdfText += "Video ID: " + VideoId + "\n";
+            pdfText += "Total frames: " + ProcessedFrames + "\n";
+            pdfText += "Successfully processed frames: " + SuccessFrames + "\n";
+            pdfText += "Unsuccessfully processed frames: " + FailFrames + "\n";
+            pdfText += "Success rate: " + SuccessRate + "\n";
+            pdfText += "Left side percent: " + LeftSidePercent + "\n";
+            pdfText += "Right side percent: " + RightSidePercent + "\n";
+            pdfText += "Average left side line length: " + LeftSideLineLength + "\n";
+            pdfText += "Average right side line length: " + RightSideLineLength + "\n";
+            pdfText += "Average span line length: " + SpanLineLength + "\n";
+            pdfText += "Average span line angle: " + SpanLineAngle + "\n";
+            pdfText += "Average left side line number: " + LeftSideLineNumber + "\n";
+            pdfText += "Average right side line number: " + RightSideLineNumber;
+            return pdfText;
         }
 
         //===========================================================//

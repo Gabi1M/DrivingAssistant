@@ -66,7 +66,6 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
         }
 
         //============================================================
-
         public async Task CreateVideoChart()
         {
             try

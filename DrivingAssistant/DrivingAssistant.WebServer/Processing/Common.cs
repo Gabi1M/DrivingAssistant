@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using DrivingAssistant.Core.Enums;
 using DrivingAssistant.Core.Tools;
 using DrivingAssistant.WebServer.Tools;
 using Emgu.CV;
@@ -106,7 +107,7 @@ namespace DrivingAssistant.WebServer.Processing
         /// <returns>The filename for the newly converted file.</returns>
         public static string ConvertH264ToMkv(string filename)
         {
-            var newFilename = Utils.GetRandomFilename(".mkv");
+            var newFilename = Utils.GetRandomFilename(".mkv", FileType.Video);
             using var video = new VideoCapture(filename);
             using var videoWriter = new VideoWriter(newFilename, VideoWriter.Fourcc('H', '2', '6', '4'), 30, new Size(video.Width, video.Height), true);
             while (true)
@@ -139,7 +140,7 @@ namespace DrivingAssistant.WebServer.Processing
         {
             using var video = new VideoCapture(filename);
             using var capturedImage = video.QueryFrame();
-            var savedFilename = Utils.GetRandomFilename(".jpg", true);
+            var savedFilename = Utils.GetRandomFilename(".jpg", FileType.Thumbnail);
             capturedImage.Save(savedFilename);
             return savedFilename;
         }

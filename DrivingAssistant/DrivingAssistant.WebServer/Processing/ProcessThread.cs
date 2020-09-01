@@ -49,6 +49,7 @@ namespace DrivingAssistant.WebServer.Processing
 
                                 var report = LaneDepartureWarningReport.FromVideoReport(result, video.Id);
                                 processedVideo.Id = await videoService.SetAsync(processedVideo);
+                                report.PdfPath = await Utils.CreatePdfFromReport(report);
                                 report.Id = await reportService.SetAsync(report);
                                 video.ProcessedId = processedVideo.Id;
                                 await videoService.SetAsync(video);
