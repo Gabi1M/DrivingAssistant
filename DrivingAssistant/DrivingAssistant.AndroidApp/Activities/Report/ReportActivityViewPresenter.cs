@@ -32,7 +32,15 @@ namespace DrivingAssistant.AndroidApp.Activities.Report
         //============================================================
         public async Task Download()
         {
-            var filename = await _reportService.DownloadReport(_video.Id);
+            string filename;
+            if (_video.IsProcessed())
+            {
+                filename = await _reportService.DownloadReport(_video.Id);
+            }
+            else
+            {
+                filename = await _reportService.DownloadReport((await _videoService.GetVideoByProcessedIdAsync(_video.Id)).Id);
+            }
             Notify(new NotificationEventArgs(NotificationCommand.ReportActivity_Download, filename));
         }
     }

@@ -5,6 +5,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Activities.Report;
@@ -39,6 +40,13 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
 
             SetupListAdapter();
+        }
+
+        //============================================================
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
         //============================================================

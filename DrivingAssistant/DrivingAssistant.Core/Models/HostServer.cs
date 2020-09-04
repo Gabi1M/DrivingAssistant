@@ -14,7 +14,7 @@ namespace DrivingAssistant.Core.Models
         public static HostServer Default = new HostServer
         {
             Name = "Default",
-            Address = "http://192.168.0.175:3287"
+            Address = "http://192.168.0.174:3287"
         };
     }
 }

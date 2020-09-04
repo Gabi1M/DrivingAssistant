@@ -3,6 +3,7 @@ using System.Globalization;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Widget;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
@@ -57,6 +58,13 @@ namespace DrivingAssistant.AndroidApp.Activities.Report
         }
 
         //============================================================
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        //============================================================
         private void ViewPresenterOnNotificationReceived(object sender, NotificationEventArgs e)
         {
             switch (e.Command)
@@ -69,7 +77,7 @@ namespace DrivingAssistant.AndroidApp.Activities.Report
                 }
                 case NotificationCommand.ReportActivity_Download:
                 {
-                    Utils.ShowToast(this, "Report saved to: " + e.Data);
+                    Utils.ShowToast(this, "Report saved to: Downloads\\" + e.Data);
                     break;
                 }
             }

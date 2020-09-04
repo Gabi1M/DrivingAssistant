@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Android.Content;
 using Android.Views;
+using DrivingAssistant.AndroidApp.Services;
 using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 
@@ -13,6 +14,8 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         public readonly IEnumerable<VideoRecording> _videos;
         private int _selectedPosition = -1;
         private View _selectedView;
+
+        private readonly VideoService _videoService = new VideoService();
 
         //============================================================
         public VideoListActivityViewPresenter(Context context, IEnumerable<VideoRecording> videos)
@@ -41,7 +44,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         }
 
         //============================================================
-        public void ButtonViewReportClick()
+        public async void ButtonViewReportClick()
         {
             if (_selectedPosition == -1)
             {
@@ -52,11 +55,12 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             try
             {
                 var video = _videos.ElementAt(_selectedPosition);
-                /*if (!video.IsProcessed())
+
+                if ((await _videoService.GetAllVideosAsync()).All(x => x.ProcessedId == video.Id) && !video.IsProcessed())
                 {
                     Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, new Exception("The selected video was not processed yet!")));
                     return;
-                }*/
+                }
                 Notify(new NotificationEventArgs(NotificationCommand.VideoListActivity_ViewReport, _videos.ElementAt(_selectedPosition)));
             }
             catch (Exception ex)

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Views;
 using Android.Widget;
@@ -14,7 +16,6 @@ using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
-using Constants = DrivingAssistant.AndroidApp.Tools.Constants;
 
 namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 {
@@ -49,7 +50,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
 
             DrivingSession currentDrivingSession = null;
             if (Intent.HasExtra("session"))
-            { 
+            {
                 currentDrivingSession = JsonConvert.DeserializeObject<DrivingSession>(Intent.GetStringExtra("session")!);
                 _textDescription.Text = currentDrivingSession.Name;
                 _labelStartDateTime.Text = currentDrivingSession.StartDateTime.ToString(Constants.DateTimeFormat);
@@ -60,8 +61,16 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, (await (new VideoService()).GetVideoBySessionAsync(currentDrivingSession.Id)).ToList());
             }
 
-            _viewPresenter = new SessionEditActivityViewPresenter(this, currentDrivingSession, _user, await Geolocation.GetLastKnownLocationAsync());
+            var location = await Geolocation.GetLocationAsync();
+            _viewPresenter = new SessionEditActivityViewPresenter(this, currentDrivingSession, _user, location);
             _viewPresenter.OnNotificationReceived += ViewPresenterOnNotificationReceived;
+        }
+
+        //============================================================
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
         //============================================================
@@ -76,62 +85,62 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
             switch (e.Command)
             {
                 case NotificationCommand.SessionEditActivity_Back:
-                {
-                    base.OnBackPressed();
-                    break;
-                }
+                    {
+                        base.OnBackPressed();
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_ItemClick:
-                {
-                    var view = e.Data as View;
-                    view?.SetBackgroundResource(Resource.Drawable.list_element_border);
-                    break;
-                }
+                    {
+                        var view = e.Data as View;
+                        view?.SetBackgroundResource(Resource.Drawable.list_element_border);
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_VideoRefresh:
-                {
-                    _videoListView.Adapter?.Dispose();
-                    _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, e.Data as List<Core.Models.VideoRecording>);
-                    break;
-                }
+                    {
+                        _videoListView.Adapter?.Dispose();
+                        _videoListView.Adapter = new VideoThumbnailViewModelAdapter(this, e.Data as List<VideoRecording>);
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_VideoView:
-                {
-                    var intent = new Intent(this, typeof(VideoActivityView));
-                    intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as Core.Models.VideoRecording));
-                    StartActivity(intent);
-                    break;
-                }
+                    {
+                        var intent = new Intent(this, typeof(VideoActivityView));
+                        intent.PutExtra("video", JsonConvert.SerializeObject(e.Data as VideoRecording));
+                        StartActivity(intent);
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_StartDate:
-                {
-                    _labelStartDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
-                    break;
-                }
+                    {
+                        _labelStartDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_EndDate:
-                {
-                    _labelEndDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
-                    break;
-                }
+                    {
+                        _labelEndDateTime.Text = (e.Data as DateTime?)?.ToString(Constants.DateTimeFormat);
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_StartLocation:
-                {
-                    var startLocation = e.Data as LocationPoint;
-                    _labelStartLocation.Text = startLocation.X + " " + startLocation.Y;
-                    break;
-                }
+                    {
+                        var startLocation = e.Data as LocationPoint;
+                        _labelStartLocation.Text = startLocation.X + " " + startLocation.Y;
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_EndLocation:
-                {
-                    var endLocation = e.Data as LocationPoint;
-                    _labelEndLocation.Text = endLocation.X + " " + endLocation.Y;
-                    break;
-                }
+                    {
+                        var endLocation = e.Data as LocationPoint;
+                        _labelEndLocation.Text = endLocation.X + " " + endLocation.Y;
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_Waypoints:
-                {
-                    var waypoints = e.Data as List<LocationPoint>;
-                    _labelWaypoints.Text = waypoints.Count + " Selected";
-                    break;
-                }
+                    {
+                        var waypoints = e.Data as List<LocationPoint>;
+                        _labelWaypoints.Text = waypoints.Count + " Selected";
+                        break;
+                    }
                 case NotificationCommand.SessionEditActivity_Submit:
-                {
-                    Finish();
-                    break;
-                }
+                    {
+                        Finish();
+                        break;
+                    }
             }
         }
 

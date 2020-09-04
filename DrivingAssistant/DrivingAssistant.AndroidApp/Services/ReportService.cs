@@ -7,6 +7,7 @@ using DrivingAssistant.AndroidApp.Tools;
 using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.Core.Tools;
 using Newtonsoft.Json;
+using Xamarin.Essentials;
 using Environment = Android.OS.Environment;
 
 namespace DrivingAssistant.AndroidApp.Services
@@ -114,12 +115,22 @@ namespace DrivingAssistant.AndroidApp.Services
                 Method = "GET"
             };
 
+            if ((await Permissions.CheckStatusAsync<Permissions.StorageWrite>()) != PermissionStatus.Granted)
+            {
+                await Permissions.RequestAsync<Permissions.StorageWrite>();
+            }
+
+            if ((await Permissions.CheckStatusAsync<Permissions.StorageRead>()) != PermissionStatus.Granted)
+            {
+                await Permissions.RequestAsync<Permissions.StorageRead>();
+            }
+
             using var response = await request.GetResponseAsync() as HttpWebResponse;
             await using var responseStream = response?.GetResponseStream();
-            var filename = Path.Combine(Environment.ExternalStorageDirectory.Path, videoId + ".html");
+            var filename = Path.Combine(Environment.GetExternalStoragePublicDirectory(Environment.DirectoryDownloads).Path, videoId + ".html");
             await using var file = File.Create(filename);
             await responseStream.CopyToAsync(file);
-            return filename;
+            return Path.GetFileName(filename);
         }
     }
 }
