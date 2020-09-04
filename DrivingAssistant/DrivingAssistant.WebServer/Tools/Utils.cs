@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Enums;
+using DrivingAssistant.Core.Models;
 using DrivingAssistant.Core.Models.Reports;
 using DrivingAssistant.WebServer.Services.Generic;
 using MailKit.Net.Smtp;
@@ -46,22 +47,21 @@ namespace DrivingAssistant.WebServer.Tools
                     }
                     break;
                 }
-                case FileType.PDF:
+                case FileType.Report:
                 {
                     var directory = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString();
-                    if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetPdfStoragePath(), directory)))
+                    if (!Directory.Exists(Path.Combine(Constants.ServerConstants.GetReportStoragePath(), directory)))
                     {
-                        Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetPdfStoragePath(), directory));
+                        Directory.CreateDirectory(Path.Combine(Constants.ServerConstants.GetReportStoragePath(), directory));
                     }
-                    path = Path.Combine(Constants.ServerConstants.GetPdfStoragePath(), directory, Path.GetRandomFileName()) + format;
+                    path = Path.Combine(Constants.ServerConstants.GetReportStoragePath(), directory, Path.GetRandomFileName()) + format;
                     while (File.Exists(path))
                     {
-                        path = Path.Combine(Constants.ServerConstants.GetPdfStoragePath(), directory, Path.GetRandomFileName()) + format;
+                        path = Path.Combine(Constants.ServerConstants.GetReportStoragePath(), directory, Path.GetRandomFileName()) + format;
                     }
                     break;
                 }
             }
-            
 
             return path;
         }
@@ -119,8 +119,8 @@ namespace DrivingAssistant.WebServer.Tools
             htmlText += "<p>Video name: \"" + video.Description + "\"</p>";
             htmlText += "<p>Session name: \"" + drivingSession.Name + "\"</p>";
             htmlText += "<p>Session time period: \"" + drivingSession.StartDateTime + " " + drivingSession.EndDateTime + "\"</p>";
-            htmlText += "<p>Session start location: \"" + drivingSession.StartLocation + "\"</p>";
-            htmlText += "<p>Session end location: \"" + drivingSession.EndLocation + "\"</p>";
+            htmlText += "<p>Session start location: \"" + drivingSession.StartLocation.PointToString() + "\"</p>";
+            htmlText += "<p>Session end location: \"" + drivingSession.EndLocation.PointToString() + "\"</p>";
             htmlText += "<p>Number of waypoints: \"" + drivingSession.Waypoints.Count + "\"</p>";
             htmlText += "<p>Total processed frames: \"" + report.ProcessedFrames + "\"</p>";
             htmlText += "<p>Successfully processed frames: \"" + report.SuccessFrames + "\"</p>";
@@ -135,7 +135,7 @@ namespace DrivingAssistant.WebServer.Tools
             htmlText += "<p>Average left side line number: \"" + report.LeftSideLineNumber + "\"</p>";
             htmlText += "<p>Average right side line number: \"" + report.RightSideLineNumber + "\"</p>";
 
-            var filename = GetRandomFilename(".pdf", FileType.PDF);
+            var filename = GetRandomFilename(".html", FileType.Report);
             await File.WriteAllTextAsync(filename, htmlText);
             
             return filename;

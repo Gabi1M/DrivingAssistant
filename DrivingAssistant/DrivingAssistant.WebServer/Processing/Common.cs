@@ -100,6 +100,15 @@ namespace DrivingAssistant.WebServer.Processing
         }
 
         //======================================================//
+        public static bool ApproximateLine(this LineSegment2D line, LineSegment2D compareLine, int threshold)
+        {
+            return line.P1.X > compareLine.P1.X - threshold && line.P1.X < compareLine.P1.X + threshold &&
+                   line.P2.X > compareLine.P2.X - threshold && line.P2.X < compareLine.P2.X + threshold
+                   && line.P1.Y > compareLine.P1.Y - threshold && line.P1.Y < compareLine.P1.Y + threshold &&
+                   line.P2.Y > compareLine.P2.Y - threshold && line.P2.Y < compareLine.P2.Y + threshold;
+        }
+
+        //======================================================//
         /// <summary>
         /// Converts the file to Matroska mkv format.
         /// </summary>

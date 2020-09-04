@@ -36,6 +36,16 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
         }
 
         //======================================================//
+        private static IEnumerable<LineSegment2D> GetLeftRightBorderLines(int width, int height)
+        {
+            return new List<LineSegment2D>
+            {
+                new LineSegment2D(new Point(3 * width / 4, 2 * height / 4), new Point(width - 5, height - 50)),
+                new LineSegment2D(new Point(width - 5, height / 2), new Point(width - 5, height - 50))
+            };
+        }
+
+        //======================================================//
         private static Image<Gray, byte> MaskImage(Image<Gray, byte> image, IEnumerable<Point> roi)
         {
             var maskedImage = new Image<Gray, byte>(image.Size);
@@ -50,10 +60,9 @@ namespace DrivingAssistant.WebServer.Processing.Algorithms
 
             try
             {
-                var grayImage = processedImage.Convert<Gray, byte>();
-                var maskedImage = MaskImage(grayImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
-                var cannyImage = maskedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
-                var lines = cannyImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
+                var cannyImage = processedImage.Canny(_parameters.CannyThreshold, _parameters.CannyThresholdLinking);
+                var maskedImage = MaskImage(cannyImage, GetOverlayPoints(processedImage.Width, processedImage.Height)).Dilate(_parameters.DilateIterations);
+                var lines = maskedImage.HoughLinesBinary(_parameters.HoughLinesRhoResolution,
                     _parameters.HoughLinesThetaResolution, _parameters.HoughLinesThreshold,
                     _parameters.HoughLinesMinimumLineWidth, _parameters.HoughLinesGapBetweenLines)[0].AsEnumerable();
 

@@ -167,6 +167,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 alert.SetItems(algorithms, async (sender, args) =>
                 {
                     await _sessionService.SubmitAsync(session.Id, Enum.Parse<ProcessingAlgorithmType>(algorithms.ElementAt(args.Which)));
+                    await Task.Delay(2000);
                     await RefreshDataSource();
                     Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Submit, true));
                 });
