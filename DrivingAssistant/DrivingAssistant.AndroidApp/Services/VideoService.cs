@@ -83,7 +83,8 @@ namespace DrivingAssistant.AndroidApp.Services
         {
             var request = new HttpWebRequest(new Uri(Constants.ServerUri + "/" + Endpoints.VideoEndpoints.UploadVideoStream + "?Encoding=mp4&Description=" + description))
             {
-                Method = "POST"
+                Method = "POST",
+                Timeout = 120000
             };
 
             await using var requestStream = await request.GetRequestStreamAsync();

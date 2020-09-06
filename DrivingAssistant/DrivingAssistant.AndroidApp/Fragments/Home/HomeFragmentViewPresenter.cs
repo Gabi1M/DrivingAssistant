@@ -55,7 +55,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
             }
             catch (Exception ex)
             {
-                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, new Exception("Data not found or could not be loaded!")));
             }
         }
 
@@ -83,9 +83,9 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                 var chart = new PieChart { Entries = videoChartEntries, BackgroundColor = SKColor.Parse("#272929"), LabelTextSize = 25, LabelMode = LabelMode.RightOnly, Margin = 50 };
                 Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateVideoChart, chart));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateVideoChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateVideoChart, new Exception("Data not found or could not be loaded!")));
             }
         }
 
@@ -143,7 +143,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
             }
             catch (Exception ex)
             {
-                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, ex));
+                Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, new Exception("Data not found or could not be loaded!")));
             }
         }
     }

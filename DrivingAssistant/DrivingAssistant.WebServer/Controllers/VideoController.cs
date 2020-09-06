@@ -16,6 +16,7 @@ namespace DrivingAssistant.WebServer.Controllers
     public class VideoController : ControllerBase
     {
         private static readonly IVideoService _videoService = IVideoService.CreateNew();
+        private static readonly IDrivingSessionService _drivingSessionService = IDrivingSessionService.CreateNew();
         private static readonly IRemoteCameraService _remoteCameraService = IRemoteCameraService.CreateNew();
         private static readonly IThumbnailService _thumbnailService = IThumbnailService.CreateNew();
 
@@ -134,14 +135,14 @@ namespace DrivingAssistant.WebServer.Controllers
         {
             try
             {
-                var sessionId = -1L;
+                DrivingSession session = null;
                 if (Request.Query.ContainsKey("UserId"))
                 {
                     var userSettings = await _remoteCameraService.GetByUser(Convert.ToInt64(Request.Query["UserId"].First()));
                     if (Request.HttpContext.Connection.RemoteIpAddress.ToString() == userSettings.Host &&
                         userSettings.DestinationSessionId != -1)
                     {
-                        sessionId = userSettings.DestinationSessionId;
+                        session = await _drivingSessionService.GetById(userSettings.DestinationSessionId);
                     }
                 }
 
@@ -161,10 +162,15 @@ namespace DrivingAssistant.WebServer.Controllers
                     DateAdded = DateTime.Now,
                     Id = -1,
                     ProcessedId = -1,
-                    SessionId = sessionId,
+                    SessionId = session?.Id ?? -1L,
                 };
                 video.Id = await _videoService.SetAsync(video);
 
+                if (session != null)
+                {
+                    session.EndDateTime = DateTime.Now;
+                    await _drivingSessionService.SetAsync(session);
+                }
                 var thumbnail = new Thumbnail
                 {
                     Id = -1,

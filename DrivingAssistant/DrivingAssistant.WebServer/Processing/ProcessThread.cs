@@ -49,7 +49,7 @@ namespace DrivingAssistant.WebServer.Processing
 
                                 var report = LaneDepartureWarningReport.FromVideoReport(result, video.Id);
                                 processedVideo.Id = await videoService.SetAsync(processedVideo);
-                                report.PdfPath = await Utils.CreatePdfFromReport(report);
+                                report.PdfPath = await Utils.CreateHtmlFromReport(report);
                                 report.Id = await reportService.SetAsync(report);
                                 video.ProcessedId = processedVideo.Id;
                                 await videoService.SetAsync(video);
@@ -69,7 +69,9 @@ namespace DrivingAssistant.WebServer.Processing
                 session.Status = SessionStatus.Processed;
                 await sessionService.SetAsync(session);
 
-                await Utils.SendEmail(user.Email, session.Name + " Finished Processing", session.Name + " Finished Processing");
+                await Utils.SendEmail(user.Email, "Driving session: " + session.Name + " Finished Processing",
+                    "Driving session: " + session.Name +
+                    " Finished Processing. Additional information regarding the trip, as well as reports for individial videos, can be found in the app.");
             }).Start();
         }
     }

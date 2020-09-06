@@ -19,7 +19,7 @@ namespace DrivingAssistant.WebServer.Tools
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=driving_assistant;Username=postgres;Password=1234";
             private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
 
-            public static bool UsePostgresql = true;
+            public static bool UsePostgresql = false;
 
             public const string MailHost = "smtp.gmail.com";
             public const int MailPort = 465;

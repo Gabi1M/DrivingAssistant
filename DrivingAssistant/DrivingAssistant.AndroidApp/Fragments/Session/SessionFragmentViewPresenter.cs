@@ -143,7 +143,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         }
 
         //============================================================
-        public void SubmitButtonClick()
+        public async Task SubmitButtonClick()
         {
             if (_selectedPosition == -1)
             {
@@ -161,17 +161,10 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
 
             try
             {
-                var algorithms = Enum.GetNames(typeof(ProcessingAlgorithmType));
-                var alert = new AlertDialog.Builder(_context);
-                alert.SetTitle("Choose an algorithm for processing");
-                alert.SetItems(algorithms, async (sender, args) =>
-                {
-                    await _sessionService.SubmitAsync(session.Id, Enum.Parse<ProcessingAlgorithmType>(algorithms.ElementAt(args.Which)));
-                    await Task.Delay(2000);
-                    await RefreshDataSource();
-                    Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Submit, true));
-                });
-                alert.Create()?.Show();
+                await _sessionService.SubmitAsync(session.Id, ProcessingAlgorithmType.Lane_Departure_Warning);
+                await Task.Delay(2000);
+                await RefreshDataSource();
+                Notify(new NotificationEventArgs(NotificationCommand.SessionFragment_Submit, true));
             }
             catch (Exception ex)
             {

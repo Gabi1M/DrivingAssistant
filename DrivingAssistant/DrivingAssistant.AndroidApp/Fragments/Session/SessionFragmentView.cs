@@ -78,6 +78,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 {
                     var intent = new Intent(_activityContext, typeof(VideoListActivityView));
                     intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<VideoRecording>));
+                    intent.PutExtra("original", true.ToString());
                     StartActivity(intent);
                     break;
                 }
@@ -85,6 +86,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
                 {
                     var intent = new Intent(_activityContext, typeof(VideoListActivityView));
                     intent.PutExtra("videos", JsonConvert.SerializeObject(e.Data as IEnumerable<VideoRecording>));
+                    intent.PutExtra("original", false.ToString());
                     StartActivity(intent);
                     break;
                 }
@@ -212,9 +214,9 @@ namespace DrivingAssistant.AndroidApp.Fragments.Session
         }
 
         //============================================================
-        private void OnSubmitButtonClick(object sender, EventArgs e)
+        private async void OnSubmitButtonClick(object sender, EventArgs e)
         {
-            _viewPresenter.SubmitButtonClick();
+            await _viewPresenter.SubmitButtonClick();
         }
     }
 }

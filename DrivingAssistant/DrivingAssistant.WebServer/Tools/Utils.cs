@@ -107,7 +107,7 @@ namespace DrivingAssistant.WebServer.Tools
         }
 
         //============================================================
-        public static async Task<string> CreatePdfFromReport(LaneDepartureWarningReport report)
+        public static async Task<string> CreateHtmlFromReport(LaneDepartureWarningReport report)
         {
             using var videoService = IVideoService.CreateNew();
             using var sessionService = IDrivingSessionService.CreateNew();

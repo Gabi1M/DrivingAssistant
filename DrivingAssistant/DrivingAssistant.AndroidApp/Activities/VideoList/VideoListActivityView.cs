@@ -24,6 +24,7 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         private ListView _videoListView;
         private Button _buttonView;
         private Button _buttonViewReport;
+        private bool _original;
 
         private VideoListActivityViewPresenter _viewPresenter;
 
@@ -34,6 +35,8 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
             Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_videos);
             SetupActivityFields();
+
+            _original = Convert.ToBoolean(Intent?.GetStringExtra("original"));
 
             _viewPresenter = new VideoListActivityViewPresenter(this,
                 JsonConvert.DeserializeObject<IEnumerable<VideoRecording>>(Intent?.GetStringExtra("videos")!));
@@ -104,7 +107,10 @@ namespace DrivingAssistant.AndroidApp.Activities.VideoList
         //============================================================
         private void OnButtonViewReportClick(object sender, EventArgs e)
         {
-            _viewPresenter.ButtonViewReportClick();
+            if (!_original)
+            {
+                _viewPresenter.ButtonViewReportClick();
+            }
         }
 
         //============================================================

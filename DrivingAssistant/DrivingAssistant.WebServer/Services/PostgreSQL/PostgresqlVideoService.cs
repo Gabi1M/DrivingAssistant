@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DrivingAssistant.Core.Models;
@@ -248,6 +249,8 @@ namespace DrivingAssistant.WebServer.Services.PostgreSQL
                 await using var command = new NpgsqlCommand(PostgreSQLCommands.DeleteVideo, connection);
                 command.Parameters.AddWithValue("id", videoRecording.Id);
                 await command.ExecuteNonQueryAsync();
+                await Task.Delay(1000);
+                File.Delete(videoRecording.Filepath);
             }
             catch (Exception ex)
             {
