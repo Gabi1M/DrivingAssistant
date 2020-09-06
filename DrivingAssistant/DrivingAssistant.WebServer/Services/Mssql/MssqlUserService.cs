@@ -45,7 +45,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Users_By_IdTableAdapter();
+                using var tableAdapter = new Get_Users_By_IdTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Users_By_Id, id);
                 return _dataset.Get_Users_By_Id.AsEnumerable().Select(row => new User
                 {

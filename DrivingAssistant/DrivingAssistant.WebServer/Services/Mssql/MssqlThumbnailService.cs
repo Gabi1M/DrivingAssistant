@@ -41,7 +41,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Thumbnail_By_IdTableAdapter();
+                using var tableAdapter = new Get_Thumbnail_By_IdTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Thumbnail_By_Id, id);
                 return _dataset.Get_Thumbnail_By_Id.AsEnumerable().Select(row => new Thumbnail
                 {
@@ -57,7 +60,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Thumbnail_By_VideoTableAdapter();
+                using var tableAdapter = new Get_Thumbnail_By_VideoTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Thumbnail_By_Video, videoId);
                 return _dataset.Get_Thumbnail_By_Video.AsEnumerable().Select(row => new Thumbnail
                 {

@@ -112,6 +112,7 @@ namespace DrivingAssistant.AndroidApp.Activities.SessionEdit
                 try
                 {
                     var videoId = await _videoService.SetVideoStreamAsync(filedata.GetStream(), textEdit.Text);
+                    await Task.Delay(2000);
                     var video = await _videoService.GetVideoByIdAsync(videoId);
                     if (_currentDrivingSession == null)
                     {

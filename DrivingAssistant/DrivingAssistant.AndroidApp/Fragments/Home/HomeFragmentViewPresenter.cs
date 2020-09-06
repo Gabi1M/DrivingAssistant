@@ -53,7 +53,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
                 };
                 Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, chart));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateSessionChart, new Exception("Data not found or could not be loaded!")));
             }
@@ -141,7 +141,7 @@ namespace DrivingAssistant.AndroidApp.Fragments.Home
 
                 Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, new Tuple<Chart, Chart>(chartReport, chartLanePosition)));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Notify(new NotificationEventArgs(NotificationCommand.HomeFragment_CreateReportChart, new Exception("Data not found or could not be loaded!")));
             }

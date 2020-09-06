@@ -13,11 +13,11 @@ namespace DrivingAssistant.WebServer.Tools
             private const string LinuxPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=driving_assistant;Username=pi;Password=1234";
             private const string LinuxMSSQLConnectionString = @"";
 
-            private const string WindowsThumbnailStoragePath = @"E:\CloudStorage\Thumbnails";
-            private const string WindowsVideoStoragePath = @"E:\CloudStorage\Videos";
-            private const string WindowsReportStoragePath = @"E:\CloudStorage\Reports";
+            private const string WindowsThumbnailStoragePath = @"C:\CloudStorage\Thumbnails";
+            private const string WindowsVideoStoragePath = @"C:\CloudStorage\Videos";
+            private const string WindowsReportStoragePath = @"C:\CloudStorage\Reports";
             private const string WindowsPsqlConnectionString = @"Host=127.0.0.1;Port=5432;Database=driving_assistant;Username=postgres;Password=1234";
-            private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-KLAJVKV;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
+            private const string WindowsMSSQLConnectionString = @"Data Source=DESKTOP-21H2OBB;Initial Catalog=DrivingAssistant;Persist Security Info=True;User ID=sa;Password=pxd";
 
             public static bool UsePostgresql = false;
 

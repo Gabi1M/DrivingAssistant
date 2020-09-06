@@ -50,7 +50,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_DrivingSession_By_IdTableAdapter();
+                using var tableAdapter = new Get_DrivingSession_By_IdTableAdapter
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_DrivingSession_By_Id, id);
                 return _dataset.Get_DrivingSession_By_Id.AsEnumerable().Select(row => new DrivingSession
                 {
@@ -73,7 +76,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_DrivingSession_By_UserTableAdapter();
+                using var tableAdapter = new Get_DrivingSession_By_UserTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_DrivingSession_By_User, userId);
                 return _dataset.Get_DrivingSession_By_User.AsEnumerable().Select(row => new DrivingSession
                 {

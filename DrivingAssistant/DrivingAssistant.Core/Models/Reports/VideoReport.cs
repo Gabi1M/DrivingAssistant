@@ -45,6 +45,24 @@ namespace DrivingAssistant.Core.Models.Reports
         {
             var successfulImageResults = imageResults.Where(x => x.Success);
 
+            if (!successfulImageResults.Any())
+            {
+                return new VideoReport
+                {
+                    NumberOfFrames = 0,
+                    SuccessFrames = 0,
+                    FailFrames = 0,
+                    AverageLeftSidePercent = 0,
+                    AverageRightSidePercent = 0,
+                    AverageLeftSideLineLength = 0,
+                    AverageRightSideLineLength = 0,
+                    AverageLeftSideLineNumber = 0,
+                    AverageRightSideLineNumber = 0,
+                    AverageSpanLineAngle = 0,
+                    AverageSpanLineLength = 0
+                };
+            }
+
             return new VideoReport
             {
                 NumberOfFrames = imageResults.Count(),

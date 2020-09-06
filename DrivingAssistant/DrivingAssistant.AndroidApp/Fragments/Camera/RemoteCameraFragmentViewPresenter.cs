@@ -42,8 +42,17 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
             {
                 //Ignored
             }
-            var cameraSessionName = _remoteCamera.DestinationSessionId == -1 ? "None" : (await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId)).Name;
-            Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, RemoteCameraStatus, string>(_remoteCamera, status, cameraSessionName)));
+
+            try
+            {
+                var cameraSessionName = _remoteCamera.DestinationSessionId == -1 ? "None" : (await _sessionService.GetByIdAsync(_remoteCamera.DestinationSessionId)).Name;
+                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, RemoteCameraStatus, string>(_remoteCamera, status, cameraSessionName)));
+            }
+            catch (Exception)
+            {
+                _remoteCamera.DestinationSessionId = -1;
+                Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_Refresh, new Tuple<RemoteCamera, RemoteCameraStatus, string>(_remoteCamera, status, "None")));
+            }
         }
 
         //============================================================
@@ -116,6 +125,11 @@ namespace DrivingAssistant.AndroidApp.Fragments.Camera
                 using var remoteCameraController = new RemoteCameraController(_remoteCamera);
                 await remoteCameraController.StopRecordingAsync();
                 var status = await remoteCameraController.GetStatusAsync();
+                if (_remoteCamera.AutoProcessSession)
+                {
+                    await _sessionService.SubmitAsync(_remoteCamera.DestinationSessionId,
+                        ProcessingAlgorithmType.Lane_Departure_Warning);
+                }
                 Notify(new NotificationEventArgs(NotificationCommand.SettingsFragment_StopRecording, status));
             }
             catch (Exception)

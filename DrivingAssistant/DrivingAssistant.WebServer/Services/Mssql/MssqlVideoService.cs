@@ -48,7 +48,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Video_By_IdTableAdapter();
+                using var tableAdapter = new Get_Video_By_IdTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Video_By_Id, id);
                 return _dataset.Get_Video_By_Id.AsEnumerable().Select(row => new VideoRecording
                 {
@@ -68,7 +71,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Video_By_Processed_IdTableAdapter();
+                using var tableAdapter = new Get_Video_By_Processed_IdTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Video_By_Processed_Id, processedId);
                 return _dataset.Get_Video_By_Processed_Id.AsEnumerable().Select(row => new VideoRecording
                 {
@@ -88,7 +94,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Videos_By_SessionTableAdapter();
+                using var tableAdapter = new Get_Videos_By_SessionTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Videos_By_Session, sessionId);
                 return _dataset.Get_Videos_By_Session.AsEnumerable().Select(row => new VideoRecording
                 {
@@ -108,7 +117,10 @@ namespace DrivingAssistant.WebServer.Services.Mssql
         {
             return await Task.Run(() =>
             {
-                using var tableAdapter = new Get_Videos_By_UserTableAdapter();
+                using var tableAdapter = new Get_Videos_By_UserTableAdapter()
+                {
+                    Connection = _tableAdapter.Connection
+                };
                 tableAdapter.Fill(_dataset.Get_Videos_By_User, userId);
                 return _dataset.Get_Videos_By_User.AsEnumerable().Select(row => new VideoRecording
                 {

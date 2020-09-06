@@ -78,7 +78,7 @@ namespace DrivingAssistant.Core.Models.Reports
                 ProcessedFrames = videoReport.NumberOfFrames,
                 SuccessFrames = videoReport.SuccessFrames,
                 FailFrames = videoReport.FailFrames,
-                SuccessRate = (float) videoReport.SuccessFrames * 100 / videoReport.NumberOfFrames,
+                SuccessRate = videoReport.SuccessFrames == 0 ? 0 : (float)videoReport.SuccessFrames * 100 / videoReport.NumberOfFrames,
                 LeftSidePercent = videoReport.AverageLeftSidePercent,
                 RightSidePercent = videoReport.AverageRightSidePercent,
                 LeftSideLineLength = videoReport.AverageLeftSideLineLength,
